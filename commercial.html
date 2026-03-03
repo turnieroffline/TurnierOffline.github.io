@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vereinslizenz — TurnierOffline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Mulish:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--or:#ff6b00;--bg:#060810;--s1:#0d1220;--s2:#141c2e;--s3:#1c2640;--s4:#243050;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;--gn:#20d472;--gd:#f0bc30;--bl:#3b82f6;--rd:#f04060;--F:'Oswald',sans-serif;--B:'Mulish',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:var(--B);background:var(--bg);color:var(--tx);}a{text-decoration:none;color:var(--or);}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 28px;height:56px;display:flex;align-items:center;background:rgba(6,8,16,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05);}
+.nb{font-family:var(--F);font-size:1rem;letter-spacing:4px;color:var(--or);}
+.nb a{color:var(--or);}
+.nb span{color:var(--mu);margin:0 8px;}
+.page{max-width:800px;margin:0 auto;padding:96px 24px 80px;}
+
+.liz-hero{background:linear-gradient(135deg,rgba(240,188,48,.07),var(--s2));border:1px solid rgba(240,188,48,.18);border-radius:18px;padding:40px;margin-bottom:36px;position:relative;overflow:hidden;}
+.liz-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(240,188,48,.1),transparent 70%);pointer-events:none;}
+.liz-hero-tag{font-size:.62rem;letter-spacing:5px;text-transform:uppercase;color:var(--gd);margin-bottom:12px;}
+.liz-hero h1{font-family:var(--F);font-size:2.4rem;letter-spacing:5px;margin-bottom:10px;}
+.liz-hero p{font-size:.85rem;color:var(--mu2);line-height:1.9;font-weight:300;max-width:520px;}
+
+.lsec{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:28px;margin-bottom:16px;}
+.lsec-num{font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--gd);margin-bottom:6px;}
+.lsec h2{font-family:var(--F);font-size:1.15rem;letter-spacing:3px;margin-bottom:16px;}
+.lsec p{font-size:.83rem;color:var(--mu2);line-height:2;font-weight:300;margin-bottom:10px;}
+.lsec p:last-child{margin-bottom:0;}
+strong{color:var(--tx);font-weight:600;}
+
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+@media(max-width:540px){.option-grid{grid-template-columns:1fr;}}
+.opt{background:var(--s2);border:1px solid var(--s3);border-radius:12px;padding:20px;}
+.opt-a{border-color:rgba(32,212,114,.25);background:linear-gradient(135deg,rgba(32,212,114,.05),var(--s2));}
+.opt-b{border-color:rgba(59,130,246,.25);background:linear-gradient(135deg,rgba(59,130,246,.05),var(--s2));}
+.opt-tag{font-size:.6rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.opt-a .opt-tag{color:var(--gn);}
+.opt-b .opt-tag{color:var(--bl);}
+.opt-h{font-family:var(--F);font-size:.95rem;letter-spacing:2px;margin-bottom:6px;}
+.opt-d{font-size:.78rem;color:var(--mu2);line-height:1.8;font-weight:300;margin-bottom:10px;}
+.opt-price{font-family:var(--F);font-size:1.5rem;letter-spacing:2px;}
+.opt-a .opt-price{color:var(--gn);}
+.opt-b .opt-price{color:var(--bl);}
+.opt-sub{font-size:.65rem;color:var(--mu);margin-top:2px;}
+
+.rule{border-radius:8px;padding:12px 16px;margin:10px 0;font-size:.8rem;line-height:1.85;border-left:3px solid;}
+.rule-gn{background:rgba(32,212,114,.06);border-color:var(--gn);}
+.rule-rd{background:rgba(240,64,96,.06);border-color:var(--rd);}
+.rule-gd{background:rgba(240,188,48,.06);border-color:var(--gd);}
+.rule-bl{background:rgba(59,130,246,.06);border-color:var(--bl);}
+
+.llist{list-style:none;display:flex;flex-direction:column;gap:7px;margin:10px 0;}
+.llist li{display:flex;gap:10px;font-size:.82rem;color:var(--mu2);line-height:1.7;font-weight:300;align-items:flex-start;}
+.llist li b{flex-shrink:0;font-size:.9rem;margin-top:1px;}
+
+/* Kontakt Card */
+.contact-card{background:linear-gradient(135deg,rgba(255,107,0,.07),var(--s2));border:1px solid rgba(255,107,0,.22);border-radius:16px;padding:32px;text-align:center;margin-top:28px;}
+.contact-card h3{font-family:var(--F);font-size:1.3rem;letter-spacing:4px;color:var(--or);margin-bottom:10px;}
+.contact-card p{font-size:.84rem;color:var(--mu2);line-height:1.9;font-weight:300;margin-bottom:18px;}
+.contact-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:10px;font-size:.82rem;font-weight:600;transition:.15s;border:1px solid transparent;font-family:var(--B);}
+.btn-or{background:var(--or);color:#fff;}
+.btn-or:hover{background:#ff9340;transform:translateY(-1px);}
+.btn-line{background:transparent;color:var(--tx);border-color:var(--s4);}
+.btn-line:hover{border-color:var(--or);color:var(--or);}
+
+.nav-bottom{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px;}
+.nb-card{flex:1;min-width:200px;background:var(--s1);border:1px solid var(--s3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;transition:.15s;}
+.nb-card:hover{border-color:var(--or);background:var(--s2);}
+.nb-card-t{font-family:var(--F);font-size:.8rem;letter-spacing:2px;margin-bottom:2px;}
+.nb-card-d{font-size:.7rem;color:var(--mu2);font-weight:300;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nb">
+    <a href="../">🏆 TURNIEROFFLINE</a><span>/</span>
+    <a href="./">LIZENZ</a><span>/</span>
+    VEREINSLIZENZ
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="liz-hero">
+    <div class="liz-hero-tag">💼 Für fremde Vereine &amp; Organisationen</div>
+    <h1>VEREINSLIZENZ</h1>
+    <p>Du bist kein privater Nutzer und kein eigener Verein des Entwicklers — aber du möchtest TurnierOffline trotzdem nutzen? Hier findest du die Konditionen. Fair, transparent, kein Gewerbe nötig.</p>
+  </div>
+
+  <!-- Wann brauche ich das? -->
+  <div class="lsec">
+    <div class="lsec-num">Voraussetzung</div>
+    <h2>WANN BRAUCHST DU EINE LIZENZ?</h2>
+    <p>Eine Vereinslizenz brauchst du wenn du <strong>nicht</strong> der Entwickler oder dessen eigener Verein bist — und TurnierOffline trotzdem einsetzen möchtest.</p>
+    <ul class="llist">
+      <li><b style="color:var(--gd)">€</b>Ein anderer Fußballverein will das System für sein Turnier nutzen</li>
+      <li><b style="color:var(--gd)">€</b>Eine Jugendgruppe aus einem anderen Ort will das System einsetzen</li>
+      <li><b style="color:var(--gd)">€</b>Jemand will es für eine Veranstaltung mit Teilnahmegebühren nutzen</li>
+      <li><b style="color:var(--gd)">€</b>Jemand möchte das System für andere einrichten oder Dienstleistungen anbieten</li>
+    </ul>
+  </div>
+
+  <!-- Optionen -->
+  <div class="lsec">
+    <div class="lsec-num">Konditionen</div>
+    <h2>DEINE OPTIONEN</h2>
+    <p>Es gibt zwei Wege — je nachdem ob du alles selbst einrichten kannst oder Hilfe möchtest.</p>
+    <div class="option-grid">
+      <div class="opt opt-a">
+        <div class="opt-tag">Option A</div>
+        <div class="opt-h">SELBST EINRICHTEN</div>
+        <div class="opt-d">Du richtest alles selbst nach der README-Anleitung ein. Kein Support enthalten, aber E-Mail für Rückfragen.</div>
+        <div class="opt-price">20–50 €</div>
+        <div class="opt-sub">einmalig · auf Anfrage</div>
+      </div>
+      <div class="opt opt-b">
+        <div class="opt-tag">Option B</div>
+        <div class="opt-h">EINRICHTUNG DURCH ENTWICKLER</div>
+        <div class="opt-d">Der Entwickler richtet das System auf deinem Gerät ein, erklärt die Bedienung und ist beim ersten Turnier erreichbar.</div>
+        <div class="opt-price">50–100 €</div>
+        <div class="opt-sub">je nach Aufwand &amp; Anfahrt</div>
+      </div>
+    </div>
+    <div class="rule rule-gd">
+      Diese Beträge sind <strong>Aufwandsentschädigungen</strong>, kein Produktverkauf. Der Entwickler betreibt kein Gewerbe — es handelt sich um gelegentliche, private Vereinbarungen.
+    </div>
+  </div>
+
+  <!-- Was ist inbegriffen -->
+  <div class="lsec">
+    <div class="lsec-num">Inbegriffen</div>
+    <h2>WAS DU BEKOMMST</h2>
+    <ul class="llist">
+      <li><b style="color:var(--gn)">✓</b>Nutzung für <strong>beliebig viele eigene Turniere</strong></li>
+      <li><b style="color:var(--gn)">✓</b>Anpassung von Farben, Logo und Vereinsname</li>
+      <li><b style="color:var(--gn)">✓</b>E-Mail-Support bei Fragen (keine Reaktionszeit garantiert)</li>
+      <li><b style="color:var(--gn)">✓</b>Zugang zu zukünftigen Updates solange das Projekt aktiv ist</li>
+      <li><b style="color:var(--gn)">✓</b>Bei Option B: persönliche Einrichtung und Erklärung</li>
+    </ul>
+    <div class="rule rule-gn">
+      Die Lizenz ist <strong>nicht übertragbar</strong> — sie gilt nur für den anfragenden Verein. Keine Weitergabe an andere Vereine oder Dritte.
+    </div>
+  </div>
+
+  <!-- Was bleibt verboten -->
+  <div class="lsec">
+    <div class="lsec-num">Grenzen</div>
+    <h2>AUCH MIT LIZENZ VERBOTEN</h2>
+    <ul class="llist">
+      <li><b style="color:var(--rd)">✗</b>Weitergabe des Systems oder der VM an andere Vereine oder Dritte</li>
+      <li><b style="color:var(--rd)">✗</b>Veröffentlichung des Quellcodes</li>
+      <li><b style="color:var(--rd)">✗</b>Das System als Basis für ein eigenes Produkt oder eine eigene App nutzen</li>
+      <li><b style="color:var(--rd)">✗</b>Den Namen "TurnierOffline" für eigene Produkte oder Dienstleistungen verwenden</li>
+      <li><b style="color:var(--rd)">✗</b>Das System als Dienstleistung für andere Vereine anbieten</li>
+    </ul>
+  </div>
+
+  <!-- Share Back -->
+  <div class="lsec">
+    <div class="lsec-num">Share-Back</div>
+    <h2>VERBESSERUNGEN TEILEN</h2>
+    <p>Auch als Lizenznehmer gilt die Share-Back-Regel: Wenn du das System anpasst oder Fehler behebst, <strong>bitte diese Änderungen dem Entwickler mitteilen</strong>.</p>
+    <div class="rule rule-bl">
+      Das ist keine Pflicht im rechtlichen Sinne — aber es ist fair und hilft allen Nutzern. Das Projekt lebt davon, dass Verbesserungen zurückfließen.
+    </div>
+  </div>
+
+  <!-- Kontakt -->
+  <div class="contact-card">
+    <h3>ANFRAGE STELLEN</h3>
+    <p>
+      Schreib kurz: welcher Verein, wie viele Turniere pro Jahr, ob du selbst einrichten kannst.<br>
+      Der Entwickler meldet sich dann mit Konditionen zurück.
+    </p>
+    <div class="contact-btns">
+      <a href="https://github.com/TurnierOffline/TurnierOffline/issues" class="btn btn-or" target="_blank">🐛 GitHub Issue öffnen</a>
+      <a href="../" class="btn btn-line">🏠 Zurück zur Startseite</a>
+    </div>
+    <p style="margin-top:16px;font-size:.72rem;color:var(--mu)">
+      Alternativ: E-Mail-Adresse findest du im GitHub-Profil des Entwicklers.
+    </p>
+  </div>
+
+  <div class="nav-bottom">
+    <a href="./" class="nb-card">
+      <div style="font-size:1.4rem">📄</div>
+      <div><div class="nb-card-t">STANDARD-LIZENZ</div><div class="nb-card-d">Allgemeine Nutzungsbedingungen</div></div>
+      <div style="margin-left:auto;color:var(--or)">→</div>
+    </a>
+    <a href="../" class="nb-card">
+      <div style="font-size:1.4rem">🏠</div>
+      <div><div class="nb-card-t">STARTSEITE</div><div class="nb-card-d">Zurück zur Projektseite</div></div>
+      <div style="margin-left:auto;color:var(--or)">→</div>
+    </a>
+  </div>
+
+</div>
+</body>
+</html>
