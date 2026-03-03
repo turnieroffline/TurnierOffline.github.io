@@ -3,169 +3,524 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lizenz — TurnierOffline</title>
+<title>TurnierOffline — Turniersystem fürs Handy</title>
+<meta name="description" content="Komplettes Turnier-Management auf deinem Android-Handy. Kein Internet, kein Abo, kein Server.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Mulish:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{--or:#ff6b00;--bg:#060810;--s1:#0d1220;--s2:#141c2e;--s3:#1c2640;--s4:#243050;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;--gn:#20d472;--gd:#f0bc30;--bl:#3b82f6;--rd:#f04060;--F:'Oswald',sans-serif;--B:'Mulish',sans-serif;}
-*{margin:0;padding:0;box-sizing:border-box;}body{font-family:var(--B);background:var(--bg);color:var(--tx);}a{text-decoration:none;color:var(--or);}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 28px;height:56px;display:flex;align-items:center;background:rgba(6,8,16,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05);}
-.nb{font-family:var(--F);font-size:1rem;letter-spacing:4px;color:var(--or);}
-.nb a{color:var(--or);}
-.nb span{color:var(--mu);margin:0 8px;}
-.page{max-width:800px;margin:0 auto;padding:96px 24px 80px;}
+:root{
+  --or:#ff6b00;--or2:#ff9340;--ord:rgba(255,107,0,.1);
+  --bg:#060810;--s1:#0d1220;--s2:#141c2e;--s3:#1c2640;--s4:#243050;
+  --tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;
+  --gn:#20d472;--gd:#f0bc30;--bl:#3b82f6;--rd:#f04060;
+  --F:'Oswald',sans-serif;--B:'Mulish',sans-serif;
+  --rad:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--B);background:var(--bg);color:var(--tx);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+img{display:block;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px;}
+
+/* NAV */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  padding:0 32px;height:58px;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(6,8,16,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nav-brand{font-family:var(--F);font-size:1.05rem;letter-spacing:4px;color:var(--or);display:flex;align-items:center;gap:7px;}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:2px;}
+.nav-r a{font-size:.79rem;color:var(--mu2);padding:6px 12px;border-radius:8px;transition:.15s;letter-spacing:.2px;}
+.nav-r a:hover{color:var(--tx);background:rgba(255,255,255,.05);}
+.nav-demo{background:var(--or)!important;color:#fff!important;font-weight:600;font-family:var(--F);letter-spacing:2px;font-size:.75rem!important;}
+.nav-demo:hover{background:var(--or2)!important;}
+@media(max-width:600px){.nav-r a:not(.nav-demo){display:none;}}
 
 /* HERO */
-.liz-hero{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid var(--s3);border-radius:18px;padding:40px;margin-bottom:36px;position:relative;overflow:hidden;}
-.liz-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,107,0,.12),transparent 70%);pointer-events:none;}
-.liz-hero-tag{font-size:.62rem;letter-spacing:5px;text-transform:uppercase;color:var(--or);margin-bottom:12px;}
-.liz-hero h1{font-family:var(--F);font-size:2.4rem;letter-spacing:5px;margin-bottom:10px;}
-.liz-hero p{font-size:.85rem;color:var(--mu2);line-height:1.9;font-weight:300;max-width:500px;}
-.copy-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(32,212,114,.08);border:1px solid rgba(32,212,114,.2);color:var(--gn);font-size:.68rem;padding:5px 14px;border-radius:20px;margin-top:16px;font-family:var(--F);letter-spacing:2px;}
+.hero{
+  min-height:100svh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:100px 24px 72px;text-align:center;
+  position:relative;overflow:hidden;
+}
+/* diagonal grid */
+.hero-grid{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(255,107,0,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,0,.04) 1px,transparent 1px);
+  background-size:72px 72px;
+  transform:rotate(-8deg) scale(1.3);
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 30%,black,transparent);
+}
+.hero-glow{
+  position:absolute;top:-10%;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse,rgba(255,107,0,.12) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-tag{
+  position:relative;
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.68rem;letter-spacing:5px;text-transform:uppercase;
+  color:var(--or);border:1px solid rgba(255,107,0,.25);
+  background:rgba(255,107,0,.07);padding:5px 16px;border-radius:20px;
+  margin-bottom:32px;
+}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--gn);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero h1{
+  font-family:var(--F);
+  font-size:clamp(3.5rem,15vw,9.5rem);
+  letter-spacing:6px;line-height:.88;
+  position:relative;margin-bottom:8px;
+}
+.hero h1 em{
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:2px var(--or);
+  font-style:normal;
+}
+.hero-sub{
+  position:relative;
+  font-size:clamp(.88rem,1.8vw,1.05rem);
+  color:var(--mu2);max-width:480px;line-height:1.9;
+  margin:22px auto 40px;font-weight:300;
+}
+.hero-actions{position:relative;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 22px;border-radius:var(--rad);
+  font-size:.85rem;font-weight:600;transition:.18s;border:1px solid transparent;
+  font-family:var(--B);cursor:pointer;
+}
+.btn-solid{background:var(--or);color:#fff;border-color:var(--or);}
+.btn-solid:hover{background:var(--or2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,0,.3);}
+.btn-line{background:transparent;color:var(--tx);border-color:var(--s4);}
+.btn-line:hover{border-color:var(--or);color:var(--or);}
 
-/* SECTION */
-.lsec{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:28px;margin-bottom:16px;}
-.lsec-num{font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--or);margin-bottom:6px;}
-.lsec h2{font-family:var(--F);font-size:1.15rem;letter-spacing:3px;margin-bottom:16px;}
-.lsec p{font-size:.83rem;color:var(--mu2);line-height:2;font-weight:300;margin-bottom:10px;}
-.lsec p:last-child{margin-bottom:0;}
+/* STATS STRIP */
+.strip{
+  background:var(--s1);
+  border-top:1px solid var(--s3);border-bottom:1px solid var(--s3);
+  display:flex;justify-content:center;
+}
+.strip-item{
+  flex:1;min-width:110px;max-width:200px;
+  text-align:center;padding:24px 12px;
+  border-right:1px solid var(--s3);
+}
+.strip-item:last-child{border-right:none;}
+.strip-n{font-family:var(--F);font-size:2.5rem;letter-spacing:3px;color:var(--or);}
+.strip-l{font-size:.63rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-top:4px;}
 
-/* RULE BOX */
-.rule{border-radius:8px;padding:12px 16px;margin:10px 0;font-size:.8rem;line-height:1.85;border-left:3px solid;}
-.rule-gn{background:rgba(32,212,114,.06);border-color:var(--gn);color:var(--tx);}
-.rule-rd{background:rgba(240,64,96,.06);border-color:var(--rd);color:var(--tx);}
-.rule-gd{background:rgba(240,188,48,.06);border-color:var(--gd);color:var(--tx);}
-.rule-bl{background:rgba(59,130,246,.06);border-color:var(--bl);color:var(--tx);}
+/* MOCKUP SHOWCASE */
+.showcase{
+  padding:88px 24px;background:var(--s1);
+  border-bottom:1px solid var(--s3);
+}
+.showcase-inner{max-width:1080px;margin:0 auto;}
+.sec-label{font-size:.63rem;letter-spacing:5px;text-transform:uppercase;color:var(--or);
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sec-label::before{content:'';width:24px;height:1px;background:var(--or);}
+.sec-h{font-family:var(--F);font-size:clamp(1.8rem,5vw,3.2rem);letter-spacing:4px;margin-bottom:14px;line-height:1.05;}
+.sec-p{font-size:.88rem;color:var(--mu2);max-width:500px;line-height:2;font-weight:300;}
+.mock-pair{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px;}
+@media(max-width:720px){.mock-pair{grid-template-columns:1fr;}}
+.mock-cap{font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--mu);text-align:center;margin-bottom:8px;}
 
-/* LIST */
-.llist{list-style:none;display:flex;flex-direction:column;gap:7px;margin:10px 0;}
-.llist li{display:flex;gap:10px;font-size:.82rem;color:var(--mu2);line-height:1.7;font-weight:300;align-items:flex-start;}
-.llist li b{flex-shrink:0;font-size:.9rem;margin-top:1px;}
+/* TV Frame */
+.tv-wrap{border-radius:10px;overflow:hidden;border:2px solid var(--s4);background:var(--bg);box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.tv-bar{background:linear-gradient(90deg,var(--s1),var(--s2));border-bottom:2px solid var(--or);padding:5px 12px;display:flex;align-items:center;gap:8px;}
+.tv-bar-name{font-family:var(--F);font-size:.58rem;letter-spacing:3px;color:var(--or);}
+.tv-body{display:grid;grid-template-columns:3fr 2fr;min-height:160px;gap:0;}
+.tv-main{padding:12px;border-right:1px solid var(--s3);}
+.tv-score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.tv-team{font-family:var(--F);font-size:.7rem;letter-spacing:2px;}
+.tv-score{font-family:var(--F);font-size:2.2rem;letter-spacing:8px;color:var(--gd);}
+.tv-live{font-size:.38rem;color:var(--gn);text-align:center;letter-spacing:2px;margin-bottom:8px;}
+.tv-ev{font-size:.38rem;color:var(--mu2);padding:2px 0;border-bottom:1px solid var(--s3);}
+.tv-side{padding:10px;background:var(--s1);}
+.tv-side-h{font-family:var(--F);font-size:.52rem;letter-spacing:2px;color:var(--gd);margin-bottom:6px;}
+.tv-br-row{display:flex;gap:4px;margin-bottom:3px;font-size:.38rem;}
+.tv-br-t{flex:1;color:var(--mu2);}
+.tv-br-s{color:var(--gd);font-family:var(--F);}
+.tv-ticker{background:var(--s2);border-top:1px solid var(--s3);padding:3px 8px;font-size:.37rem;color:var(--mu);overflow:hidden;white-space:nowrap;}
+.ticker-inner{display:inline-block;animation:ticker 18s linear infinite;}
+@keyframes ticker{from{transform:translateX(0%)}to{transform:translateX(-50%)}}
 
-/* HIGHLIGHT */
-.hl{color:var(--tx);font-weight:600;}
-strong{color:var(--tx);font-weight:600;}
+/* Phone Frame */
+.phone-outer{display:flex;justify-content:center;}
+.phone-wrap{width:180px;background:var(--s2);border:2px solid var(--s4);border-radius:26px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.phone-pill{width:50px;height:12px;background:var(--bg);margin:0 auto;border-radius:0 0 8px 8px;}
+.phone-hdr{background:var(--or);padding:6px 10px;display:flex;align-items:center;}
+.phone-hdr-t{font-family:var(--F);font-size:.58rem;letter-spacing:2px;color:#fff;}
+.phone-live{margin-left:auto;background:rgba(0,0,0,.25);color:#fff;font-size:.42rem;padding:1px 5px;border-radius:5px;}
+.phone-body{padding:7px 8px;}
+.phone-scorebox{background:var(--s1);border:1px solid var(--s3);border-top:2px solid var(--or);border-radius:8px;padding:8px;text-align:center;margin-bottom:7px;}
+.phone-teams{display:flex;justify-content:space-between;font-size:.44rem;color:var(--mu2);margin-bottom:2px;}
+.phone-score{font-family:var(--F);font-size:1.6rem;letter-spacing:5px;color:var(--gd);}
+.phone-status{font-size:.4rem;color:var(--gn);margin-top:1px;}
+.phone-ev{display:flex;gap:4px;padding:3px 0;border-bottom:1px solid var(--s3);font-size:.44rem;align-items:center;}
+.phone-ev:last-child{border-bottom:none;}
+.phone-nav{display:flex;border-top:1px solid var(--s3);background:var(--s1);}
+.pn{flex:1;padding:5px 2px 6px;text-align:center;font-size:.34rem;color:var(--mu);}
+.pn.ac{color:var(--or);}
+.dot{width:5px;height:5px;background:var(--gn);border-radius:50%;display:inline-block;animation:bl 1s infinite;}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.1}}
 
-/* NAV BOTTOM */
-.nav-bottom{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px;}
-.nb-card{flex:1;min-width:200px;background:var(--s1);border:1px solid var(--s3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;transition:.15s;}
-.nb-card:hover{border-color:var(--or);background:var(--s2);}
-.nb-card-t{font-family:var(--F);font-size:.8rem;letter-spacing:2px;margin-bottom:2px;}
-.nb-card-d{font-size:.7rem;color:var(--mu2);font-weight:300;}
+/* FEATURES */
+.features{padding:88px 24px;}
+.feat-inner{max-width:1080px;margin:0 auto;}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1px;background:var(--s3);border:1px solid var(--s3);border-radius:18px;overflow:hidden;margin-top:48px;}
+.fc{background:var(--s1);padding:24px;position:relative;overflow:hidden;transition:background .2s;}
+.fc:hover{background:var(--s2);}
+.fc::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 0,rgba(255,107,0,.08),transparent 55%);opacity:0;transition:.25s;}
+.fc:hover::after{opacity:1;}
+.fc-em{font-size:1.6rem;margin-bottom:10px;display:block;}
+.fc-t{font-family:var(--F);font-size:.85rem;letter-spacing:3px;margin-bottom:6px;}
+.fc-d{font-size:.77rem;color:var(--mu2);line-height:1.8;font-weight:300;}
+.badge{display:inline-block;margin-top:8px;font-size:.58rem;letter-spacing:2px;padding:2px 8px;border-radius:4px;background:rgba(255,107,0,.1);color:var(--or);text-transform:uppercase;}
+
+/* STEPS */
+.steps-sec{padding:88px 24px;background:var(--s1);border-top:1px solid var(--s3);border-bottom:1px solid var(--s3);}
+.steps-inner{max-width:920px;margin:0 auto;}
+.steps{display:flex;margin-top:48px;flex-wrap:wrap;}
+.step{flex:1;min-width:180px;padding:20px;text-align:center;position:relative;}
+.step:not(:last-child)::after{content:'›';position:absolute;right:-4px;top:40px;color:var(--s4);font-size:1.4rem;}
+@media(max-width:640px){.step:not(:last-child)::after{display:none;}}
+.step-n{width:40px;height:40px;margin:0 auto 10px;border-radius:50%;background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);display:flex;align-items:center;justify-content:center;font-family:var(--F);font-size:1.15rem;color:var(--or);}
+.step-t{font-family:var(--F);font-size:.78rem;letter-spacing:3px;margin-bottom:5px;}
+.step-d{font-size:.74rem;color:var(--mu2);line-height:1.75;font-weight:300;}
+
+/* LIZENZ OVERVIEW */
+.liz-sec{padding:88px 24px;background:var(--bg);border-top:1px solid var(--s3);}
+.liz-inner{max-width:1080px;margin:0 auto;}
+.liz-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:48px;}
+.lc{border-radius:16px;padding:24px;border:1px solid var(--s3);}
+.lc-gn{background:linear-gradient(135deg,rgba(32,212,114,.06),var(--s1));border-color:rgba(32,212,114,.18);}
+.lc-gd{background:linear-gradient(135deg,rgba(240,188,48,.06),var(--s1));border-color:rgba(240,188,48,.18);}
+.lc-rd{background:linear-gradient(135deg,rgba(240,64,96,.06),var(--s1));border-color:rgba(240,64,96,.18);}
+.lc-bl{background:linear-gradient(135deg,rgba(59,130,246,.06),var(--s1));border-color:rgba(59,130,246,.18);}
+.lc-em{font-size:1.7rem;margin-bottom:10px;}
+.lc-t{font-family:var(--F);font-size:.95rem;letter-spacing:3px;margin-bottom:10px;}
+.c-gn{color:var(--gn);}
+.c-gd{color:var(--gd);}
+.c-rd{color:var(--rd);}
+.c-bl{color:var(--bl);}
+.lc-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.lc-list li{display:flex;gap:7px;font-size:.78rem;color:var(--mu2);line-height:1.6;font-weight:300;align-items:flex-start;}
+.lc-list li span{flex-shrink:0;margin-top:1px;font-size:.8rem;}
+
+.liz-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px;}
+.liz-link{
+  flex:1;min-width:220px;
+  background:var(--s1);border:1px solid var(--s3);
+  border-radius:var(--rad);padding:20px 22px;
+  display:flex;align-items:center;gap:14px;
+  transition:.18s;
+}
+.liz-link:hover{border-color:var(--or);background:var(--s2);}
+.liz-link-icon{font-size:1.5rem;flex-shrink:0;}
+.liz-link-t{font-family:var(--F);font-size:.82rem;letter-spacing:2px;margin-bottom:3px;}
+.liz-link-d{font-size:.72rem;color:var(--mu2);font-weight:300;}
+.liz-link-arr{margin-left:auto;color:var(--or);font-size:1.1rem;flex-shrink:0;}
+
+/* DOWNLOAD */
+.dl-sec{padding:88px 24px;text-align:center;background:var(--s1);border-top:1px solid var(--s3);}
+.dl-box{max-width:600px;margin:0 auto;background:var(--bg);border:1px solid var(--s3);border-radius:20px;padding:48px 32px;}
+.dl-ver{display:inline-block;background:rgba(32,212,114,.09);border:1px solid rgba(32,212,114,.25);color:var(--gn);font-size:.64rem;padding:3px 12px;border-radius:16px;margin-bottom:16px;letter-spacing:3px;font-family:var(--F);}
+.dl-box h2{font-family:var(--F);font-size:2.4rem;letter-spacing:5px;margin-bottom:10px;}
+.dl-box p{color:var(--mu2);margin-bottom:28px;font-weight:300;line-height:1.85;font-size:.88rem;}
+.dl-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+.chips{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
+.chip{background:var(--s2);border:1px solid var(--s3);border-radius:7px;padding:5px 11px;font-size:.7rem;color:var(--mu2);}
+.chip b{color:var(--tx);font-weight:600;}
+
+/* FOOTER */
+footer{background:var(--s1);border-top:1px solid var(--s3);padding:44px 24px;text-align:center;}
+.footer-logo{font-family:var(--F);font-size:1.8rem;letter-spacing:6px;color:var(--or);margin-bottom:8px;}
+footer p{font-size:.73rem;color:var(--mu);line-height:2.2;}
+footer a{color:var(--or);}
+
+/* FADE IN */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero > *{animation:fadeUp .6s ease both;}
+.hero > *:nth-child(1){animation-delay:.05s}
+.hero > *:nth-child(2){animation-delay:.12s}
+.hero > *:nth-child(3){animation-delay:.2s}
+.hero > *:nth-child(4){animation-delay:.28s}
+.hero > *:nth-child(5){animation-delay:.36s}
+
+@media(max-width:500px){
+  .strip{flex-wrap:wrap;}
+  .strip-item{min-width:45%;border-bottom:1px solid var(--s3);}
+}
 </style>
 </head>
 <body>
-<nav>
-  <div class="nb"><a href="../">🏆 TURNIEROFFLINE</a><span>/</span>LIZENZ</div>
+
+<nav class="nav">
+  <div class="nav-brand">🏆 TURNIEROFFLINE</div>
+  <div class="nav-r">
+    <a href="#features">Features</a>
+    <a href="#lizenz">Lizenz</a>
+    <a href="#download">Download</a>
+    <a href="demo/" class="nav-demo">Demo →</a>
+  </div>
 </nav>
 
-<div class="page">
-
-  <div class="liz-hero">
-    <div class="liz-hero-tag">Rechtliche Nutzungsbedingungen</div>
-    <h1>LIZENZ</h1>
-    <p>TurnierOffline ist ein privates Hobbyprojekt. Die Nutzung ist für private Zwecke und den eigenen Verein kostenlos. Für fremde Vereine und kommerzielle Nutzung gelten besondere Bedingungen.</p>
-    <div class="copy-badge">© 2025–2026 Tobias Binner · Alle Rechte vorbehalten</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag"><span></span>V14 · Stabil · Kostenlos für Vereine</div>
+  <h1>TURNIER<em>OFFLINE</em></h1>
+  <p class="hero-sub">Dein Handy wird zum Turnierserver. Live-Stände, TV-Anzeige, KI-Assistent — komplett ohne Internet.</p>
+  <div class="hero-actions">
+    <a href="#download" class="btn btn-solid">📥 Download</a>
+    <a href="demo/" class="btn btn-line">👁 Live Demo ansehen</a>
   </div>
+</section>
 
-  <!-- 1 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 1</div>
-    <h2>KOSTENLOSE NUTZUNG</h2>
-    <p>Folgende Nutzung ist ausdrücklich <strong>kostenlos und ohne Anfrage</strong> erlaubt:</p>
-    <ul class="llist">
-      <li><b style="color:var(--gn)">✓</b>Privatpersonen für private, nicht-kommerzielle Zwecke</li>
-      <li><b style="color:var(--gn)">✓</b>Der eigene Verein und die eigene Jugendgruppe des Entwicklers</li>
-      <li><b style="color:var(--gn)">✓</b>Lesen und Verstehen des Quellcodes zu Lernzwecken</li>
-      <li><b style="color:var(--gn)">✓</b>Vorschlagen von Verbesserungen via GitHub Issues</li>
-    </ul>
-    <div class="rule rule-gn">
-      Kurzfassung: Du bist Privatperson oder Teil des Entwickler-Vereins? → Einfach benutzen, kein Problem.
-    </div>
-  </div>
-
-  <!-- 2 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 2</div>
-    <h2>SHARE-BACK (Pflicht bei Modifikationen)</h2>
-    <p>Wer den Quellcode <strong>verändert, erweitert oder Fehler behebt</strong>, muss diese Änderungen dem Entwickler zur Verfügung stellen.</p>
-    <ul class="llist">
-      <li><b style="color:var(--bl)">→</b>Änderungen als <strong>GitHub Pull Request</strong> einreichen</li>
-      <li><b style="color:var(--bl)">→</b>ODER als <strong>Patch per E-Mail</strong> senden</li>
-      <li><b style="color:var(--bl)">→</b>Der Entwickler entscheidet, ob und wie Änderungen übernommen werden</li>
-      <li><b style="color:var(--bl)">→</b>Es besteht kein Rechtsanspruch auf Übernahme</li>
-    </ul>
-    <div class="rule rule-bl">
-      Modifizierte Versionen dürfen <strong>nicht eigenständig veröffentlicht oder weitergegeben</strong> werden. Verbesserungen fließen ins Hauptprojekt ein.
-    </div>
-  </div>
-
-  <!-- 3 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 3</div>
-    <h2>KOMMERZIELLE NUTZUNG</h2>
-    <p>Folgende Nutzung ist <strong>nur mit schriftlicher Erlaubnis</strong> des Entwicklers zulässig:</p>
-    <ul class="llist">
-      <li><b style="color:var(--gd)">€</b>Nutzung durch <strong>fremde Vereine</strong>, Organisationen oder Gruppen</li>
-      <li><b style="color:var(--gd)">€</b>Veranstaltungen bei denen <strong>Eintrittsgelder oder Einnahmen</strong> erzielt werden</li>
-      <li><b style="color:var(--gd)">€</b>Einbinden in andere Software oder Produkte</li>
-      <li><b style="color:var(--gd)">€</b>Anbieten als Dienstleistung für Dritte</li>
-      <li><b style="color:var(--gd)">€</b>Jede Form des Verkaufs oder der Vermietung</li>
-    </ul>
-    <div class="rule rule-gd">
-      Für diese Fälle bitte eine <strong>Vereinslizenz anfragen</strong>. Die Konditionen sind fair — kein Gewerbe nötig, Aufwandsentschädigung statt Produktverkauf.
-    </div>
-  </div>
-
-  <!-- 4 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 4</div>
-    <h2>ABSOLUTE VERBOTE</h2>
-    <p>Folgendes ist <strong>immer verboten</strong> — auch mit einer Vereinslizenz:</p>
-    <ul class="llist">
-      <li><b style="color:var(--rd)">✗</b>Das System als Basis für ein <strong>Konkurrenzprodukt</strong> zu kommerzieller Turniersoftware verwenden</li>
-      <li><b style="color:var(--rd)">✗</b>Den Quellcode <strong>ohne diese Lizenzdatei</strong> weitergeben</li>
-      <li><b style="color:var(--rd)">✗</b>Den Namen <strong>"TurnierOffline"</strong> oder den Namen des Entwicklers für eigene Produkte verwenden</li>
-      <li><b style="color:var(--rd)">✗</b>Automatisiertes Scraping oder Missbrauch der öffentlichen Demo-Seite</li>
-    </ul>
-    <div class="rule rule-rd">
-      TurnierOffline ist kein kommerzielles Produkt und soll kein Wettbewerber zu professioneller Turniersoftware sein.
-    </div>
-  </div>
-
-  <!-- 5 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 5</div>
-    <h2>HAFTUNGSAUSSCHLUSS</h2>
-    <p>Die Software wird <strong>ohne jede Garantie</strong> bereitgestellt. Der Entwickler haftet nicht für Schäden die durch die Nutzung der Software entstehen. Nutzung auf eigene Verantwortung.</p>
-    <p>Die Software wird als Hobby-Projekt gepflegt. Es gibt <strong>keinen garantierten Support</strong> und keine Garantie auf zukünftige Updates.</p>
-  </div>
-
-  <!-- 6 -->
-  <div class="lsec">
-    <div class="lsec-num">Abschnitt 6</div>
-    <h2>URHEBERRECHT</h2>
-    <p>Alle Rechte am Originalcode liegen beim Entwickler. Das Urheberrecht entsteht <strong>automatisch mit der Erstellung</strong> — eine Registrierung ist nicht notwendig (§ 2 UrhG).</p>
-    <p>Verstöße gegen diese Lizenz stellen eine <strong>Verletzung des Urheberrechts</strong> dar und können rechtlich verfolgt werden — auch ohne Gewerbe oder Klage.</p>
-    <div class="rule rule-gn">
-      Der Code wurde von Tobias Binner entwickelt. Die Nutzung von KI-Werkzeugen bei der Entwicklung berührt das Urheberrecht nicht — die Entscheidungshoheit und das Produkt liegen beim Entwickler.
-    </div>
-  </div>
-
-  <!-- Bottom Nav -->
-  <div class="nav-bottom">
-    <a href="commercial.html" class="nb-card">
-      <div style="font-size:1.4rem">💼</div>
-      <div><div class="nb-card-t">VEREINSLIZENZ</div><div class="nb-card-d">Konditionen für fremde Vereine</div></div>
-      <div style="margin-left:auto;color:var(--or)">→</div>
-    </a>
-    <a href="../" class="nb-card">
-      <div style="font-size:1.4rem">🏠</div>
-      <div><div class="nb-card-t">STARTSEITE</div><div class="nb-card-d">Zurück zur Projektseite</div></div>
-      <div style="margin-left:auto;color:var(--or)">→</div>
-    </a>
-  </div>
-
+<!-- STATS -->
+<div class="strip">
+  <div class="strip-item"><div class="strip-n">88</div><div class="strip-l">PHP Dateien</div></div>
+  <div class="strip-item"><div class="strip-n">35</div><div class="strip-l">DB Tabellen</div></div>
+  <div class="strip-item"><div class="strip-n">0</div><div class="strip-l">Dependencies</div></div>
+  <div class="strip-item"><div class="strip-n">100%</div><div class="strip-l">Offline</div></div>
+  <div class="strip-item"><div class="strip-n">V14</div><div class="strip-l">Aktuelle Version</div></div>
 </div>
+
+<!-- MOCKUPS -->
+<section class="showcase">
+  <div class="showcase-inner">
+    <div class="sec-label">Vorschau</div>
+    <h2 class="sec-h">SO SIEHT ES AUS</h2>
+    <p class="sec-p">TV-Anzeige am Fernseher, Handy-Seite für alle Zuschauer — beide laufen auf deinem Android.</p>
+    <div class="mock-pair">
+      <div>
+        <div class="mock-cap">📺 TV-Ansicht</div>
+        <div class="tv-wrap">
+          <div class="tv-bar">
+            <span>🏆</span>
+            <div class="tv-bar-name">KLJB TURNIER 2025</div>
+            <div style="margin-left:auto;font-size:.45rem;color:var(--mu2)" id="uhr">--:--:--</div>
+          </div>
+          <div class="tv-body">
+            <div class="tv-main">
+              <div class="tv-score-row">
+                <div class="tv-team" style="color:#4488ff">BLAU FC</div>
+                <div class="tv-score">2 : 1</div>
+                <div class="tv-team" style="color:#ff4444">ROT UTD</div>
+              </div>
+              <div class="tv-live"><span class="dot"></span> HALBFINALE · LIVE · 73'</div>
+              <div class="tv-ev">⚽ 73' Müller (Blau FC)</div>
+              <div class="tv-ev">🟨 68' Bauer (Rot United)</div>
+              <div class="tv-ev">⚽ 45' Braun (Rot United)</div>
+              <div class="tv-ev" style="border:none">⚽ 12' Klein (Blau FC)</div>
+            </div>
+            <div class="tv-side">
+              <div class="tv-side-h">KO-BRACKET</div>
+              <div style="font-size:.38rem;color:var(--or);margin-bottom:2px;letter-spacing:1px">VIERTELFINALE</div>
+              <div class="tv-br-row"><span class="tv-br-t" style="color:#4488ff">Blau</span><span class="tv-br-s">3:1</span><span class="tv-br-t" style="color:var(--mu2);text-align:right">Gelb</span></div>
+              <div class="tv-br-row"><span class="tv-br-t" style="color:#ff4444">Rot</span><span class="tv-br-s">2:0</span><span class="tv-br-t" style="color:var(--mu2);text-align:right">Lila</span></div>
+              <div style="font-size:.38rem;color:var(--or);margin:4px 0 2px;letter-spacing:1px">HALBFINALE ▶</div>
+              <div class="tv-br-row"><span class="tv-br-t" style="color:#4488ff">Blau</span><span class="tv-br-s" style="color:var(--gn)">2:1</span><span class="tv-br-t" style="color:#ff4444;text-align:right">Rot</span></div>
+              <div style="margin-top:8px;font-size:.38rem;color:var(--mu2);">Finale: 16:30 Uhr</div>
+            </div>
+          </div>
+          <div class="tv-ticker">
+            <div class="ticker-inner">📡 Blau FC 2:1 Rot (73') · Grün 0:0 Weiß · Finale 16:30 · Tore: Müller, Braun, Klein &nbsp;&nbsp;&nbsp; 📡 Blau FC 2:1 Rot (73') · Grün 0:0 Weiß · Finale 16:30 · Tore: Müller, Braun, Klein</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-cap">📱 Handy-Ansicht (Zuschauer)</div>
+        <div class="phone-outer">
+          <div class="phone-wrap">
+            <div class="phone-pill"></div>
+            <div class="phone-hdr">
+              <div class="phone-hdr-t">🏆 KLJB TURNIER</div>
+              <div class="phone-live">LIVE</div>
+            </div>
+            <div class="phone-body">
+              <div class="phone-scorebox">
+                <div class="phone-teams"><span style="color:#4488ff">Blau FC</span><span style="color:#ff4444">Rot United</span></div>
+                <div class="phone-score">2 : 1</div>
+                <div class="phone-status"><span class="dot"></span> Laufend · 73'</div>
+              </div>
+              <div style="font-size:.44rem;color:var(--mu);margin-bottom:3px;letter-spacing:1px">EREIGNISSE</div>
+              <div class="phone-ev"><span style="color:var(--gd);font-family:var(--F);min-width:18px">73'</span><span>⚽</span><span>Tor! Blau – Müller</span></div>
+              <div class="phone-ev"><span style="color:var(--gd);font-family:var(--F);min-width:18px">68'</span><span>🟨</span><span>Karte – Bauer</span></div>
+              <div class="phone-ev"><span style="color:var(--gd);font-family:var(--F);min-width:18px">45'</span><span>⚽</span><span>Tor! Rot – Braun</span></div>
+            </div>
+            <div class="phone-nav">
+              <div class="pn ac">⚽<br>Spiel</div>
+              <div class="pn">🏆<br>KO</div>
+              <div class="pn">📅<br>Plan</div>
+              <div class="pn">🤖<br>KI</div>
+              <div class="pn">📞<br>Info</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="feat-inner">
+    <div class="sec-label">Features</div>
+    <h2 class="sec-h">ALLES DABEI</h2>
+    <p class="sec-p">Alles was du für einen Turniertag brauchst — auf deinem Handy, ohne Internet.</p>
+    <div class="feat-grid">
+      <div class="fc"><span class="fc-em">📺</span><div class="fc-t">TV-ANZEIGE</div><div class="fc-d">Automatischer Seitenwechsel. Pro Seite eigene Dauer und Auto-Scroll. Spielstand, KO, Tabelle, Werbung.</div><span class="badge">Auto-Zyklus</span></div>
+      <div class="fc"><span class="fc-em">⚽</span><div class="fc-t">LIVE-EINGABE</div><div class="fc-d">Tore, Karten, Auswechslungen — ein Tipp und alle sehen es sofort. Torschütze und Spielminute.</div><span class="badge">Echtzeit</span></div>
+      <div class="fc"><span class="fc-em">📱</span><div class="fc-t">HANDY-APP</div><div class="fc-d">Zuschauer verbinden sich per QR-Code. PWA — kein Download nötig. Jeder Browser.</div><span class="badge">PWA</span></div>
+      <div class="fc"><span class="fc-em">🏆</span><div class="fc-t">KO-RUNDEN</div><div class="fc-d">Losziehung per Knopfdruck. Automatischer Spielbaum. Finale bis Viertelfinale.</div><span class="badge">Automatisch</span></div>
+      <div class="fc"><span class="fc-em">🤖</span><div class="fc-t">KI-ASSISTENT</div><div class="fc-d">Zuschauer können fragen: "Wer spielt gerade?". Regelbasiert oder Ollama — auch ohne Internet.</div><span class="badge">Offline KI</span></div>
+      <div class="fc"><span class="fc-em">🔊</span><div class="fc-t">SPRACHANSAGEN</div><div class="fc-d">Automatische Ansagen bei Toren, Karten, Halbzeit. Stimme und Lautstärke einstellbar.</div><span class="badge">Text-to-Speech</span></div>
+      <div class="fc"><span class="fc-em">🏟</span><div class="fc-t">MULTI-FELD</div><div class="fc-d">Mehrere Spiele gleichzeitig auf verschiedenen Feldern. TV zeigt Split-Screen. Bis 4 Felder.</div><span class="badge">Bis 4 Felder</span></div>
+      <div class="fc"><span class="fc-em">🌐</span><div class="fc-t">GITHUB SYNC</div><div class="fc-d">Nach jedem Tor wird automatisch eine Seite auf GitHub Pages gepusht — für Fans zuhause.</div><span class="badge">Auto-Push</span></div>
+      <div class="fc"><span class="fc-em">🎯</span><div class="fc-t">TIPP-SPIEL</div><div class="fc-d">Zuschauer tippen Ergebnisse. 3 Punkte exakt, 1 Punkt Sieger. Live-Rangliste.</div><span class="badge">Neu V14</span></div>
+      <div class="fc"><span class="fc-em">📵</span><div class="fc-t">100% OFFLINE</div><div class="fc-d">Läuft komplett auf deinem Android. Kein Internet, kein Server, kein Abo. Alles lokal.</div><span class="badge">Kein Cloud</span></div>
+      <div class="fc"><span class="fc-em">🔌</span><div class="fc-t">WORDPRESS</div><div class="fc-d">Plugin zum Einbetten des Live-Stands auf der Vereinswebseite. Automatisches Update.</div><span class="badge">Plugin enthalten</span></div>
+      <div class="fc"><span class="fc-em">🏆</span><div class="fc-t">SIEGEREHRUNG</div><div class="fc-d">Automatisches Podest mit allen Ergebnissen. Export als HTML für das Vereinsprotokoll.</div><span class="badge">HTML Export</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-sec">
+  <div class="steps-inner">
+    <div class="sec-label">Anleitung</div>
+    <h2 class="sec-h">IN 4 SCHRITTEN</h2>
+    <p class="sec-p">Von der Installation bis zum laufenden Turnier in unter 10 Minuten.</p>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div class="step-t">APP STARTEN</div><div class="step-d">UserLAnd oder Termux, PHP starten. Einmal einrichten — dann immer.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">TEAMS ANLEGEN</div><div class="step-d">Teams, Farben, Logos. KO-Runden einrichten, Losziehung starten.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">QR-CODE ZEIGEN</div><div class="step-d">Am Fernseher und als Plakat. Zuschauer scannen und sehen alles.</div></div>
+      <div class="step"><div class="step-n">4</div><div class="step-t">TURNIER LÄUFT</div><div class="step-d">Tore eintragen, KI-Ansagen laufen automatisch. TV wechselt selbst.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIZENZ -->
+<section class="liz-sec" id="lizenz">
+  <div class="liz-inner">
+    <div class="sec-label">Lizenz</div>
+    <h2 class="sec-h">NUTZUNGSRECHTE</h2>
+    <p class="sec-p">Kein klassisches Open Source — aber fair und transparent. Für private und Vereinsnutzung kostenlos.</p>
+
+    <div class="liz-cards">
+      <div class="lc lc-gn">
+        <div class="lc-em">✅</div>
+        <div class="lc-t c-gn">KOSTENLOS</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--gn)">✓</span>Privatpersonen für private Zwecke</li>
+          <li><span style="color:var(--gn)">✓</span>Eigener Verein des Entwicklers</li>
+          <li><span style="color:var(--gn)">✓</span>Eigene Jugendgruppe</li>
+          <li><span style="color:var(--gn)">✓</span>Code lesen zu Lernzwecken</li>
+        </ul>
+      </div>
+      <div class="lc lc-gd">
+        <div class="lc-em">💶</div>
+        <div class="lc-t c-gd">VEREINSLIZENZ</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--gd)">€</span>Fremde Vereine &amp; Organisationen</li>
+          <li><span style="color:var(--gd)">€</span>Veranstaltungen mit Einnahmen</li>
+          <li><span style="color:var(--gd)">€</span>Support &amp; Einrichtungshilfe</li>
+        </ul>
+        <div style="margin-top:10px;font-size:.72rem;color:var(--mu2)">→ Anfrage via GitHub Issue</div>
+      </div>
+      <div class="lc lc-rd">
+        <div class="lc-em">🚫</div>
+        <div class="lc-t c-rd">VERBOTEN</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--rd)">✗</span>Als Basis für Konkurrenzprodukte</li>
+          <li><span style="color:var(--rd)">✗</span>Weitergabe ohne Lizenzdatei</li>
+          <li><span style="color:var(--rd)">✗</span>Modifizierte Versionen veröffentlichen</li>
+        </ul>
+      </div>
+      <div class="lc lc-bl">
+        <div class="lc-em">🔄</div>
+        <div class="lc-t c-bl">SHARE-BACK</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--bl)">→</span>Verbesserungen dem Entwickler geben</li>
+          <li><span style="color:var(--bl)">→</span>Pull Request oder E-Mail</li>
+          <li><span style="color:var(--bl)">→</span>Entwickler entscheidet über Übernahme</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Links zu den Lizenz-Seiten -->
+    <div class="liz-links">
+      <a href="lizenz/" class="liz-link">
+        <div class="liz-link-icon">📄</div>
+        <div>
+          <div class="liz-link-t">LIZENZ LESEN</div>
+          <div class="liz-link-d">Vollständige Nutzungsbedingungen</div>
+        </div>
+        <div class="liz-link-arr">→</div>
+      </a>
+      <a href="lizenz/commercial.html" class="liz-link">
+        <div class="liz-link-icon">💼</div>
+        <div>
+          <div class="liz-link-t">VEREINSLIZENZ</div>
+          <div class="liz-link-d">Konditionen für fremde Vereine</div>
+        </div>
+        <div class="liz-link-arr">→</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="dl-sec" id="download">
+  <div class="dl-box">
+    <div class="dl-ver">VERSION 14 · STABIL</div>
+    <h2>DOWNLOAD</h2>
+    <p>Keine Dependencies.<br>Kein Composer, kein npm — entpacken und starten.</p>
+    <div class="dl-btns">
+      <a href="https://github.com/TurnierOffline/TurnierOffline/releases" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline" class="btn btn-line" target="_blank">⭐ GitHub</a>
+      <a href="demo/" class="btn btn-line">👁 Demo</a>
+    </div>
+    <div class="chips">
+      <div class="chip"><b>Android</b> 9+</div>
+      <div class="chip"><b>PHP</b> 8.0+</div>
+      <div class="chip"><b>SQLite</b> 3</div>
+      <div class="chip"><b>RAM</b> 2 GB+</div>
+      <div class="chip"><b>UserLAnd</b> / Termux</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">🏆 TURNIEROFFLINE</div>
+  <p>
+    Privates Hobbyprojekt · Kein kommerzielles Produkt<br>
+    Copyright © 2025–2026 Tobias Binner ·
+    <a href="https://github.com/TurnierOffline/TurnierOffline" target="_blank">GitHub</a> ·
+    <a href="lizenz/">Lizenz</a> ·
+    <a href="demo/">Demo</a>
+  </p>
+</footer>
+
+<script>
+(function tick(){
+  const el=document.getElementById('uhr');
+  if(el){const d=new Date(),p=n=>String(n).padStart(2,'0');el.textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());}
+  setTimeout(tick,1000);
+})();
+</script>
 </body>
 </html>
