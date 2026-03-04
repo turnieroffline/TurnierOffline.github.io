@@ -208,12 +208,83 @@ footer{background:var(--s1);border-top:1px solid var(--s2);padding:40px 24px;tex
 footer p{font-size:.75rem;color:var(--mu);line-height:2;}
 footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
 
-/* RESPONSIVE */
-@media(max-width:720px){.mock-pair{grid-template-columns:1fr;}}
-@media(max-width:640px){
-  .dl-box{padding:36px 24px;}
-  .si{padding:10px 18px;}
-  h1{letter-spacing:3px;}
+/* ── RESPONSIVE ── */
+
+/* Tablet */
+@media(max-width:768px){
+  .mock-pair{grid-template-columns:1fr;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .plat-grid{grid-template-columns:repeat(3,1fr);}
+  .liz-cards{grid-template-columns:repeat(2,1fr);}
+  .dl-box{padding:40px 28px;}
+}
+
+/* Mobil */
+@media(max-width:600px){
+  /* Nav */
+  .nav{padding:0 14px;height:52px;}
+  .nav-logo{font-size:.8rem;letter-spacing:2px;}
+  .nav-r a:not(.nav-demo){display:none;}
+
+  /* Hero */
+  .hero{padding:72px 16px 56px;}
+  h1{font-size:clamp(2rem,13vw,3.4rem);letter-spacing:2px;}
+  .hero-sub{font-size:.88rem;padding:0;}
+  .hero-btns{flex-direction:column;width:100%;max-width:340px;}
+  .btn{width:100%;padding:13px 16px;font-size:.8rem;justify-content:center;}
+
+  /* Strip */
+  .strip{display:grid;grid-template-columns:1fr 1fr;}
+  .si{border-right:none;border-bottom:1px solid var(--s3);padding:12px 8px;}
+  .si:nth-child(odd){border-right:1px solid var(--s3);}
+  .si:last-child{grid-column:1/-1;border-bottom:none;}
+  .si-n{font-size:1.3rem;}
+
+  /* Mockups */
+  .demo-sec{padding:56px 16px;}
+  .mock-pair{gap:16px;}
+  .tv-side{display:none;}  /* KO-Bracket auf Handy ausblenden — zu klein */
+  .phone-wrap{width:min(155px,42vw);}
+  .demo-cta{padding:22px 16px;}
+  .demo-cta h3{font-size:.9rem;}
+  .demo-btns{flex-direction:column;}
+  .demo-btns .btn{width:100%;}
+
+  /* Features */
+  .feat-sec{padding:56px 16px;}
+  .feat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .fc{padding:14px 12px;}
+  .fc-d{font-size:.72rem;}
+
+  /* Plattformen */
+  .plat-sec{padding:52px 16px;}
+  .plat-grid{grid-template-columns:1fr 1fr;}
+  .pc{padding:18px 10px;}
+
+  /* Download */
+  .dl-sec{padding:56px 16px;}
+  .dl-box{padding:30px 16px;}
+  .dl-btns{flex-direction:column;}
+  .dl-btns .btn{width:100%;}
+
+  /* Lizenz */
+  .liz-sec{padding:52px 16px;}
+  .liz-links{flex-direction:column;}
+  .ll{min-width:0;}
+
+  /* Footer */
+  footer{padding:28px 16px;}
+  footer p{font-size:.7rem;line-height:2;}
+}
+
+/* Klein-Handy */
+@media(max-width:380px){
+  h1{font-size:clamp(1.7rem,12vw,2.4rem);}
+  .feat-grid{grid-template-columns:1fr;}
+  .liz-cards{grid-template-columns:1fr;}
+  .plat-grid{grid-template-columns:1fr 1fr;}
+  .phone-wrap{width:130px;}
+  .phone-score{font-size:1rem;letter-spacing:4px;}
 }
 </style>
 </head>
@@ -226,7 +297,7 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
     <a href="#features">Features</a>
     <a href="#download">Download</a>
     <a href="kontakt.html">Kontakt</a>
-    <a href="https://turnieroffline.github.io/demo/" target="_blank" class="nav-demo">DEMO →</a>
+    <a href="demo_tv.html" target="_blank" class="nav-demo">DEMO →</a>
   </div>
 </nav>
 
@@ -237,8 +308,8 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
   <h1>TURNIER<em>OFFLINE</em></h1>
   <p class="hero-sub">Dein Handy wird zum Turnierserver. Live-Stände, TV-Anzeige, KI-Assistent — komplett ohne Internet.</p>
   <div class="hero-btns">
-    <a href="https://github.com/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 Jetzt herunterladen</a>
-    <a href="https://turnieroffline.github.io/demo/" class="btn btn-demo" target="_blank">👁 Live Demo</a>
+    <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 Jetzt herunterladen</a>
+    <a href="demo_handy.html" class="btn btn-demo" target="_blank">👁 Live Demo</a>
     <a href="#features" class="btn btn-line">Features ansehen</a>
   </div>
   <div class="hero-scroll">▼ MEHR</div>
@@ -317,8 +388,8 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
       <h3>LIVE DEMO AUSPROBIEREN</h3>
       <p>Echte App — kein Mockup. Handy- und TV-Ansicht direkt im Browser testen.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://turnieroffline.github.io/demo_handy.html" class="btn btn-demo" target="_blank">📱 Handy-Demo</a>
-        <a href="https://turnieroffline.github.io/demo_tv.html" class="btn btn-line" target="_blank">📺 TV-Demo</a>
+        <a href="demo_handy.html" class="btn btn-demo" target="_blank">📱 Handy-Demo</a>
+        <a href="demo_tv.html" class="btn btn-line" target="_blank">📺 TV-Demo</a>
       </div>
     </div>
   </div>
@@ -371,8 +442,8 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
     <h2>DOWNLOAD</h2>
     <p>Keine Dependencies. Kein Composer, kein npm.<br>ZIP entpacken, Installer starten — fertig.</p>
     <div class="dl-btns">
-      <a href="https://github.com/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
-      <a href="https://github.com/TurnierOffline" class="btn btn-line" target="_blank">⭐ GitHub</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline" class="btn btn-line" target="_blank">⭐ GitHub</a>
       <a href="anleitung/" class="btn btn-line">📖 Anleitung</a>
     </div>
     <div class="chips">
@@ -411,11 +482,11 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
   <p>
     Privates Hobbyprojekt · Kein kommerzielles Produkt<br>
     Copyright © 2025–2026 TurnierOffline ·
-    <a href="https://github.com/TurnierOffline" target="_blank">GitHub</a> ·
+    <a href="https://github.com/TurnierOffline/TurnierOffline" target="_blank">GitHub</a> ·
     <a href="lizenz/">Lizenz</a> ·
     <a href="anleitung/">Anleitung</a> ·
     <a href="kontakt.html">Kontakt</a> ·
-    <a href="https://turnieroffline.github.io/demo/" target="_blank">Demo</a>
+    <a href="demo_handy.html" target="_blank">Demo</a>
   </p>
 </footer>
 
