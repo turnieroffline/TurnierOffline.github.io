@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TurnierOffline – TV Demo</title>
+<style>
+  @font-face{font-family:'Black Han Sans';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');font-weight:900;}
+  @font-face{font-family:'DM Sans';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');font-weight:300 400 600 700;}
+</style>
+<style>
+:root {
+  --ak:#ff6b00; --bg:#06080b; --bg2:#0d1117; --bg3:#161b22; --bg4:#21262d;
+  --txt:#dde4ef; --dim:#6b7280; --gruen:#22d66f; --rot:#f03050; --gold:#f5c518;
+  --H:'Black Han Sans',sans-serif; --B:'DM Sans',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--B);}
+
+/* ── TV LAYOUT: Header / Content / Footer ── */
+.tv-wrap{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
+
+/* Header */
+.tv-header{background:linear-gradient(135deg,var(--bg2),var(--bg3));border-bottom:2px solid var(--ak);padding:8px 20px;display:flex;align-items:center;gap:16px;}
+.tv-logo-ph{font-size:2rem;}
+.tv-evname{font-family:var(--H);font-size:1.1rem;letter-spacing:4px;color:var(--ak);}
+.tv-evinfo{font-size:.65rem;color:var(--dim);letter-spacing:2px;margin-top:2px;}
+.tv-uhr-wrap{margin-left:auto;text-align:right;}
+.tv-uhr{font-family:var(--H);font-size:1.2rem;letter-spacing:3px;}
+.tv-datum{font-size:.6rem;color:var(--dim);letter-spacing:2px;}
+
+/* Page title */
+.page-title{font-family:var(--H);font-size:1.1rem;letter-spacing:6px;color:var(--ak);margin-bottom:16px;padding:16px 20px 0;}
+
+/* ── SCREEN: SPIEL ── */
+.spiel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 20px;height:100%;align-content:start;}
+.score-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--bg4);border-top:3px solid var(--ak);border-radius:14px;padding:20px;text-align:center;grid-column:1/-1;}
+.score-teams-tv{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:8px;}
+.tv-teamname{font-family:var(--H);font-size:1.6rem;letter-spacing:4px;}
+.tv-score{font-family:var(--H);font-size:5rem;color:var(--gold);letter-spacing:12px;line-height:1;}
+.tv-meta{font-size:.75rem;color:var(--gruen);letter-spacing:3px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.live-dot{width:8px;height:8px;background:var(--gruen);border-radius:50%;display:inline-block;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.events-box{background:var(--bg2);border:1px solid var(--bg4);border-radius:12px;padding:14px;}
+.events-title{font-family:var(--H);font-size:.65rem;letter-spacing:4px;color:var(--ak);margin-bottom:10px;}
+.ev-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg4);font-size:.8rem;}
+.ev-row:last-child{border-bottom:none;}
+.ev-min{font-family:var(--H);color:var(--gold);min-width:32px;}
+.ev-detail{flex:1;}
+.ev-team-tv{font-size:.65rem;color:var(--dim);}
+
+.next-box{background:var(--bg2);border:1px solid var(--bg4);border-radius:12px;padding:14px;}
+.feld2-box{background:var(--bg2);border:1px solid var(--bg4);border-top:2px solid var(--gruen);border-radius:12px;padding:14px;}
+
+/* ── SCREEN: BRACKET ── */
+.bracket-tv{display:flex;align-items:center;gap:16px;padding:12px 20px;height:100%;overflow:hidden;}
+.br-col-tv{display:flex;flex-direction:column;gap:10px;min-width:180px;}
+.br-col-title{font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin-bottom:4px;text-align:center;}
+.br-match-tv{background:var(--bg2);border:1px solid var(--bg4);border-radius:8px;overflow:hidden;}
+.br-match-tv.live{border-color:var(--gruen);box-shadow:0 0 12px rgba(34,198,111,.2);}
+.br-match-tv.done{opacity:.75;}
+.br-team-tv{display:flex;align-items:center;padding:6px 10px;font-size:.8rem;gap:6px;}
+.br-team-tv:first-child{border-bottom:1px solid var(--bg4);}
+.br-team-tv.w{font-weight:700;}
+.br-score-tv{margin-left:auto;font-family:var(--H);font-size:.9rem;color:var(--gold);}
+.br-arrow{font-family:var(--H);font-size:2rem;color:var(--ak);opacity:.4;}
+.trophy-icon{font-size:5rem;opacity:.15;margin:auto;}
+.trophy-icon.won{opacity:1;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05);filter:drop-shadow(0 0 20px var(--gold));}}
+
+/* ── SCREEN: TABELLE ── */
+.tabelle-wrap{padding:12px 20px;height:100%;overflow:hidden;}
+.ztable{width:100%;border-collapse:collapse;font-size:.82rem;}
+.ztable th{font-family:var(--H);font-size:.6rem;letter-spacing:3px;color:var(--dim);text-align:left;padding:6px 10px;border-bottom:1px solid var(--bg4);}
+.ztable td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);}
+.ztable tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.65rem;}
+.badge-gruen{background:rgba(34,198,111,.15);color:var(--gruen);}
+.badge-gold{background:rgba(245,197,24,.12);color:var(--gold);}
+.badge-dim{background:rgba(255,255,255,.06);color:var(--dim);}
+
+/* ── SCREEN: SPIELPLAN ── */
+.spielplan-wrap{padding:12px 20px;height:100%;overflow:hidden;}
+
+/* ── SCREEN: WERBUNG ── */
+.werbung-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px 20px;height:100%;align-content:start;}
+.werb-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;}
+.werb-icon{font-size:3.5rem;}
+.werb-title{font-family:var(--H);font-size:1rem;letter-spacing:3px;}
+.werb-text{font-size:.8rem;color:var(--dim);line-height:1.6;}
+
+/* ── SCREEN: VERBINDEN ── */
+.verbinden-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;padding:20px;}
+.qr-placeholder{width:180px;height:180px;background:var(--bg2);border:2px solid var(--bg4);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:5rem;}
+.wlan-info{text-align:center;}
+.wlan-ssid{font-family:var(--H);font-size:1.8rem;letter-spacing:4px;color:var(--ak);}
+.wlan-pw{font-size:1rem;color:var(--dim);margin-top:6px;font-family:var(--H);letter-spacing:3px;}
+.scan-hint{font-size:.72rem;color:var(--dim);letter-spacing:2px;}
+
+/* Footer-Ticker */
+.tv-footer{background:var(--bg2);border-top:1px solid var(--bg4);overflow:hidden;padding:5px 0;height:32px;}
+.ticker-track{white-space:nowrap;overflow:hidden;}
+.ticker-inner{display:inline-block;animation:ticker 25s linear infinite;font-size:.72rem;color:var(--dim);padding-left:100%;}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Progress bar */
+.progress-bar{position:fixed;bottom:32px;left:0;height:3px;background:var(--ak);z-index:100;transition:width linear;}
+
+/* Screen selector (für Demo) */
+.demo-ctrl{position:fixed;top:4px;right:8px;display:flex;gap:4px;z-index:200;flex-wrap:wrap;justify-content:flex-end;}
+.ctrl-btn{background:rgba(6,8,11,.85);border:1px solid var(--bg4);border-radius:6px;padding:3px 8px;font-size:.62rem;color:var(--dim);cursor:pointer;transition:all .15s;}
+.ctrl-btn:hover,.ctrl-btn.active{border-color:var(--ak);color:var(--ak);}
+</style>
+</head>
+<body>
+
+<div class="demo-ctrl"><a href="../" style="background:rgba(255,107,0,.2);color:#ff6b00;border:1px solid rgba(255,107,0,.3);border-radius:6px;padding:4px 10px;font-size:.65rem;letter-spacing:1px;text-decoration:none;">← HOME</a>
+  <div class="ctrl-btn active" onclick="showPage('spiel',this)">⚽ Spiel</div>
+  <div class="ctrl-btn" onclick="showPage('bracket',this)">🏆 Bracket</div>
+  <div class="ctrl-btn" onclick="showPage('tabelle',this)">📊 Tabelle</div>
+  <div class="ctrl-btn" onclick="showPage('spielplan',this)">📅 Spielplan</div>
+  <div class="ctrl-btn" onclick="showPage('werbung',this)">🍔 Werbung</div>
+  <div class="ctrl-btn" onclick="showPage('verbinden',this)">📶 WLAN</div>
+  <div class="ctrl-btn auto-btn" onclick="toggleAuto()">▶ Auto</div>
+</div>
+
+<div class="progress-bar" id="progress" style="width:0%;transition-duration:20s;"></div>
+
+<div class="tv-wrap">
+  <!-- HEADER -->
+  <div class="tv-header">
+    <div class="tv-logo-ph">🏆</div>
+    <div>
+      <div class="tv-evname">KLJB TURNIER 2025</div>
+      <div class="tv-evinfo">Musterdorf · 14.06.2025</div>
+    </div>
+    <div class="tv-uhr-wrap">
+      <div class="tv-uhr" id="tv-uhr">--:--:--</div>
+      <div class="tv-datum" id="tv-dat">SA --.--.----</div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div style="overflow:hidden;position:relative;">
+
+    <!-- SPIEL -->
+    <div class="page" id="p-spiel">
+      <div class="page-title">⚽ AKTUELLES SPIEL</div>
+      <div class="spiel-grid">
+        <div class="score-box">
+          <div class="score-teams-tv">
+            <div class="tv-teamname" style="color:#4499ff;text-align:left">BLAU FC</div>
+            <div>
+              <div class="tv-score">2 : 1</div>
+              <div class="tv-meta"><div class="live-dot"></div> HALBFINALE · <span id="spielmin">73</span>'</div>
+            </div>
+            <div class="tv-teamname" style="color:#ff4444;text-align:right">ROT UNITED</div>
+          </div>
+        </div>
+        <div class="events-box">
+          <div class="events-title">EREIGNISSE</div>
+          <div class="ev-row"><span class="ev-min">73'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Blau FC<div class="ev-team-tv">M. Müller</div></div></div>
+          <div class="ev-row"><span class="ev-min">68'</span><span>🟨</span><div class="ev-detail">Gelbe Karte<div class="ev-team-tv">Rot United – T. Bauer</div></div></div>
+          <div class="ev-row"><span class="ev-min">45'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Rot United<div class="ev-team-tv">K. Braun</div></div></div>
+          <div class="ev-row"><span class="ev-min">12'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Blau FC<div class="ev-team-tv">A. Klein</div></div></div>
+        </div>
+        <div class="feld2-box">
+          <div class="events-title">● FELD 2 · GLEICHZEITIG</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+            <span style="font-family:var(--H);font-size:1rem;color:#22aa44">GRÜN SV</span>
+            <span style="font-family:var(--H);font-size:1.4rem;color:var(--gold);letter-spacing:4px">0 : 0</span>
+            <span style="font-family:var(--H);font-size:1rem">WEISS FC</span>
+            <span style="margin-left:auto;font-size:.7rem;color:var(--gruen)"><div class="live-dot" style="display:inline-block"></div> 34'</span>
+          </div>
+        </div>
+        <div class="next-box">
+          <div class="events-title">NÄCHSTES</div>
+          <div style="font-size:.85rem;">🏆 Finale: <strong>16:30 Uhr</strong><br><span style="color:var(--dim);font-size:.72rem;">Sieger dieses Spiels</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRACKET -->
+    <div class="page" id="p-bracket" style="display:none">
+      <div class="page-title">🏆 KO-BRACKET</div>
+      <div class="bracket-tv">
+        <div class="br-col-tv">
+          <div class="br-col-title">VIERTELFINALE</div>
+          <div class="br-match-tv done">
+            <div class="br-team-tv w"><span style="color:#4499ff">Blau FC</span><span class="br-score-tv">3 🏆</span></div>
+            <div class="br-team-tv"><span>Gelb SV</span><span class="br-score-tv">1</span></div>
+          </div>
+          <div class="br-match-tv done">
+            <div class="br-team-tv w"><span style="color:#ff4444">Rot United</span><span class="br-score-tv">2 🏆</span></div>
+            <div class="br-team-tv"><span>Lila FC</span><span class="br-score-tv">0</span></div>
+          </div>
+          <div class="br-match-tv done">
+            <div class="br-team-tv w"><span style="color:#22aa44">Grün SV</span><span class="br-score-tv">4:3 🏆</span></div>
+            <div class="br-team-tv"><span>Orange FC</span><span class="br-score-tv">–</span></div>
+          </div>
+          <div class="br-match-tv done">
+            <div class="br-team-tv w"><span>Weiß FC</span><span class="br-score-tv">2 🏆</span></div>
+            <div class="br-team-tv"><span>Schwarz SV</span><span class="br-score-tv">1</span></div>
+          </div>
+        </div>
+        <div class="br-arrow">›</div>
+        <div class="br-col-tv">
+          <div class="br-col-title">HALBFINALE ● JETZT</div>
+          <div class="br-match-tv live">
+            <div class="br-team-tv"><span style="color:#4499ff">Blau FC</span><span class="br-score-tv" style="color:var(--gruen)">2 ●</span></div>
+            <div class="br-team-tv"><span style="color:#ff4444">Rot United</span><span class="br-score-tv">1</span></div>
+          </div>
+          <div class="br-match-tv live">
+            <div class="br-team-tv"><span style="color:#22aa44">Grün SV</span><span class="br-score-tv" style="color:var(--gruen)">0 ●</span></div>
+            <div class="br-team-tv"><span>Weiß FC</span><span class="br-score-tv">0</span></div>
+          </div>
+        </div>
+        <div class="br-arrow">›</div>
+        <div class="br-col-tv">
+          <div class="br-col-title">FINALE · 16:30</div>
+          <div class="br-match-tv" style="opacity:.35">
+            <div class="br-team-tv"><span>Sieger HF 1</span><span class="br-score-tv">?</span></div>
+            <div class="br-team-tv"><span>Sieger HF 2</span><span class="br-score-tv">?</span></div>
+          </div>
+        </div>
+        <div class="br-arrow">›</div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div class="trophy-icon">🏆</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABELLE -->
+    <div class="page" id="p-tabelle" style="display:none">
+      <div class="page-title">📊 ERGEBNISSE</div>
+      <div class="tabelle-wrap">
+        <div style="font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin-bottom:8px;">VIERTELFINALE</div>
+        <table class="ztable">
+          <thead><tr><th>Team 1</th><th>Ergebnis</th><th>Team 2</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">3 : 1</td><td>Gelb SV</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
+            <tr><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">2 : 0</td><td>Lila FC</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
+            <tr><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">1 : 1</td><td>Orange FC</td><td><span class="badge badge-dim">✓ Elfm.</span></td></tr>
+            <tr><td style="font-family:var(--H)">Weiß FC</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">2 : 1</td><td>Schwarz SV</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
+          </tbody>
+        </table>
+        <div style="font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin:14px 0 8px;">HALBFINALE · JETZT</div>
+        <table class="ztable">
+          <tbody>
+            <tr><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="text-align:center;font-family:var(--H);color:var(--gruen);letter-spacing:3px">2 : 1 ●</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td><span class="badge badge-gruen">● laufend 73'</span></td></tr>
+            <tr><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="text-align:center;font-family:var(--H);color:var(--gruen);letter-spacing:3px">0 : 0 ●</td><td style="font-family:var(--H)">Weiß FC</td><td><span class="badge badge-gruen">● laufend 34'</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SPIELPLAN -->
+    <div class="page" id="p-spielplan" style="display:none">
+      <div class="page-title">📅 SPIELPLAN</div>
+      <div class="spielplan-wrap">
+        <table class="ztable">
+          <thead><tr><th>Zeit</th><th>Runde</th><th>Feld</th><th>Team 1</th><th>Erg.</th><th>Team 2</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--dim)">09:00</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>1</td><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">3:1</td><td>Gelb SV</td><td><span class="badge badge-dim">✓</span></td></tr>
+            <tr><td style="color:var(--dim)">09:20</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>2</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">2:0</td><td>Lila FC</td><td><span class="badge badge-dim">✓</span></td></tr>
+            <tr><td style="color:var(--dim)">09:40</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>1</td><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">1:1 E.</td><td>Orange FC</td><td><span class="badge badge-dim">✓</span></td></tr>
+            <tr><td style="color:var(--dim)">10:00</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>2</td><td style="font-family:var(--H)">Weiß FC</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">2:1</td><td>Schwarz SV</td><td><span class="badge badge-dim">✓</span></td></tr>
+            <tr style="background:rgba(34,198,111,.04)"><td style="color:var(--gruen)">14:00</td><td style="color:var(--ak);font-size:.7rem">Halbfinale</td><td>1</td><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="font-family:var(--H);color:var(--gruen);letter-spacing:3px">2:1 ●</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td><span class="badge badge-gruen">● 73'</span> 📺</td></tr>
+            <tr style="background:rgba(34,198,111,.04)"><td style="color:var(--gruen)">14:00</td><td style="color:var(--ak);font-size:.7rem">Halbfinale</td><td>2</td><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="font-family:var(--H);color:var(--gruen);letter-spacing:3px">0:0 ●</td><td style="font-family:var(--H)">Weiß FC</td><td><span class="badge badge-gruen">● 34'</span></td></tr>
+            <tr><td>16:30</td><td style="color:var(--gold);font-size:.7rem">🏆 FINALE</td><td>1</td><td style="color:var(--dim)">Sieger HF1</td><td style="font-family:var(--H);color:var(--dim);letter-spacing:3px">–:–</td><td style="color:var(--dim)">Sieger HF2</td><td><span class="badge badge-gold">16:30</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WERBUNG -->
+    <div class="page" id="p-werbung" style="display:none">
+      <div class="page-title">🍔 ANGEBOTE & SPONSOREN</div>
+      <div class="werbung-grid">
+        <div class="werb-card" style="border-color:rgba(255,107,0,.3)">
+          <div class="werb-icon">🍔</div>
+          <div class="werb-title">BURGER-STAND</div>
+          <div class="werb-text">Frische Burger, Pommes und Getränke direkt am Hauptfeld. Nur Barzahlung.</div>
+          <div style="font-family:var(--H);color:var(--ak);font-size:.9rem;letter-spacing:2px;">AB 11:00 UHR</div>
+        </div>
+        <div class="werb-card" style="border-color:rgba(245,197,24,.2)">
+          <div class="werb-icon">🏪</div>
+          <div class="werb-title">HAUPTSPONSOR</div>
+          <div class="werb-text">Raiffeisen-Bank Musterdorf unterstützt das KLJB Turnier 2025 als Hauptsponsor.</div>
+          <div style="font-family:var(--H);color:var(--gold);font-size:.9rem;letter-spacing:2px;">DANKE! 🏆</div>
+        </div>
+        <div class="werb-card" style="border-color:rgba(34,198,111,.2)">
+          <div class="werb-icon">⚽</div>
+          <div class="werb-title">SPORTVEREIN</div>
+          <div class="werb-text">FC Musterdorf stellt Platz und Equipment. Mitgliedschaft ab 5€/Monat.</div>
+          <div style="font-family:var(--H);color:var(--gruen);font-size:.9rem;letter-spacing:2px;">fc-musterdorf.de</div>
+        </div>
+        <div class="werb-card">
+          <div class="werb-icon">🍺</div>
+          <div class="werb-title">GETRÄNKE-STAND</div>
+          <div class="werb-text">Kaltgetränke, Kaffee und Kuchen. Alle Erlöse gehen an die KLJB-Kasse.</div>
+          <div style="font-family:var(--H);color:var(--dim);font-size:.9rem;letter-spacing:2px;">DANKE FÜR EUREN EINKAUF</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VERBINDEN -->
+    <div class="page" id="p-verbinden" style="display:none">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 60px);gap:24px;padding:20px;">
+        <div style="font-family:var(--H);font-size:1.2rem;letter-spacing:4px;color:var(--ak)">MIT HANDY VERBINDEN</div>
+        <div class="qr-placeholder">📱</div>
+        <div class="wlan-info">
+          <div style="font-size:.7rem;color:var(--dim);letter-spacing:3px;margin-bottom:8px;">WLAN-NETZWERK</div>
+          <div class="wlan-ssid">@TurnierOffline</div>
+          <div class="wlan-pw">turnier2025</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.72rem;color:var(--dim);letter-spacing:2px;">DANN IM BROWSER:</div>
+          <div style="font-family:var(--H);font-size:1rem;color:var(--ak);margin-top:4px;letter-spacing:2px;">192.168.1.100/mobile</div>
+        </div>
+        <div class="scan-hint">QR-CODE SCANNEN ODER IP EINGEBEN</div>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <!-- TICKER FOOTER -->
+  <div class="tv-footer">
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        📡 Blau FC 2:1 Rot United (Halbfinale 73') &nbsp;·&nbsp; Grün SV 0:0 Weiß FC (Halbfinale 34') &nbsp;·&nbsp; Viertelfinale: Blau FC 3:1 Gelb SV &nbsp;·&nbsp; Rot United 2:0 Lila FC &nbsp;·&nbsp; Grün SV 1:1 Orange FC (4:3 Elfm.) &nbsp;·&nbsp; Weiß FC 2:1 Schwarz SV &nbsp;·&nbsp; ⚽ Torschützen: M.Müller 73', K.Braun 45', A.Klein 12' &nbsp;·&nbsp; 🏆 Finale: 16:30 Uhr
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        📡 Blau FC 2:1 Rot United (Halbfinale 73') &nbsp;·&nbsp; Grün SV 0:0 Weiß FC (Halbfinale 34') &nbsp;·&nbsp; Viertelfinale: Blau FC 3:1 Gelb SV &nbsp;·&nbsp; Rot United 2:0 Lila FC &nbsp;·&nbsp; Grün SV 1:1 Orange FC (4:3 Elfm.) &nbsp;·&nbsp; Weiß FC 2:1 Schwarz SV &nbsp;·&nbsp; ⚽ Torschützen: M.Müller 73', K.Braun 45', A.Klein 12' &nbsp;·&nbsp; 🏆 Finale: 16:30 Uhr
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Uhr
+(function(){
+  const T=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  function tick(){
+    const d=new Date(),p=n=>String(n).padStart(2,'0');
+    document.getElementById('tv-uhr').textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    document.getElementById('tv-dat').textContent=T[d.getDay()]+' '+p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear();
+    setTimeout(tick,1000);
+  }tick();
+})();
+
+// Pages
+const pages=['spiel','bracket','tabelle','spielplan','werbung','verbinden'];
+const durations={spiel:20,bracket:18,tabelle:15,spielplan:15,werbung:12,verbinden:10};
+let curIdx=0, autoTimer=null, autoMode=false;
+
+function showPage(name, btnEl) {
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.ctrl-btn:not(.auto-btn)').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+name).style.display='block';
+  if(btnEl) btnEl.classList.add('active');
+  curIdx = pages.indexOf(name);
+  // Progress bar
+  const dur = (durations[name]||15)*1000;
+  const bar = document.getElementById('progress');
+  bar.style.transition='none'; bar.style.width='0%';
+  setTimeout(()=>{ bar.style.transition='width '+dur+'ms linear'; bar.style.width='100%'; },50);
+}
+
+function nextPage() {
+  curIdx = (curIdx+1)%pages.length;
+  const name = pages[curIdx];
+  showPage(name);
+  document.querySelectorAll('.ctrl-btn:not(.auto-btn)').forEach((b,i)=>b.classList.toggle('active',i===curIdx));
+  if(autoMode) autoTimer=setTimeout(nextPage,(durations[name]||15)*1000);
+}
+
+function toggleAuto() {
+  autoMode=!autoMode;
+  const btn=document.querySelector('.auto-btn');
+  if(autoMode){
+    btn.textContent='⏸ Auto'; btn.classList.add('active');
+    const dur=(durations[pages[curIdx]]||15)*1000;
+    autoTimer=setTimeout(nextPage,dur);
+  } else {
+    btn.textContent='▶ Auto'; btn.classList.remove('active');
+    clearTimeout(autoTimer);
+  }
+}
+
+// Simulate live minute
+let min=73;
+setInterval(()=>{ min=Math.min(90,min+1); const el=document.getElementById('spielmin'); if(el)el.textContent=min; },20000);
+
+// Init
+showPage('spiel');
+</script>
+</body>
+</html>

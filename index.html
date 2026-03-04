@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TurnierOffline — Turniersystem fürs Handy</title>
+<meta name="description" content="Komplettes Turnier-Management auf deinem Handy. Kein Internet, kein Abo, kein Server.">
+<style>
+@font-face{font-family:'TH';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');font-weight:900;}
+@font-face{font-family:'TB';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');font-weight:300 700;}
+:root{
+  --or:#ff6b00;--or2:#ff9340;--ord:rgba(255,107,0,.12);--orb:rgba(255,107,0,.05);
+  --bg:#060810;--s1:#0c1120;--s2:#121a2e;--s3:#1a2440;--s4:#222e50;
+  --tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;
+  --gn:#20d472;--gd:#f0bc30;--bl:#3b82f6;--rd:#f04060;
+  --F:'TH',Impact,'Arial Black',sans-serif;
+  --B:'TB','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --rad:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--B);background:var(--bg);color:var(--tx);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--s4);}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:56px;padding:0 28px;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(6,8,16,.9);backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(255,107,0,.1);}
+.nav-logo{font-family:var(--F);font-size:.95rem;letter-spacing:4px;color:var(--or);}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:2px;}
+.nav-r a{font-size:.77rem;color:var(--mu2);padding:5px 10px;border-radius:8px;transition:.15s;}
+.nav-r a:hover{color:var(--tx);background:rgba(255,255,255,.05);}
+.nav-demo{background:var(--or)!important;color:#fff!important;font-family:var(--F);
+  font-size:.72rem!important;letter-spacing:2px;padding:6px 14px!important;border-radius:8px;}
+.nav-demo:hover{background:var(--or2)!important;}
+@media(max-width:640px){.nav-r a:not(.nav-demo){display:none;}}
+
+/* HERO */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:100px 24px 80px;text-align:center;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,107,0,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,0,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 30%,transparent 100%);}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,rgba(255,107,0,.13) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{font-size:.72rem;letter-spacing:4px;color:var(--or);
+  background:var(--ord);border:1px solid rgba(255,107,0,.25);
+  padding:5px 14px;border-radius:20px;margin-bottom:28px;
+  display:inline-flex;align-items:center;gap:8px;}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--gn);
+  border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.15;}}
+h1{font-family:var(--F);font-size:clamp(2.8rem,10vw,7rem);letter-spacing:6px;line-height:.95;margin-bottom:22px;}
+h1 em{color:var(--or);font-style:normal;}
+.hero-sub{font-size:clamp(.9rem,2vw,1.15rem);color:var(--mu2);max-width:540px;line-height:1.7;margin-bottom:36px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 26px;border-radius:10px;
+  font-size:.82rem;font-family:var(--F);letter-spacing:2px;transition:.2s;white-space:nowrap;cursor:pointer;}
+.btn-solid{background:var(--or);color:#fff;}
+.btn-solid:hover{background:var(--or2);transform:translateY(-2px);}
+.btn-line{border:1px solid rgba(255,255,255,.15);color:var(--mu2);}
+.btn-line:hover{border-color:var(--or);color:var(--tx);transform:translateY(-2px);}
+.btn-demo{background:rgba(255,107,0,.1);border:1px solid var(--or);color:var(--or);}
+.btn-demo:hover{background:var(--ord);transform:translateY(-2px);}
+.hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  font-size:.62rem;letter-spacing:3px;color:var(--mu);animation:float 2s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+/* STRIP */
+.strip{background:var(--s1);border-top:1px solid rgba(255,107,0,.1);
+  border-bottom:1px solid rgba(255,107,0,.1);
+  padding:20px 0;display:flex;justify-content:center;flex-wrap:wrap;}
+.si{padding:10px 32px;text-align:center;border-right:1px solid var(--s3);}
+.si:last-child{border-right:none;}
+.si-n{font-family:var(--F);font-size:1.6rem;letter-spacing:2px;color:var(--or);}
+.si-l{font-size:.63rem;letter-spacing:3px;color:var(--mu);margin-top:2px;}
+
+/* SECTION SHARED */
+.sw{max-width:1100px;margin:0 auto;padding:0 24px;}
+.sl{font-size:.62rem;letter-spacing:5px;color:var(--or);margin-bottom:10px;}
+.sh{font-family:var(--F);font-size:clamp(1.6rem,5vw,2.8rem);letter-spacing:4px;margin-bottom:12px;}
+.sp{color:var(--mu2);font-size:.9rem;line-height:1.8;max-width:560px;}
+
+/* MOCKUP SECTION */
+.demo-sec{padding:96px 24px;}
+.demo-sec .sw{display:flex;flex-direction:column;align-items:center;text-align:center;gap:48px;}
+.mock-pair{display:grid;grid-template-columns:1fr 1fr;gap:28px;width:100%;max-width:900px;}
+.mock-cap{font-size:.63rem;letter-spacing:3px;color:var(--mu2);margin-bottom:8px;}
+/* TV */
+.tv-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;font-family:var(--F);}
+.tv-bar{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--s2);
+  border-bottom:2px solid var(--or);font-size:.55rem;letter-spacing:2px;}
+.tv-bar-name{color:var(--or);letter-spacing:3px;}
+.tv-body{display:grid;grid-template-columns:1fr auto;}
+.tv-main{padding:10px;border-right:1px solid var(--s3);}
+.tv-score-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;}
+.tv-team{font-size:.52rem;letter-spacing:1px;}
+.tv-score{font-size:1.5rem;letter-spacing:8px;color:var(--gd);}
+.tv-live{font-size:.45rem;color:var(--gn);letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:4px;}
+.tv-ev{font-size:.42rem;color:var(--mu2);padding:3px 0;border-bottom:1px solid var(--s3);}
+.tv-side{padding:8px;min-width:100px;}
+.tv-side-h{font-size:.42rem;letter-spacing:3px;color:var(--or);margin-bottom:6px;}
+.tv-br-row{display:grid;grid-template-columns:1fr auto 1fr;gap:2px;margin-bottom:4px;font-size:.38rem;}
+.tv-br-s{color:var(--gd);text-align:center;letter-spacing:2px;}
+.tv-ticker{background:var(--bg);border-top:1px solid var(--s3);padding:4px 0;overflow:hidden;}
+.ticker-inner{display:inline-block;white-space:nowrap;font-size:.38rem;color:var(--mu);
+  animation:tick 20s linear infinite;padding-left:100%;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.dot{width:6px;height:6px;background:var(--gn);border-radius:50%;display:inline-block;animation:blink 1s step-end infinite;}
+/* PHONE */
+.phone-outer{display:flex;justify-content:center;}
+.phone-wrap{width:160px;background:var(--s1);border-radius:24px;
+  border:1.5px solid var(--s3);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.phone-pill{width:50px;height:4px;background:var(--s3);border-radius:2px;margin:8px auto 0;}
+.phone-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:6px 10px;background:var(--s2);border-bottom:2px solid var(--or);}
+.phone-hdr-t{font-size:.48rem;letter-spacing:2px;color:var(--or);}
+.phone-live{font-size:.38rem;background:var(--gn);color:#000;padding:1px 5px;
+  border-radius:3px;font-family:var(--F);letter-spacing:1px;}
+.phone-body{padding:8px;}
+.phone-scorebox{background:var(--s2);border-radius:8px;padding:8px;margin-bottom:6px;text-align:center;}
+.phone-teams{display:flex;justify-content:space-between;font-size:.42rem;margin-bottom:4px;}
+.phone-score{font-size:1.2rem;letter-spacing:6px;color:var(--gd);}
+.phone-status{font-size:.38rem;color:var(--gn);margin-top:3px;display:flex;align-items:center;justify-content:center;gap:3px;}
+.phone-ev{display:flex;align-items:center;gap:4px;font-size:.38rem;padding:3px 0;border-bottom:1px solid var(--s3);color:var(--mu2);}
+.phone-nav{display:grid;grid-template-columns:repeat(5,1fr);background:var(--s2);border-top:1px solid var(--s3);}
+.pn{font-size:.32rem;text-align:center;padding:5px 2px;color:var(--mu);line-height:1.6;}
+.pn.ac{color:var(--or);}
+.demo-cta{background:linear-gradient(135deg,var(--s1),var(--s2));
+  border:1px solid rgba(255,107,0,.2);border-radius:var(--rad);
+  padding:32px 40px;text-align:center;max-width:500px;width:100%;}
+.demo-cta h3{font-family:var(--F);letter-spacing:3px;font-size:1.1rem;margin-bottom:8px;}
+.demo-cta p{font-size:.82rem;color:var(--mu2);margin-bottom:20px;line-height:1.7;}
+
+/* FEATURES */
+.feat-sec{padding:96px 24px;background:var(--s1);}
+.feat-sec .sw{display:flex;flex-direction:column;align-items:center;text-align:center;gap:48px;}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;width:100%;}
+.fc{background:var(--s2);border:1px solid var(--s3);border-radius:var(--rad);
+  padding:20px 18px;display:flex;flex-direction:column;gap:6px;transition:.2s;text-align:left;position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,var(--orb),transparent 60%);pointer-events:none;}
+.fc:hover{border-color:rgba(255,107,0,.3);transform:translateY(-3px);}
+.fc-em{font-size:1.4rem;}
+.fc-t{font-family:var(--F);font-size:.75rem;letter-spacing:3px;}
+.fc-d{font-size:.78rem;color:var(--mu2);line-height:1.7;flex:1;}
+.badge{display:inline-block;background:var(--ord);color:var(--or);font-size:.6rem;
+  padding:2px 8px;border-radius:4px;letter-spacing:1px;margin-top:4px;font-family:var(--F);}
+
+/* PLATFORMS */
+.plat-sec{padding:80px 24px;}
+.plat-sec .sw{display:flex;flex-direction:column;align-items:center;text-align:center;gap:40px;}
+.plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;width:100%;max-width:900px;}
+.pc{background:var(--s1);border:1px solid var(--s3);border-radius:var(--rad);
+  padding:24px 16px;text-align:center;transition:.2s;}
+.pc:hover{border-color:rgba(255,107,0,.3);transform:translateY(-2px);}
+.pc-em{font-size:2rem;margin-bottom:10px;}
+.pc-t{font-family:var(--F);font-size:.78rem;letter-spacing:3px;margin-bottom:4px;}
+.pc-d{font-size:.72rem;color:var(--mu2);}
+
+/* DOWNLOAD */
+.dl-sec{padding:96px 24px;background:var(--s1);}
+.dl-box{max-width:680px;margin:0 auto;
+  background:linear-gradient(135deg,var(--s2),var(--s3));
+  border:1px solid rgba(255,107,0,.2);border-radius:20px;
+  padding:52px 48px;text-align:center;position:relative;overflow:hidden;}
+.dl-box::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;
+  background:radial-gradient(circle,var(--ord),transparent 70%);pointer-events:none;}
+.dl-ver{font-size:.62rem;letter-spacing:5px;color:var(--or);margin-bottom:14px;}
+.dl-box h2{font-family:var(--F);font-size:2.2rem;letter-spacing:4px;margin-bottom:12px;}
+.dl-box p{color:var(--mu2);font-size:.88rem;line-height:1.8;margin-bottom:28px;}
+.dl-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.chip{background:var(--s1);border:1px solid var(--s3);border-radius:6px;padding:4px 12px;font-size:.7rem;color:var(--mu2);}
+.chip b{color:var(--tx);}
+
+/* LIZENZ */
+.liz-sec{padding:80px 24px;background:var(--bg);}
+.liz-sec .sw{display:flex;flex-direction:column;align-items:center;text-align:center;gap:40px;}
+.liz-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;width:100%;}
+.lc{background:var(--s1);border:1px solid var(--s3);border-radius:var(--rad);padding:20px 18px;}
+.lc-em{font-size:1.4rem;margin-bottom:8px;}
+.lc-t{font-family:var(--F);font-size:.75rem;letter-spacing:3px;margin-bottom:12px;}
+.lc-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.lc-list li{font-size:.77rem;color:var(--mu2);display:flex;align-items:center;gap:8px;text-align:left;}
+.c-gn{color:var(--gn);}.c-gd{color:var(--gd);}.c-rd{color:var(--rd);}.c-bl{color:var(--bl);}
+.lc-gn{border-top:3px solid var(--gn);}
+.lc-gd{border-top:3px solid var(--gd);}
+.lc-rd{border-top:3px solid var(--rd);}
+.lc-bl{border-top:3px solid var(--bl);}
+.liz-links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;}
+.ll{flex:1;min-width:220px;max-width:340px;background:var(--s1);border:1px solid var(--s3);
+  border-radius:var(--rad);padding:16px 20px;display:flex;align-items:center;gap:14px;transition:.2s;}
+.ll:hover{border-color:rgba(255,107,0,.3);background:var(--s2);}
+.ll-icon{font-size:1.3rem;}
+.ll-t{font-family:var(--F);font-size:.75rem;letter-spacing:2px;}
+.ll-d{font-size:.72rem;color:var(--mu);}
+.ll-arr{margin-left:auto;color:var(--or);}
+
+/* FOOTER */
+footer{background:var(--s1);border-top:1px solid var(--s2);padding:40px 24px;text-align:center;}
+.footer-logo{font-family:var(--F);font-size:1rem;letter-spacing:5px;color:var(--or);margin-bottom:14px;}
+footer p{font-size:.75rem;color:var(--mu);line-height:2;}
+footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
+
+/* RESPONSIVE */
+@media(max-width:720px){.mock-pair{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  .dl-box{padding:36px 24px;}
+  .si{padding:10px 18px;}
+  h1{letter-spacing:3px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">🏆 TURNIEROFFLINE</div>
+  <div class="nav-r">
+    <a href="#demo">Demo</a>
+    <a href="#features">Features</a>
+    <a href="#download">Download</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="https://turnieroffline.github.io/TurnierOffline/demo_tv.html" target="_blank" class="nav-demo">DEMO →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag"><span></span>V14 · Stabil · Kostenlos für Vereine</div>
+  <h1>TURNIER<em>OFFLINE</em></h1>
+  <p class="hero-sub">Dein Handy wird zum Turnierserver. Live-Stände, TV-Anzeige, KI-Assistent — komplett ohne Internet.</p>
+  <div class="hero-btns">
+    <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 Jetzt herunterladen</a>
+    <a href="https://turnieroffline.github.io/TurnierOffline/demo_handy.html" class="btn btn-demo" target="_blank">👁 Live Demo</a>
+    <a href="#features" class="btn btn-line">Features ansehen</a>
+  </div>
+  <div class="hero-scroll">▼ MEHR</div>
+</section>
+
+<div class="strip">
+  <div class="si"><div class="si-n">88</div><div class="si-l">PHP Dateien</div></div>
+  <div class="si"><div class="si-n">35</div><div class="si-l">DB Tabellen</div></div>
+  <div class="si"><div class="si-n">0</div><div class="si-l">Dependencies</div></div>
+  <div class="si"><div class="si-n">100%</div><div class="si-l">Offline</div></div>
+  <div class="si"><div class="si-n">V14</div><div class="si-l">Aktuelle Version</div></div>
+</div>
+
+<section class="demo-sec" id="demo">
+  <div class="sw">
+    <div>
+      <div class="sl">Vorschau</div>
+      <h2 class="sh">SO SIEHT ES AUS</h2>
+      <p class="sp">TV-Anzeige am Fernseher, Handy-Seite für alle Zuschauer — beide laufen lokal auf deinem Gerät.</p>
+    </div>
+    <div class="mock-pair">
+      <div>
+        <div class="mock-cap">📺 TV-Ansicht</div>
+        <div class="tv-wrap">
+          <div class="tv-bar"><span>🏆</span><div class="tv-bar-name">KLJB TURNIER 2025</div><div style="margin-left:auto;font-size:.42rem;color:var(--mu2)" id="uhr">--:--</div></div>
+          <div class="tv-body">
+            <div class="tv-main">
+              <div class="tv-score-row">
+                <div class="tv-team" style="color:#4488ff">BLAU FC</div>
+                <div class="tv-score">2 : 1</div>
+                <div class="tv-team" style="color:#ff4444">ROT UTD</div>
+              </div>
+              <div class="tv-live"><span class="dot"></span> HALBFINALE · LIVE · 73'</div>
+              <div class="tv-ev">⚽ 73' Müller (Blau FC)</div>
+              <div class="tv-ev">🟨 68' Bauer (Rot United)</div>
+              <div class="tv-ev">⚽ 45' Braun (Rot United)</div>
+              <div class="tv-ev" style="border:none">⚽ 12' Klein (Blau FC)</div>
+            </div>
+            <div class="tv-side">
+              <div class="tv-side-h">KO-BRACKET</div>
+              <div style="font-size:.35rem;color:var(--or);margin-bottom:2px;letter-spacing:1px">HALBFINALE</div>
+              <div class="tv-br-row"><span style="color:#4488ff">Blau</span><span class="tv-br-s" style="color:var(--gn)">2:1</span><span style="color:#ff4444;text-align:right">Rot</span></div>
+              <div class="tv-br-row"><span style="color:#22bb55">Grün</span><span class="tv-br-s">–</span><span style="color:#f5c518;text-align:right">Gelb</span></div>
+              <div style="margin-top:6px;font-size:.35rem;color:var(--mu2)">Finale: 16:30</div>
+            </div>
+          </div>
+          <div class="tv-ticker"><div class="ticker-inner">📡 Blau FC 2:1 Rot (73') · Grün 0:0 Gelb · Finale 16:30 · Tore: Müller, Braun, Klein &nbsp;&nbsp;&nbsp;&nbsp; 📡 Blau FC 2:1 Rot (73') · Grün 0:0 Gelb · Finale 16:30 · Tore: Müller, Braun, Klein</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-cap">📱 Handy-Ansicht (Zuschauer per QR-Code)</div>
+        <div class="phone-outer">
+          <div class="phone-wrap">
+            <div class="phone-pill"></div>
+            <div class="phone-hdr"><div class="phone-hdr-t">🏆 KLJB TURNIER</div><div class="phone-live">LIVE</div></div>
+            <div class="phone-body">
+              <div class="phone-scorebox">
+                <div class="phone-teams"><span style="color:#4488ff">Blau FC</span><span style="color:#ff4444">Rot United</span></div>
+                <div class="phone-score">2 : 1</div>
+                <div class="phone-status"><span class="dot"></span> Laufend · 73'</div>
+              </div>
+              <div style="font-size:.4rem;color:var(--mu);margin:4px 0 3px;letter-spacing:1px">EREIGNISSE</div>
+              <div class="phone-ev"><span style="color:var(--gd);min-width:16px;font-size:.4rem">73'</span><span>⚽</span><span>Müller – Blau</span></div>
+              <div class="phone-ev"><span style="color:var(--gd);min-width:16px;font-size:.4rem">68'</span><span>🟨</span><span>Bauer – Rot</span></div>
+              <div class="phone-ev"><span style="color:var(--gd);min-width:16px;font-size:.4rem">45'</span><span>⚽</span><span>Braun – Rot</span></div>
+            </div>
+            <div class="phone-nav">
+              <div class="pn ac">⚽<br>Spiel</div><div class="pn">🏆<br>KO</div>
+              <div class="pn">📅<br>Plan</div><div class="pn">🤖<br>KI</div><div class="pn">📞<br>Info</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-cta">
+      <h3>LIVE DEMO AUSPROBIEREN</h3>
+      <p>Echte App — kein Mockup. Handy- und TV-Ansicht direkt im Browser testen.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://turnieroffline.github.io/TurnierOffline/demo_handy.html" class="btn btn-demo" target="_blank">📱 Handy-Demo</a>
+        <a href="https://turnieroffline.github.io/TurnierOffline/demo_tv.html" class="btn btn-line" target="_blank">📺 TV-Demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feat-sec" id="features">
+  <div class="sw">
+    <div>
+      <div class="sl">Features</div>
+      <h2 class="sh">ALLES DABEI</h2>
+      <p class="sp">Alles was du für einen Turniertag brauchst — auf deinem Gerät, ohne Internet, ohne Abo.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="fc"><span class="fc-em">📺</span><div class="fc-t">TV-ANZEIGE</div><div class="fc-d">Automatischer Seitenwechsel. Spielstand, KO-Bracket, Tabelle, Werbung — alles konfigurierbar.</div><span class="badge">Auto-Zyklus</span></div>
+      <div class="fc"><span class="fc-em">⚽</span><div class="fc-t">LIVE-EINGABE</div><div class="fc-d">Tore, Karten, Auswechslungen — ein Tipp und alle sehen es sofort. Torschütze und Spielminute.</div><span class="badge">Echtzeit</span></div>
+      <div class="fc"><span class="fc-em">📱</span><div class="fc-t">HANDY-APP</div><div class="fc-d">Zuschauer verbinden sich per QR-Code. PWA — kein Download nötig. Jeder Browser.</div><span class="badge">PWA</span></div>
+      <div class="fc"><span class="fc-em">🏆</span><div class="fc-t">KO-RUNDEN</div><div class="fc-d">Losziehung per Knopfdruck. Automatischer Spielbaum. Finale bis Viertelfinale.</div><span class="badge">Automatisch</span></div>
+      <div class="fc"><span class="fc-em">🤖</span><div class="fc-t">KI-ASSISTENT</div><div class="fc-d">Zuschauer fragen: „Wer spielt gerade?" — regelbasiert oder Ollama, auch ohne Internet.</div><span class="badge">Offline KI</span></div>
+      <div class="fc"><span class="fc-em">🔊</span><div class="fc-t">SPRACHANSAGEN</div><div class="fc-d">Automatische Ansagen bei Toren, Karten, Halbzeit. Stimme und Lautstärke einstellbar.</div><span class="badge">Text-to-Speech</span></div>
+      <div class="fc"><span class="fc-em">🏟</span><div class="fc-t">MULTI-FELD</div><div class="fc-d">Mehrere Spiele gleichzeitig. TV zeigt Split-Screen. Bis zu 4 Felder gleichzeitig.</div><span class="badge">Bis 4 Felder</span></div>
+      <div class="fc"><span class="fc-em">🌐</span><div class="fc-t">GITHUB SYNC</div><div class="fc-d">Nach jedem Tor automatisch auf GitHub Pages gepusht — für Fans die zuhause mitfiebern.</div><span class="badge">Auto-Push</span></div>
+      <div class="fc"><span class="fc-em">🎯</span><div class="fc-t">TIPP-SPIEL</div><div class="fc-d">Zuschauer tippen Ergebnisse. 3 Punkte exakt, 1 Punkt Sieger. Live-Rangliste.</div><span class="badge">Neu V14</span></div>
+      <div class="fc"><span class="fc-em">📵</span><div class="fc-t">100% OFFLINE</div><div class="fc-d">Läuft komplett lokal. Kein Internet, kein Server, kein Abo. Alles auf deinem Gerät.</div><span class="badge">Kein Cloud</span></div>
+      <div class="fc"><span class="fc-em">🔌</span><div class="fc-t">WORDPRESS</div><div class="fc-d">Plugin zum Einbetten des Live-Stands auf der Vereinswebseite. Automatisches Update.</div><span class="badge">Plugin enthalten</span></div>
+      <div class="fc"><span class="fc-em">🏅</span><div class="fc-t">SIEGEREHRUNG</div><div class="fc-d">Automatisches Podest mit allen Ergebnissen. Export als HTML für das Vereinsprotokoll.</div><span class="badge">HTML Export</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="plat-sec">
+  <div class="sw">
+    <div>
+      <div class="sl">Plattformen</div>
+      <h2 class="sh">LÄUFT ÜBERALL</h2>
+      <p class="sp" style="margin:0 auto">Windows, Linux, Android, macOS — ein Installer-Skript und fertig.</p>
+    </div>
+    <div class="plat-grid">
+      <div class="pc"><div class="pc-em">🤖</div><div class="pc-t">ANDROID</div><div class="pc-d">Termux · direkt auf dem Handy</div></div>
+      <div class="pc"><div class="pc-em">🪟</div><div class="pc-t">WINDOWS</div><div class="pc-d">XAMPP · ein Klick Setup</div></div>
+      <div class="pc"><div class="pc-em">🐧</div><div class="pc-t">LINUX</div><div class="pc-d">Ubuntu · openSUSE · systemd</div></div>
+      <div class="pc"><div class="pc-em">🍎</div><div class="pc-t">macOS</div><div class="pc-d">Homebrew · PHP built-in</div></div>
+      <div class="pc"><div class="pc-em">🐳</div><div class="pc-t">DOCKER</div><div class="pc-d">Plattformunabhängig · 50MB</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="dl-sec" id="download">
+  <div class="dl-box">
+    <div class="dl-ver">VERSION 14 · STABIL · KOSTENLOS</div>
+    <h2>DOWNLOAD</h2>
+    <p>Keine Dependencies. Kein Composer, kein npm.<br>ZIP entpacken, Installer starten — fertig.</p>
+    <div class="dl-btns">
+      <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline" class="btn btn-line" target="_blank">⭐ GitHub</a>
+      <a href="anleitung/" class="btn btn-line">📖 Anleitung</a>
+    </div>
+    <div class="chips">
+      <div class="chip"><b>Android</b> 9+</div>
+      <div class="chip"><b>PHP</b> 8.0+</div>
+      <div class="chip"><b>SQLite</b> 3</div>
+      <div class="chip"><b>RAM</b> 2 GB+</div>
+      <div class="chip"><b>Termux</b> / XAMPP</div>
+      <div class="chip"><b>Docker</b> optional</div>
+    </div>
+  </div>
+</section>
+
+<section class="liz-sec" id="lizenz">
+  <div class="sw">
+    <div>
+      <div class="sl">Lizenz</div>
+      <h2 class="sh">NUTZUNGSRECHTE</h2>
+      <p class="sp" style="margin:0 auto">Für private und Vereinsnutzung kostenlos. Fair und transparent.</p>
+    </div>
+    <div class="liz-cards">
+      <div class="lc lc-gn"><div class="lc-em">✅</div><div class="lc-t c-gn">KOSTENLOS</div><ul class="lc-list"><li><span style="color:var(--gn)">✓</span>Privatpersonen</li><li><span style="color:var(--gn)">✓</span>Eigener Verein</li><li><span style="color:var(--gn)">✓</span>Eigene Jugendgruppe</li><li><span style="color:var(--gn)">✓</span>Zum Lernen</li></ul></div>
+      <div class="lc lc-gd"><div class="lc-em">💶</div><div class="lc-t c-gd">VEREINSLIZENZ</div><ul class="lc-list"><li><span style="color:var(--gd)">€</span>Fremde Vereine</li><li><span style="color:var(--gd)">€</span>Veranst. mit Einnahmen</li><li><span style="color:var(--gd)">€</span>Support inklusive</li></ul></div>
+      <div class="lc lc-rd"><div class="lc-em">🚫</div><div class="lc-t c-rd">VERBOTEN</div><ul class="lc-list"><li><span style="color:var(--rd)">✗</span>Konkurrenzprodukte</li><li><span style="color:var(--rd)">✗</span>Ohne Lizenzdatei</li><li><span style="color:var(--rd)">✗</span>Mod. Version veröff.</li></ul></div>
+      <div class="lc lc-bl"><div class="lc-em">🔄</div><div class="lc-t c-bl">SHARE-BACK</div><ul class="lc-list"><li><span style="color:var(--bl)">→</span>Verbesserungen teilen</li><li><span style="color:var(--bl)">→</span>Pull Request willkommen</li><li><span style="color:var(--bl)">→</span>Entwickler entscheidet</li></ul></div>
+    </div>
+    <div class="liz-links">
+      <a href="lizenz/" class="ll"><div class="ll-icon">📄</div><div><div class="ll-t">LIZENZ LESEN</div><div class="ll-d">Vollständige Nutzungsbedingungen</div></div><div class="ll-arr">→</div></a>
+      <a href="lizenz/commercial.html" class="ll"><div class="ll-icon">💼</div><div><div class="ll-t">VEREINSLIZENZ</div><div class="ll-d">Konditionen für fremde Vereine</div></div><div class="ll-arr">→</div></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">🏆 TURNIEROFFLINE</div>
+  <p>
+    Privates Hobbyprojekt · Kein kommerzielles Produkt<br>
+    Copyright © 2025–2026 TurnierOffline ·
+    <a href="https://github.com/TurnierOffline/TurnierOffline" target="_blank">GitHub</a> ·
+    <a href="lizenz/">Lizenz</a> ·
+    <a href="anleitung/">Anleitung</a> ·
+    <a href="kontakt.html">Kontakt</a> ·
+    <a href="https://turnieroffline.github.io/TurnierOffline/demo_handy.html" target="_blank">Demo</a>
+  </p>
+</footer>
+
+<script>
+(function tick(){
+  const el=document.getElementById('uhr');
+  if(el){const d=new Date(),p=n=>String(n).padStart(2,'0');el.textContent=p(d.getHours())+':'+p(d.getMinutes());}
+  setTimeout(tick,1000);
+})();
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}}),{threshold:.1});
+document.querySelectorAll('.fc,.pc,.lc,.si').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(16px)';
+  el.style.transition='opacity .5s ease,transform .4s ease';obs.observe(el);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TurnierOffline – Handy Demo</title>
+<style>
+  @font-face{font-family:'Black Han Sans';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');font-weight:900;}
+  @font-face{font-family:'DM Sans';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');font-weight:300 400 600 700;}
+</style>
+<style>
+:root {
+  --ak:#ff6b00; --bg:#06080b; --bg2:#0d1117; --bg3:#161b22; --bg4:#21262d;
+  --txt:#dde4ef; --dim:#6b7280; --gruen:#22d66f; --rot:#f03050; --gold:#f5c518;
+  --H:'Black Han Sans',sans-serif; --B:'DM Sans',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--B);background:var(--bg);color:var(--txt);min-height:100vh;max-width:430px;margin:0 auto;}
+
+/* Header */
+.top-bar{background:var(--ak);padding:10px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50;}
+.top-bar .ev-name{font-family:var(--H);font-size:1rem;letter-spacing:2px;color:#fff;}
+.live-badge{margin-left:auto;background:rgba(0,0,0,.3);color:#fff;font-size:.6rem;padding:2px 7px;border-radius:10px;letter-spacing:2px;display:flex;align-items:center;gap:4px;}
+.live-dot{width:6px;height:6px;background:#22d66f;border-radius:50%;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* Screen-Tabs */
+.screen-nav{background:var(--bg2);border-bottom:1px solid var(--bg4);display:flex;overflow-x:auto;padding:0;gap:0;}
+.screen-nav::-webkit-scrollbar{display:none;}
+.snav-item{flex-shrink:0;padding:10px 14px;font-size:.78rem;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.snav-item.active{color:var(--ak);border-bottom-color:var(--ak);}
+
+/* Screen-Inhalt */
+.screen{display:none;padding:14px;animation:fadeIn .2s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Karten */
+.card{background:var(--bg2);border:1px solid var(--bg4);border-radius:12px;padding:14px;margin-bottom:12px;}
+.card-title{font-family:var(--H);font-size:.7rem;letter-spacing:3px;color:var(--ak);margin-bottom:10px;}
+
+/* Spielstand */
+.live-score-wrap{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--bg4);border-top:3px solid var(--ak);border-radius:14px;padding:20px;text-align:center;margin-bottom:12px;}
+.score-teams{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.score-team{flex:1;}
+.score-team .tname{font-family:var(--H);font-size:.85rem;letter-spacing:2px;}
+.score-team .kuerzel{font-size:2rem;font-family:var(--H);}
+.score-num{font-family:var(--H);font-size:3.5rem;color:var(--gold);letter-spacing:8px;line-height:1;}
+.score-meta{font-size:.7rem;color:var(--gruen);letter-spacing:2px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px;}
+.event-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bg4);font-size:.82rem;}
+.event-row:last-child{border-bottom:none;}
+.ev-min{font-family:var(--H);color:var(--gold);min-width:28px;font-size:.75rem;}
+.ev-icon{font-size:1rem;}
+.ev-desc{flex:1;}
+.ev-team{font-size:.7rem;color:var(--dim);}
+
+/* Spielplan */
+.spiel-item{padding:10px 12px;background:var(--bg3);border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.spiel-item.live{border-left:3px solid var(--gruen);}
+.spiel-item.beendet{opacity:.6;}
+.spiel-teams{flex:1;font-size:.85rem;font-weight:600;}
+.spiel-score-s{font-family:var(--H);font-size:.95rem;color:var(--gold);letter-spacing:3px;min-width:40px;text-align:center;}
+.spiel-badge{font-size:.6rem;padding:2px 6px;border-radius:6px;}
+.badge-live{background:rgba(34,198,111,.15);color:var(--gruen);}
+.badge-done{background:rgba(255,255,255,.05);color:var(--dim);}
+.badge-plan{background:rgba(245,197,24,.1);color:var(--gold);}
+
+/* KO Bracket */
+.bracket{display:flex;flex-direction:column;gap:10px;}
+.runde-label{font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);padding:4px 0;}
+.br-match{background:var(--bg3);border-radius:8px;overflow:hidden;border:1px solid var(--bg4);}
+.br-match.live{border-color:var(--gruen);}
+.br-team-row{display:flex;align-items:center;padding:7px 10px;gap:8px;font-size:.82rem;}
+.br-team-row:first-child{border-bottom:1px solid var(--bg4);}
+.br-team-row.winner{font-weight:700;}
+.br-team-row .score-b{margin-left:auto;font-family:var(--H);font-size:.9rem;color:var(--gold);}
+.trophy{color:var(--gold);font-size:.8rem;margin-left:4px;}
+
+/* Regeln */
+.regeln-text{font-size:.88rem;line-height:1.9;color:var(--txt);white-space:pre-line;}
+
+/* Kontakt */
+.kontakt-person{text-align:center;padding:16px;margin-bottom:12px;}
+.kontakt-avatar{width:64px;height:64px;border-radius:50%;background:var(--ak);color:#fff;font-family:var(--H);font-size:1.5rem;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.kontakt-name{font-family:var(--H);font-size:1rem;letter-spacing:2px;}
+.kontakt-rolle{font-size:.75rem;color:var(--dim);}
+.kontakt-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg3);border-radius:10px;margin-bottom:8px;text-decoration:none;color:var(--txt);}
+.kontakt-btn-icon{font-size:1.4rem;width:36px;text-align:center;}
+.kontakt-btn-text{flex:1;}
+.kontakt-btn-label{font-size:.9rem;font-weight:600;}
+.kontakt-btn-sub{font-size:.72rem;color:var(--dim);}
+
+/* KI Chat */
+.chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:320px;}
+.chat-msg{max-width:80%;padding:10px 12px;border-radius:12px;font-size:.84rem;line-height:1.6;}
+.chat-msg.ki{background:var(--bg3);border:1px solid var(--bg4);align-self:flex-start;}
+.chat-msg.user{background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--txt);align-self:flex-end;text-align:right;}
+.chat-name{font-size:.65rem;color:var(--dim);margin-bottom:3px;font-family:var(--H);letter-spacing:2px;}
+.chat-input-bar{display:flex;gap:8px;padding:10px 0 0;}
+.chat-inp{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:8px 12px;color:var(--txt);font-size:.85rem;}
+.chat-send{background:var(--ak);border:none;color:#fff;border-radius:10px;padding:8px 14px;font-size:.85rem;cursor:pointer;font-family:var(--H);}
+
+/* Tipp-Spiel */
+.tipp-item{background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px;}
+.tipp-match{display:flex;align-items:center;gap:8px;font-size:.85rem;margin-bottom:8px;font-weight:600;}
+.tipp-input-row{display:flex;align-items:center;gap:6px;justify-content:center;}
+.tipp-inp{width:44px;background:var(--bg2);border:1px solid var(--bg4);border-radius:8px;padding:6px;text-align:center;font-family:var(--H);font-size:1.1rem;color:var(--gold);}
+.tipp-vs{color:var(--dim);font-size:.8rem;}
+.tipp-submit{width:100%;background:var(--ak);border:none;color:#fff;padding:8px;border-radius:8px;font-family:var(--H);font-size:.8rem;letter-spacing:2px;cursor:pointer;margin-top:8px;}
+
+/* Stimmung */
+.stimmung-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stimmung-btn{padding:14px;background:var(--bg3);border:2px solid var(--bg4);border-radius:12px;text-align:center;cursor:pointer;transition:all .15s;}
+.stimmung-btn:hover{border-color:var(--ak);}
+.stimmung-icon{font-size:2rem;display:block;margin-bottom:4px;}
+.stimmung-label{font-size:.72rem;color:var(--dim);}
+.stimmung-bar-wrap{margin-top:16px;}
+.stimmung-bar-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.78rem;}
+.stimmung-bar{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;}
+.stimmung-bar-fill{height:100%;border-radius:4px;background:var(--ak);transition:width .6s ease;}
+
+/* Bottom-Nav */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--bg4);display:flex;z-index:50;}
+.bnav-item{flex:1;padding:8px 4px 10px;text-align:center;cursor:pointer;color:var(--dim);transition:color .15s;}
+.bnav-item.active{color:var(--ak);}
+.bnav-icon{font-size:1.2rem;display:block;margin-bottom:2px;}
+.bnav-label{font-size:.55rem;letter-spacing:1px;}
+
+.pb{padding-bottom:70px;}
+</style>
+</head>
+<body>
+
+<div class="top-bar"><a href="../" style="color:#fff;opacity:.7;font-size:1rem;margin-right:4px;text-decoration:none;" title="Zur Startseite">←</a>
+  <div class="ev-name">🏆 KLJB TURNIER 2025</div>
+  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+</div>
+
+<div class="screen-nav" id="screenNav">
+  <div class="snav-item active" onclick="showScreen('spiel',this)">⚽ Spiel</div>
+  <div class="snav-item" onclick="showScreen('plan',this)">📅 Spielplan</div>
+  <div class="snav-item" onclick="showScreen('ko',this)">🏆 KO</div>
+  <div class="snav-item" onclick="showScreen('tipp',this)">🎯 Tipp</div>
+  <div class="snav-item" onclick="showScreen('regeln',this)">📋 Regeln</div>
+  <div class="snav-item" onclick="showScreen('ki',this)">🤖 KI</div>
+  <div class="snav-item" onclick="showScreen('stimmung',this)">😄 Stimmung</div>
+  <div class="snav-item" onclick="showScreen('kontakt',this)">📞 Kontakt</div>
+</div>
+
+<!-- ══ SCREEN: SPIEL ══ -->
+<div class="screen active pb" id="s-spiel">
+  <div class="live-score-wrap">
+    <div class="score-teams">
+      <div class="score-team" style="text-align:left">
+        <div class="kuerzel">🔵</div>
+        <div class="tname" style="color:#4499ff">BLAU FC</div>
+      </div>
+      <div>
+        <div class="score-num">2 : 1</div>
+        <div class="score-meta"><div class="live-dot"></div> LAUFEND · 73'</div>
+      </div>
+      <div class="score-team" style="text-align:right">
+        <div class="kuerzel">🔴</div>
+        <div class="tname" style="color:#ff4444">ROT UTD.</div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:var(--dim);margin-top:8px;">📍 Halbfinale · Feld 1</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">EREIGNISSE</div>
+    <div class="event-row"><span class="ev-min">73'</span><span class="ev-icon">⚽</span><div class="ev-desc"><strong>Tor!</strong> Blau FC<div class="ev-team">M. Müller (Torschütze)</div></div></div>
+    <div class="event-row"><span class="ev-min">68'</span><span class="ev-icon">🟨</span><div class="ev-desc">Gelbe Karte<div class="ev-team">Rot United – T. Bauer</div></div></div>
+    <div class="event-row"><span class="ev-min">45'</span><span class="ev-icon">⚽</span><div class="ev-desc"><strong>Tor!</strong> Rot United<div class="ev-team">K. Braun (Torschütze)</div></div></div>
+    <div class="event-row"><span class="ev-min">12'</span><span class="ev-icon">⚽</span><div class="ev-desc"><strong>Tor!</strong> Blau FC<div class="ev-team">A. Klein (Torschütze)</div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">GLEICHZEITIG · FELD 2</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:.85rem;">
+      <span style="color:#22aa44;font-weight:700;">GRÜN SV</span>
+      <span style="font-family:var(--H);color:var(--gold);letter-spacing:3px;">0 : 0</span>
+      <span style="color:#aaaaaa;font-weight:700;">WEISS FC</span>
+      <span class="spiel-badge badge-live" style="margin-left:auto"><div class="live-dot" style="display:inline-block"></div> 34'</span>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,rgba(245,197,24,.08),rgba(245,197,24,.02));border-color:rgba(245,197,24,.2)">
+    <div class="card-title">🏆 NÄCHSTES FINALE</div>
+    <div style="font-size:.85rem;">Sieger dieses Spiels spielt am <strong>16:30 Uhr</strong> im Finale.</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: SPIELPLAN ══ -->
+<div class="screen pb" id="s-plan">
+  <div class="card">
+    <div class="card-title">VIERTELFINALE</div>
+    <div class="spiel-item beendet">
+      <div class="spiel-teams">Blau FC<br><span style="color:var(--dim);font-size:.72rem">vs. Gelb SV</span></div>
+      <div class="spiel-score-s">3:1</div>
+      <span class="spiel-badge badge-done">✓ Ende</span>
+    </div>
+    <div class="spiel-item beendet">
+      <div class="spiel-teams">Rot United<br><span style="color:var(--dim);font-size:.72rem">vs. Lila FC</span></div>
+      <div class="spiel-score-s">2:0</div>
+      <span class="spiel-badge badge-done">✓ Ende</span>
+    </div>
+    <div class="spiel-item beendet">
+      <div class="spiel-teams">Grün SV<br><span style="color:var(--dim);font-size:.72rem">vs. Orange FC</span></div>
+      <div class="spiel-score-s">1:1 (4:3)</div>
+      <span class="spiel-badge badge-done">✓ Elf.</span>
+    </div>
+    <div class="spiel-item beendet">
+      <div class="spiel-teams">Weiß FC<br><span style="color:var(--dim);font-size:.72rem">vs. Schwarz SV</span></div>
+      <div class="spiel-score-s">2:1</div>
+      <span class="spiel-badge badge-done">✓ Ende</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">HALBFINALE · JETZT</div>
+    <div class="spiel-item live">
+      <div class="spiel-teams">Blau FC<br><span style="color:var(--dim);font-size:.72rem">vs. Rot United · Feld 1</span></div>
+      <div class="spiel-score-s">2:1</div>
+      <span class="spiel-badge badge-live">● 73'</span>
+    </div>
+    <div class="spiel-item live">
+      <div class="spiel-teams">Grün SV<br><span style="color:var(--dim);font-size:.72rem">vs. Weiß FC · Feld 2</span></div>
+      <div class="spiel-score-s">0:0</div>
+      <span class="spiel-badge badge-live">● 34'</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">FINALE · SPÄTER</div>
+    <div class="spiel-item">
+      <div class="spiel-teams">Sieger HF 1<br><span style="color:var(--dim);font-size:.72rem">vs. Sieger HF 2 · 16:30 Uhr</span></div>
+      <div class="spiel-score-s">–:–</div>
+      <span class="spiel-badge badge-plan">16:30</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: KO-BRACKET ══ -->
+<div class="screen pb" id="s-ko">
+  <div class="card">
+    <div class="card-title">KO-POKAL BRACKET</div>
+    <div class="bracket">
+      <div class="runde-label">🏅 VIERTELFINALE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div class="br-match">
+          <div class="br-team-row winner"><span style="color:#4499ff">Blau FC</span><span class="score-b">3</span><span class="trophy">🏆</span></div>
+          <div class="br-team-row"><span>Gelb SV</span><span class="score-b">1</span></div>
+        </div>
+        <div class="br-match">
+          <div class="br-team-row winner"><span style="color:#ff4444">Rot United</span><span class="score-b">2</span><span class="trophy">🏆</span></div>
+          <div class="br-team-row"><span>Lila FC</span><span class="score-b">0</span></div>
+        </div>
+        <div class="br-match">
+          <div class="br-team-row winner"><span style="color:#22aa44">Grün SV</span><span class="score-b">4:3</span><span class="trophy">🏆</span></div>
+          <div class="br-team-row"><span>Orange FC</span><span class="score-b">–</span></div>
+        </div>
+        <div class="br-match">
+          <div class="br-team-row winner"><span>Weiß FC</span><span class="score-b">2</span><span class="trophy">🏆</span></div>
+          <div class="br-team-row"><span>Schwarz SV</span><span class="score-b">1</span></div>
+        </div>
+      </div>
+      <div class="runde-label">⚔ HALBFINALE · JETZT</div>
+      <div class="br-match live">
+        <div class="br-team-row"><span style="color:#4499ff">Blau FC</span><span class="score-b" style="color:var(--gruen)">2 ●</span></div>
+        <div class="br-team-row"><span style="color:#ff4444">Rot United</span><span class="score-b">1</span></div>
+      </div>
+      <div class="br-match live">
+        <div class="br-team-row"><span style="color:#22aa44">Grün SV</span><span class="score-b" style="color:var(--gruen)">0 ●</span></div>
+        <div class="br-team-row"><span>Weiß FC</span><span class="score-b">0</span></div>
+      </div>
+      <div class="runde-label">🏆 FINALE · 16:30 UHR</div>
+      <div class="br-match" style="opacity:.4">
+        <div class="br-team-row"><span>Sieger HF 1</span><span class="score-b">?</span></div>
+        <div class="br-team-row"><span>Sieger HF 2</span><span class="score-b">?</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: TIPP-SPIEL ══ -->
+<div class="screen pb" id="s-tipp">
+  <div class="card">
+    <div class="card-title">🎯 DEIN TIPP · FINALE</div>
+    <div style="font-size:.78rem;color:var(--dim);margin-bottom:12px;">Tippe das Ergebnis des Finales! 3 Punkte für exaktes Ergebnis, 1 Punkt für richtigen Sieger.</div>
+    <div class="tipp-item">
+      <div class="tipp-match">
+        <span style="color:#4499ff">Blau FC</span>
+        <span class="tipp-vs">vs.</span>
+        <span style="color:#22aa44">Grün SV</span>
+      </div>
+      <div class="tipp-input-row">
+        <input class="tipp-inp" type="number" min="0" max="20" value="2" id="t1">
+        <span class="tipp-vs">:</span>
+        <input class="tipp-inp" type="number" min="0" max="20" value="1" id="t2">
+      </div>
+      <button class="tipp-submit" onclick="sendTipp()">🎯 TIPP ABGEBEN</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🏅 TIPP-RANGLISTE</div>
+    <div style="font-size:.8rem;">
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg4);">
+        <span style="color:var(--gold);font-family:var(--H);width:20px;">1.</span>
+        <span style="flex:1">Max M.</span>
+        <span style="font-family:var(--H);color:var(--gold)">9 Pkte</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg4);">
+        <span style="color:var(--dim);font-family:var(--H);width:20px;">2.</span>
+        <span style="flex:1">Lisa K.</span>
+        <span style="font-family:var(--H);color:var(--dim)">7 Pkte</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;">
+        <span style="color:var(--dim);font-family:var(--H);width:20px;">3.</span>
+        <span style="flex:1">Tom B.</span>
+        <span style="font-family:var(--H);color:var(--dim)">6 Pkte</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: REGELN ══ -->
+<div class="screen pb" id="s-regeln">
+  <div class="card">
+    <div class="card-title">📋 SPIELREGELN</div>
+    <div class="regeln-text">⚽ <strong>Spielzeit</strong>
+Jedes Spiel dauert 2x8 Minuten. Halbzeit 3 Minuten.
+
+🟨 <strong>Karten</strong>
+Gelb-Rote Karte: Spieler scheidet aus.
+Rote Karte: Sofortiger Ausschluss.
+
+🥅 <strong>Elfmeterschießen</strong>
+Bei Unentschieden nach der regulären Zeit entscheidet ein Elfmeterschießen (je 3 Schüsse, dann abwechselnd).
+
+🍺 <strong>Getränke</strong>
+Getränke gibt es bei Team Rot United am Stand.
+Bitte Becher wieder zurückbringen!
+
+🏆 <strong>Siegerehrung</strong>
+Die Siegerehrung findet um ca. 18:00 Uhr statt.
+Alle Spieler bitte pünktlich am Hauptplatz erscheinen.</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: KI-CHAT ══ -->
+<div class="screen pb" id="s-ki">
+  <div class="card">
+    <div class="card-title">🤖 KI-ASSISTENT</div>
+    <div class="chat-wrap" id="chatWrap">
+      <div>
+        <div class="chat-name">KI-ASSISTENT</div>
+        <div class="chat-msg ki">Hallo! 👋 Ich bin dein Turnier-Assistent. Frag mich alles zum KLJB Turnier 2025 — Spielplan, Ergebnisse, Regeln oder Teams!</div>
+      </div>
+      <div style="align-self:flex-end">
+        <div class="chat-name" style="text-align:right">DU</div>
+        <div class="chat-msg user">Wer führt gerade?</div>
+      </div>
+      <div>
+        <div class="chat-name">KI-ASSISTENT</div>
+        <div class="chat-msg ki">Im Halbfinale führt aktuell <strong>Blau FC mit 2:1</strong> gegen Rot United (73. Minute) ⚽<br><br>Auf Feld 2 steht es noch <strong>0:0</strong> zwischen Grün SV und Weiß FC.</div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <input class="chat-inp" type="text" id="chatInp" placeholder="Frage stellen..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">↑</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+      <div onclick="quickChat('Spielplan?')" style="background:var(--bg3);border:1px solid var(--bg4);border-radius:20px;padding:4px 10px;font-size:.72rem;color:var(--dim);cursor:pointer;">📅 Spielplan?</div>
+      <div onclick="quickChat('Wer hat gewonnen?')" style="background:var(--bg3);border:1px solid var(--bg4);border-radius:20px;padding:4px 10px;font-size:.72rem;color:var(--dim);cursor:pointer;">🏆 Wer hat gewonnen?</div>
+      <div onclick="quickChat('Wann Finale?')" style="background:var(--bg3);border:1px solid var(--bg4);border-radius:20px;padding:4px 10px;font-size:.72rem;color:var(--dim);cursor:pointer;">⏰ Wann Finale?</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: STIMMUNG ══ -->
+<div class="screen pb" id="s-stimmung">
+  <div class="card">
+    <div class="card-title">😄 STIMMUNGSBAROMETER</div>
+    <div style="font-size:.8rem;color:var(--dim);margin-bottom:12px;">Wie ist deine Stimmung beim Turnier?</div>
+    <div class="stimmung-grid">
+      <div class="stimmung-btn" onclick="vote('super')"><span class="stimmung-icon">🔥</span><span class="stimmung-label">Super!</span></div>
+      <div class="stimmung-btn" onclick="vote('gut')"><span class="stimmung-icon">😊</span><span class="stimmung-label">Gut</span></div>
+      <div class="stimmung-btn" onclick="vote('naja')"><span class="stimmung-icon">😐</span><span class="stimmung-label">Na ja</span></div>
+      <div class="stimmung-btn" onclick="vote('schlecht')"><span class="stimmung-icon">😞</span><span class="stimmung-label">Schlecht</span></div>
+    </div>
+    <div class="stimmung-bar-wrap" id="stimmungBars">
+      <div class="stimmung-bar-item"><span style="width:50px">🔥 Super</span><div class="stimmung-bar"><div class="stimmung-bar-fill" style="width:65%;background:#ff6b00"></div></div><span style="width:30px;text-align:right;color:var(--dim)">65%</span></div>
+      <div class="stimmung-bar-item"><span style="width:50px">😊 Gut</span><div class="stimmung-bar"><div class="stimmung-bar-fill" style="width:25%;background:#22d66f"></div></div><span style="width:30px;text-align:right;color:var(--dim)">25%</span></div>
+      <div class="stimmung-bar-item"><span style="width:50px">😐 Na ja</span><div class="stimmung-bar"><div class="stimmung-bar-fill" style="width:8%;background:#f5c518"></div></div><span style="width:30px;text-align:right;color:var(--dim)">8%</span></div>
+      <div class="stimmung-bar-item"><span style="width:50px">😞 Schl.</span><div class="stimmung-bar"><div class="stimmung-bar-fill" style="width:2%;background:#f03050"></div></div><span style="width:30px;text-align:right;color:var(--dim)">2%</span></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--dim);margin-top:8px;text-align:center;">47 Stimmen · Live-Update alle 30s</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: KONTAKT ══ -->
+<div class="screen pb" id="s-kontakt">
+  <div class="card">
+    <div class="kontakt-person">
+      <div class="kontakt-avatar">TB</div>
+      <div class="kontakt-name">Tobias Binner</div>
+      <div class="kontakt-rolle">Turnierleitung · KLJB Gruppe</div>
+    </div>
+    <a class="kontakt-btn" href="#">
+      <span class="kontakt-btn-icon">💬</span>
+      <div class="kontakt-btn-text">
+        <div class="kontakt-btn-label">WhatsApp</div>
+        <div class="kontakt-btn-sub">+49 151 73046749</div>
+      </div>
+      <span style="color:var(--dim)">›</span>
+    </a>
+    <a class="kontakt-btn" href="#">
+      <span class="kontakt-btn-icon">✉️</span>
+      <div class="kontakt-btn-text">
+        <div class="kontakt-btn-label">E-Mail</div>
+        <div class="kontakt-btn-sub">turnieroffline@gmail.com</div>
+      </div>
+      <span style="color:var(--dim)">›</span>
+    </a>
+    <a class="kontakt-btn" href="#">
+      <span class="kontakt-btn-icon">📸</span>
+      <div class="kontakt-btn-text">
+        <div class="kontakt-btn-label">Instagram</div>
+        <div class="kontakt-btn-sub">@kljb_turnier</div>
+      </div>
+      <span style="color:var(--dim)">›</span>
+    </a>
+  </div>
+  <div class="card">
+    <div class="card-title">📶 WLAN VERBINDEN</div>
+    <div style="font-size:.85rem;margin-bottom:8px;"><strong>Netzwerk:</strong> @TurnierOffline</div>
+    <div style="font-size:.85rem;margin-bottom:12px;"><strong>Passwort:</strong> turnier2025</div>
+    <div style="text-align:center;font-size:3rem;">📱</div>
+    <div style="text-align:center;font-size:.72rem;color:var(--dim);margin-top:4px;">QR-Code scannen zum Verbinden</div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="bnav-item active" id="bn-spiel" onclick="showScreen('spiel',null,this)"><span class="bnav-icon">⚽</span><span class="bnav-label">SPIEL</span></div>
+  <div class="bnav-item" id="bn-plan" onclick="showScreen('plan',null,this)"><span class="bnav-icon">📅</span><span class="bnav-label">PLAN</span></div>
+  <div class="bnav-item" id="bn-ko" onclick="showScreen('ko',null,this)"><span class="bnav-icon">🏆</span><span class="bnav-label">KO</span></div>
+  <div class="bnav-item" id="bn-ki" onclick="showScreen('ki',null,this)"><span class="bnav-icon">🤖</span><span class="bnav-label">KI</span></div>
+  <div class="bnav-item" id="bn-kontakt" onclick="showScreen('kontakt',null,this)"><span class="bnav-icon">📞</span><span class="bnav-label">KONTAKT</span></div>
+</div>
+
+<script>
+function showScreen(name, tabEl, navEl) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  if (tabEl) tabEl.classList.add('active');
+  const bnav = document.getElementById('bn-'+name);
+  if (bnav) bnav.classList.add('active');
+  // Sync tab nav
+  const tabs = document.querySelectorAll('.snav-item');
+  const map = {spiel:0,plan:1,ko:2,tipp:3,regeln:4,ki:5,stimmung:6,kontakt:7};
+  if (map[name] !== undefined) tabs[map[name]].classList.add('active');
+}
+
+const kiAnswers = {
+  'spielplan': 'Halbfinale läuft gerade:\n• Blau FC 2:1 Rot United (73\')\n• Grün SV 0:0 Weiß FC (34\')\n\nFinale: heute 16:30 Uhr 🏆',
+  'wann finale': 'Das Finale beginnt um <strong>16:30 Uhr</strong> auf dem Hauptplatz. Siegerehrung ca. 18:00 Uhr 🏆',
+  'wer hat gewonnen': 'Die Spiele laufen noch. Im Viertelfinale haben gewonnen:\n• Blau FC 3:1 gegen Gelb SV\n• Rot United 2:0 gegen Lila FC\n• Grün SV im Elfmeterschießen\n• Weiß FC 2:1 gegen Schwarz SV',
+  'torschützen': '⚽ Bisherige Torschützen:\n• M. Müller (Blau FC) – 2 Tore\n• A. Klein (Blau FC) – 1 Tor\n• K. Braun (Rot United) – 1 Tor',
+};
+function sendChat() {
+  const inp = document.getElementById('chatInp');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  const wrap = document.getElementById('chatWrap');
+  wrap.innerHTML += `<div style="align-self:flex-end"><div class="chat-name" style="text-align:right">DU</div><div class="chat-msg user">${msg}</div></div>`;
+  inp.value = '';
+  setTimeout(() => {
+    const lc = msg.toLowerCase();
+    let ans = 'Gute Frage! 🤔 Ich kann dir Infos zu Spielplan, Ergebnissen, Teams und Regeln geben. Was möchtest du wissen?';
+    for (const [k,v] of Object.entries(kiAnswers)) {
+      if (lc.includes(k)) { ans = v; break; }
+    }
+    wrap.innerHTML += `<div><div class="chat-name">KI-ASSISTENT</div><div class="chat-msg ki">${ans}</div></div>`;
+    wrap.scrollTop = wrap.scrollHeight;
+  }, 600);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+function quickChat(msg) {
+  document.getElementById('chatInp').value = msg;
+  sendChat();
+}
+function sendTipp() {
+  const t1 = document.getElementById('t1').value;
+  const t2 = document.getElementById('t2').value;
+  alert(`✅ Dein Tipp wurde gespeichert!\nBlau FC ${t1}:${t2} Grün SV\n\nViel Erfolg! 🎯`);
+}
+function vote(typ) {
+  const labels = {super:'🔥 Super!',gut:'😊 Gut',naja:'😐 Na ja',schlecht:'😞 Schlecht'};
+  alert(`✅ Stimme gezählt!\nDu hast "${labels[typ]}" gewählt.\nDanke für dein Feedback!`);
+}
+// Live-Uhr Simulation
+setInterval(() => {
+  const meta = document.querySelector('.score-meta');
+  if (meta) {
+    const m = parseInt(meta.textContent.match(/(\d+)'/)?.[1] || 73);
+    if (m < 90) meta.innerHTML = `<div class="live-dot"></div> LAUFEND · ${Math.min(90,m+1)}'`;
+  }
+}, 30000);
+</script>
+</body>
+</html>
