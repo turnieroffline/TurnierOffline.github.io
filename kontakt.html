@@ -164,7 +164,7 @@ footer a:hover{color:var(--ak2);}
         <div class="btn-sub">turnieroffline@gmail.com</div>
       </div>
     </a>
-    <a href="https://github.com/TurnierOffline/TurnierOffline/issues" target="_blank" class="contact-btn">
+    <a href="https://github.com/TurnierOffline/issues" target="_blank" class="contact-btn">
       <span class="btn-icon">🐙</span>
       <div>
         <div>GitHub Issue</div>
@@ -185,10 +185,10 @@ footer a:hover{color:var(--ak2);}
     <p class="projekt-text">
       Wenn du Fragen, Ideen oder Feedback hast — meld dich einfach über E-Mail, GitHub oder unsere Social-Media-Kanäle.
     </p>
-    <div style="margin-top:14px;" class="hinweis">
+    <!-- <div style="margin-top:14px;" class="hinweis">
       Für KLJB, Schützen und private Veranstaltungen helfe ich ehrenamtlich.
       Vereinslizenz auf Anfrage.
-    </div>
+    </div> -->
   </div>
 
   <!-- NACHRICHT SENDEN -->
@@ -246,14 +246,15 @@ footer a:hover{color:var(--ak2);}
     <div class="hinweis">
       <strong style="color:var(--tx)">Hinweis:</strong>
       TurnierOffline ist ein privates Hobbyprojekt. Ich verkaufe nichts, vermiete nichts
-      und biete keine kommerziellen Dienstleistungen an. Für KLJB, Schützen und private
-      Veranstaltungen helfe ich ehrenamtlich.
+      und biete keine kommerziellen Dienstleistungen an. 
+      <!-- Für KLJB, Schützen und private
+      Veranstaltungen helfe ich ehrenamtlich. -->
     </div>
   </div>
 
   <footer>
     <strong>TurnierOffline</strong> · V14<br>
-    <a href="mailto:turnieroffline@gmail.com">turnieroffline@gmail.com</a><br>
+    <a href="mailto:turnieroffline+kontakt@gmail.com">turnieroffline+kontakt@gmail.com</a><br>
     <small>Privates Hobbyprojekt · Kein Gewerbe · Kostenlos für Vereine</small><br>
     <a href="index.html">← Zurück zur Startseite</a>
   </footer>
@@ -270,7 +271,7 @@ function sendMail(){
   if(!msg){alert('Bitte eine Nachricht eingeben!');return;}
   const sub  = encodeURIComponent('Kontaktanfrage' + (name ? ' von '+name : ''));
   const body = encodeURIComponent('Name: '+name+'\nE-Mail: '+email+'\n\nNachricht:\n'+msg);
-  window.location.href = 'mailto:turnieroffline@gmail.com?subject='+sub+'&body='+body;
+  window.location.href = 'mailto:turnieroffline+kontakt@gmail.com?subject='+sub+'&body='+body;
   const t = document.getElementById('toast');
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 3000);
