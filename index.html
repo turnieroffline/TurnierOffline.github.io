@@ -41,13 +41,14 @@ a{text-decoration:none;color:inherit;}
 /* HERO */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;
   justify-content:center;padding:100px 24px 80px;text-align:center;position:relative;overflow:hidden;}
-.hero-grid{position:absolute;inset:0;
+.hero-grid{position:absolute;inset:0;pointer-events:none;
   background-image:linear-gradient(rgba(255,107,0,.04) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,107,0,.04) 1px,transparent 1px);
   background-size:48px 48px;
   mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 30%,transparent 100%);}
+/* FIX 1: war width:600px — überläuft auf Handy */
 .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);
-  width:600px;height:400px;
+  width:min(600px,100vw);height:400px;
   background:radial-gradient(ellipse,rgba(255,107,0,.13) 0%,transparent 70%);pointer-events:none;}
 .hero-tag{font-size:.72rem;letter-spacing:4px;color:var(--or);
   background:var(--ord);border:1px solid rgba(255,107,0,.25);
@@ -137,6 +138,8 @@ h1 em{color:var(--or);font-style:normal;}
   padding:32px 40px;text-align:center;max-width:500px;width:100%;}
 .demo-cta h3{font-family:var(--F);letter-spacing:3px;font-size:1.1rem;margin-bottom:8px;}
 .demo-cta p{font-size:.82rem;color:var(--mu2);margin-bottom:20px;line-height:1.7;}
+/* FIX 2: Klasse demo-btns hinzugefügt damit Mobile-Regel greift */
+.demo-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 
 /* FEATURES */
 .feat-sec{padding:96px 24px;background:var(--s1);}
@@ -213,6 +216,7 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
 /* Tablet */
 @media(max-width:768px){
   .mock-pair{grid-template-columns:1fr;}
+  .tv-side{display:none;}
   .feat-grid{grid-template-columns:repeat(2,1fr);}
   .plat-grid{grid-template-columns:repeat(3,1fr);}
   .liz-cards{grid-template-columns:repeat(2,1fr);}
@@ -228,26 +232,27 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
 
   /* Hero */
   .hero{padding:72px 16px 56px;}
-  h1{font-size:clamp(2rem,13vw,3.4rem);letter-spacing:2px;}
+  h1{font-size:clamp(1.4rem,8vw,2.2rem);letter-spacing:1px;word-break:keep-all;}
   .hero-sub{font-size:.88rem;padding:0;}
-  .hero-btns{flex-direction:column;width:100%;max-width:340px;}
+  .hero-tag{font-size:.62rem;letter-spacing:2px;padding:4px 10px;}
+  .hero-btns{flex-direction:column;width:100%;max-width:340px;align-items:stretch;}
   .btn{width:100%;padding:13px 16px;font-size:.8rem;justify-content:center;}
 
   /* Strip */
-  .strip{display:grid;grid-template-columns:1fr 1fr;}
+  .strip{display:grid;grid-template-columns:1fr 1fr;padding:0;}
   .si{border-right:none;border-bottom:1px solid var(--s3);padding:12px 8px;}
   .si:nth-child(odd){border-right:1px solid var(--s3);}
   .si:last-child{grid-column:1/-1;border-bottom:none;}
   .si-n{font-size:1.3rem;}
 
-  /* Mockups */
+  /* Mockups — TV ausblenden, Phone zentrieren */
   .demo-sec{padding:56px 16px;}
-  .mock-pair{gap:16px;}
-  .tv-side{display:none;}  /* KO-Bracket auf Handy ausblenden — zu klein */
-  .phone-wrap{width:min(155px,42vw);}
+  .mock-pair{display:none;}
+  .phone-outer{justify-content:center;}
+
   .demo-cta{padding:22px 16px;}
   .demo-cta h3{font-size:.9rem;}
-  .demo-btns{flex-direction:column;}
+  .demo-btns{flex-direction:column;align-items:stretch;}
   .demo-btns .btn{width:100%;}
 
   /* Features */
@@ -264,7 +269,7 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
   /* Download */
   .dl-sec{padding:56px 16px;}
   .dl-box{padding:30px 16px;}
-  .dl-btns{flex-direction:column;}
+  .dl-btns{flex-direction:column;align-items:stretch;}
   .dl-btns .btn{width:100%;}
 
   /* Lizenz */
@@ -275,11 +280,14 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
   /* Footer */
   footer{padding:28px 16px;}
   footer p{font-size:.7rem;line-height:2;}
+
+  .sw{padding:0 16px;}
 }
 
 /* Klein-Handy */
 @media(max-width:380px){
   h1{font-size:clamp(1.7rem,12vw,2.4rem);}
+  .hero-btns{max-width:100%;}
   .feat-grid{grid-template-columns:1fr;}
   .liz-cards{grid-template-columns:1fr;}
   .plat-grid{grid-template-columns:1fr 1fr;}
@@ -297,19 +305,19 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
     <a href="#features">Features</a>
     <a href="#download">Download</a>
     <a href="kontakt.html">Kontakt</a>
-    <a href="/demo/index.html" target="_blank" class="nav-demo">DEMO →</a>
+    <a href="demo/index.html" target="_blank" class="nav-demo">DEMO →</a>
   </div>
 </nav>
 
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <div class="hero-tag"><span></span>V14 · Stabil · Kostenlos für Vereine</div>
+  <div class="hero-tag"><span></span>V16 · Stabil · Für jeden Verein</div>
   <h1>TURNIER<em>OFFLINE</em></h1>
   <p class="hero-sub">Dein Handy wird zum Turnierserver. Live-Stände, TV-Anzeige, KI-Assistent — komplett ohne Internet.</p>
   <div class="hero-btns">
-    <a href="https://github.com/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 Jetzt herunterladen</a>
-    <a href="/demo/index.html" class="btn btn-demo" target="_blank">👁 Live Demo</a>
+    <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 Jetzt herunterladen</a>
+    <a href="demo/index.html" class="btn btn-demo" target="_blank">👁 Live Demo</a>
     <a href="#features" class="btn btn-line">Features ansehen</a>
   </div>
   <div class="hero-scroll">▼ MEHR</div>
@@ -387,9 +395,9 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
     <div class="demo-cta">
       <h3>LIVE DEMO AUSPROBIEREN</h3>
       <p>Echte App — kein Mockup. Handy- und TV-Ansicht direkt im Browser testen.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="/demo/demo_handy.html" class="btn btn-demo" target="_blank">📱 Handy-Demo</a>
-        <a href="/demo/demo_tv.html" class="btn btn-line" target="_blank">📺 TV-Demo</a>
+      <div class="demo-btns">
+        <a href="demo/demo_handy.html" class="btn btn-demo" target="_blank">📱 Handy-Demo</a>
+        <a href="demo/demo_tv.html" class="btn btn-line" target="_blank">📺 TV-Demo</a>
       </div>
     </div>
   </div>
@@ -442,8 +450,8 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
     <h2>DOWNLOAD</h2>
     <p>Keine Dependencies. Kein Composer, kein npm.<br>ZIP entpacken, Installer starten — fertig.</p>
     <div class="dl-btns">
-      <a href="https://github.com/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
-      <a href="https://github.com/TurnierOffline/" class="btn btn-line" target="_blank">⭐ GitHub</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline/releases/latest" class="btn btn-solid" target="_blank">📥 ZIP herunterladen</a>
+      <a href="https://github.com/TurnierOffline/TurnierOffline" class="btn btn-line" target="_blank">⭐ GitHub</a>
       <a href="anleitung/" class="btn btn-line">📖 Anleitung</a>
     </div>
     <div class="chips">
@@ -465,12 +473,75 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
       <p class="sp" style="margin:0 auto">Für private und Vereinsnutzung kostenlos. Fair und transparent.</p>
     </div>
     <div class="liz-cards">
-      <div class="lc lc-gn"><div class="lc-em">✅</div><div class="lc-t c-gn">KOSTENLOS</div><ul class="lc-list"><li><span style="color:var(--gn)">✓</span>Privatpersonen</li><li><span style="color:var(--gn)">✓</span>Eigener Verein</li><li><span style="color:var(--gn)">✓</span>Eigene Jugendgruppe</li><li><span style="color:var(--gn)">✓</span>Zum Lernen</li></ul></div>
-      <div class="lc lc-gd"><div class="lc-em">💶</div><div class="lc-t c-gd">VEREINSLIZENZ</div><ul class="lc-list"><li><span style="color:var(--gd)">€</span>Fremde Vereine</li><li><span style="color:var(--gd)">€</span>Veranst. mit Einnahmen</li><li><span style="color:var(--gd)">€</span>Support inklusive</li></ul></div>
-      <div class="lc lc-rd"><div class="lc-em">🚫</div><div class="lc-t c-rd">VERBOTEN</div><ul class="lc-list"><li><span style="color:var(--rd)">✗</span>Konkurrenzprodukte</li><li><span style="color:var(--rd)">✗</span>Ohne Lizenzdatei</li><li><span style="color:var(--rd)">✗</span>Mod. Version veröff.</li></ul></div>
-      <div class="lc lc-bl"><div class="lc-em">🔄</div><div class="lc-t c-bl">SHARE-BACK</div><ul class="lc-list"><li><span style="color:var(--bl)">→</span>Verbesserungen teilen</li><li><span style="color:var(--bl)">→</span>Pull Request willkommen</li><li><span style="color:var(--bl)">→</span>Entwickler entscheidet</li></ul></div>
+
+      <!-- KOSTENLOS -->
+      <div class="lc lc-gn">
+        <div class="lc-em">✅</div>
+        <div class="lc-t c-gn">KOSTENLOS</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--gn)">✓</span>Private &amp; interne Turniere</li>
+          <li><span style="color:var(--gn)">✓</span>Eigener Verein (nicht-öffentlich)</li>
+          <li><span style="color:var(--gn)">✓</span>Eigene Jugendgruppe</li>
+          <li><span style="color:var(--gn)">✓</span>Kein Eintrittsgeld</li>
+          <li><span style="color:var(--gn)">✓</span>Zum Lernen &amp; Testen</li>
+        </ul>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(32,212,114,.15);font-size:.72rem;color:var(--mu);line-height:1.6;text-align:left">
+          Kein Konto, kein Abo, kein Ablaufdatum.
+        </div>
+      </div>
+
+      <!-- VEREINSLIZENZ -->
+      <div class="lc lc-gd" style="position:relative">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gd);color:#000;font-family:var(--F);font-size:.55rem;letter-spacing:2px;padding:2px 10px;border-radius:10px;white-space:nowrap">FÜR ÖFFENTLICHE NUTZUNG</div>
+        <div class="lc-em">💼</div>
+        <div class="lc-t c-gd">VEREINSLIZENZ</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--gd)">✓</span>Öffentliche Veranstaltungen</li>
+          <li><span style="color:var(--gd)">✓</span>Turniere mit Eintrittsgeld</li>
+          <li><span style="color:var(--gd)">✓</span>Sponsoren &amp; Einnahmen</li>
+          <li><span style="color:var(--gd)">✓</span>Unternehmen &amp; Gewerbetreibende</li>
+          <li><span style="color:var(--gd)">✓</span>Priorisierter Support</li>
+        </ul>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(240,188,48,.15)">
+          <div style="font-family:var(--F);font-size:.65rem;letter-spacing:2px;color:var(--mu);margin-bottom:6px">PREIS</div>
+          <div style="font-family:var(--F);font-size:1.1rem;color:var(--gd);margin-bottom:4px">AUF ANFRAGE</div>
+          <div style="font-size:.72rem;color:var(--mu);line-height:1.5">Noch kein fester Preis —<br>einfach anfragen.</div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="background:rgba(32,212,114,.07);border:1px solid rgba(32,212,114,.18);border-radius:8px;padding:8px 10px;font-size:.72rem;color:var(--gn);line-height:1.6;text-align:left">
+            🏘 <strong>Lokaler Verein?</strong> Kostenlose Vereinslizenz auf Anfrage möglich.
+          </div>
+        </div>
+        <a href="kontakt.html" style="display:block;margin-top:10px;background:var(--gd);color:#000;font-family:var(--F);font-size:.65rem;letter-spacing:2px;padding:8px;border-radius:8px;text-decoration:none;text-align:center">LIZENZ ANFRAGEN →</a>
+      </div>
+
+      <!-- VERBOTEN -->
+      <div class="lc lc-rd">
+        <div class="lc-em">🚫</div>
+        <div class="lc-t c-rd">NICHT ERLAUBT</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--rd)">✗</span>Als Konkurrenzprodukt verkaufen</li>
+          <li><span style="color:var(--rd)">✗</span>Ohne gültige Lizenz öffentlich nutzen</li>
+          <li><span style="color:var(--rd)">✗</span>Veränderte Version veröffentlichen</li>
+          <li><span style="color:var(--rd)">✗</span>Lizenz weitergeben</li>
+        </ul>
+      </div>
+
+      <!-- SHARE-BACK -->
+      <div class="lc lc-bl">
+        <div class="lc-em">🔄</div>
+        <div class="lc-t c-bl">MITMACHEN</div>
+        <ul class="lc-list">
+          <li><span style="color:var(--bl)">→</span>Verbesserungen &amp; Ideen teilen</li>
+          <li><span style="color:var(--bl)">→</span>Pull Requests willkommen</li>
+          <li><span style="color:var(--bl)">→</span>Entwickler entscheidet über Aufnahme</li>
+          <li><span style="color:var(--bl)">→</span>Credits bleiben erhalten</li>
+        </ul>
+      </div>
+
     </div>
     <div class="liz-links">
+      <p style="font-size:.68rem;color:var(--mu);text-align:center;margin:-8px 0 16px;line-height:1.7">* Ausnahmen werden vom Entwickler entschieden — bei Fragen einfach melden.</p>
       <a href="lizenz/" class="ll"><div class="ll-icon">📄</div><div><div class="ll-t">LIZENZ LESEN</div><div class="ll-d">Vollständige Nutzungsbedingungen</div></div><div class="ll-arr">→</div></a>
       <a href="lizenz/commercial.html" class="ll"><div class="ll-icon">💼</div><div><div class="ll-t">VEREINSLIZENZ</div><div class="ll-d">Konditionen für fremde Vereine</div></div><div class="ll-arr">→</div></a>
     </div>
@@ -482,11 +553,11 @@ footer a{color:var(--mu2);}footer a:hover{color:var(--or);}
   <p>
     Privates Hobbyprojekt · Kein kommerzielles Produkt<br>
     Copyright © 2025–2026 TurnierOffline ·
-    <a href="https://github.com/TurnierOffline/" target="_blank">GitHub</a> ·
+    <a href="https://github.com/TurnierOffline/TurnierOffline" target="_blank">GitHub</a> ·
     <a href="lizenz/">Lizenz</a> ·
     <a href="anleitung/">Anleitung</a> ·
     <a href="kontakt.html">Kontakt</a> ·
-    <a href="/demo/index.html" target="_blank">Demo</a>
+    <a href="demo/index.html" target="_blank">Demo</a>
   </p>
 </footer>
 
