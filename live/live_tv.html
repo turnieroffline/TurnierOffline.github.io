@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Live TV · TurnierOffline</title>
+<style>
+@font-face{font-family:'TH';src:local('Impact'),local('Arial Black');font-weight:700;}
+:root{--or:#ff6b00;--bg:#06080b;--s1:#0c1120;--s2:#121a2e;--s3:#1a2440;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;--gn:#20d472;--rd:#f04060;--gd:#f0bc30;--F:'TH',Impact,'Arial Black',sans-serif;--B:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--B);}
+html{font-size:clamp(9px,1.95vh,19px);}
+
+/* PORTRAIT HINT */
+.portrait-hint{display:none;position:fixed;inset:0;z-index:999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:16px;}
+.ph-icon{font-size:3rem;animation:rot 2s ease-in-out infinite;}
+@keyframes rot{0%,100%{transform:rotate(0)}50%{transform:rotate(-90deg)}}
+.ph-h{font-family:var(--F);letter-spacing:3px;color:var(--or);font-size:1rem;}
+.ph-p{font-size:.82rem;color:var(--mu2);line-height:1.7;}
+.ph-a{color:var(--or);text-decoration:none;border:1px solid rgba(255,107,0,.3);padding:8px 20px;border-radius:8px;font-size:.8rem;}
+@media(orientation:portrait) and (hover:none) and (pointer:coarse){
+  .portrait-hint{display:flex;}
+  .tv-shell{display:none;}
+}
+
+/* TV SHELL */
+.tv-shell{width:100vw;height:100vh;display:grid;grid-template-rows:2.4em 1fr 1.75em;}
+.tv-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 .85em;background:rgba(10,15,28,.97);border-bottom:2px solid var(--or);}
+.tv-hdr-l{display:flex;align-items:center;gap:.55em;}
+.tv-hdr-name{font-family:var(--F);font-size:.68em;letter-spacing:.22em;color:var(--or);}
+.live-pill{font-family:var(--F);font-size:.42em;letter-spacing:.14em;background:var(--gn);color:#000;padding:1px 7px;border-radius:3px;display:none;}
+.tv-hdr-time{font-family:var(--F);font-size:.56em;color:var(--mu);}
+.tv-content{position:relative;overflow:hidden;}
+.tv-page{position:absolute;inset:0;display:none;align-items:center;justify-content:center;}
+.tv-page.ac{display:flex;}
+.tv-ticker{overflow:hidden;background:rgba(10,15,28,.97);border-top:1px solid var(--s2);display:flex;align-items:center;}
+.ticker-inner{white-space:nowrap;font-size:.5em;color:var(--mu2);animation:tick 35s linear infinite;padding-left:100%;font-family:var(--F);letter-spacing:.04em;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* DOTS */
+.dots{position:fixed;bottom:2.6em;right:.55em;z-index:300;display:flex;flex-direction:column;gap:.28em;}
+.dot-i{width:.38em;height:.38em;border-radius:50%;background:var(--s3);cursor:pointer;transition:.3s;}
+.dot-i.ac{background:var(--or);transform:scale(1.7);}
+
+/* BACK BTN */
+.back-btn{position:fixed;top:9px;left:9px;z-index:500;background:rgba(6,8,11,.9);border:1px solid var(--s3);color:var(--mu2);font-size:.55rem;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-decoration:none;font-family:var(--F);}
+.back-btn:hover{color:var(--or);border-color:var(--or);}
+
+.sec-title{font-family:var(--F);font-size:.68em;letter-spacing:.28em;color:var(--or);margin-bottom:.55em;text-align:center;}
+.blink-dot{width:.42em;height:.42em;background:var(--gn);border-radius:50%;display:inline-block;animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* SPIELSTAND */
+.spiel-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.4em;gap:.4em;width:100%;height:100%;}
+.spiel-runde{font-family:var(--F);font-size:.5em;letter-spacing:.3em;color:var(--or);}
+.spiel-teams{display:flex;align-items:center;gap:.9em;width:100%;max-width:680px;}
+.st{flex:1;text-align:center;}
+.st-dot{width:.7em;height:.7em;border-radius:50%;margin:0 auto .25em;}
+.st-name{font-family:var(--F);font-size:.9em;letter-spacing:.07em;}
+.spiel-score{font-family:var(--F);font-size:3.4em;letter-spacing:.38em;color:var(--gd);line-height:1;}
+.spiel-live{display:flex;align-items:center;gap:.3em;font-family:var(--F);font-size:.44em;letter-spacing:.14em;color:var(--gn);}
+.ev-list-tv{width:100%;max-width:480px;margin-top:.3em;}
+.ev-row{display:flex;align-items:center;gap:.4em;padding:.2em .4em;border-bottom:1px solid rgba(255,255,255,.04);font-size:.48em;color:var(--mu2);}
+.ev-row:last-child{border:none;}
+.ev-min{color:var(--gd);min-width:2.3em;font-family:var(--F);}
+
+/* TABELLE */
+.tab-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.tv-tbl{width:100%;max-width:620px;border-collapse:collapse;}
+.tv-tbl th{font-family:var(--F);font-size:.48em;letter-spacing:.16em;color:var(--or);padding:.28em .4em;border-bottom:1px solid var(--s2);font-weight:normal;text-align:center;}
+.tv-tbl td{padding:.4em .4em;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);font-size:.62em;}
+.tv-tbl td.tn{text-align:left;font-family:var(--F);font-size:.7em;}
+.tv-tbl tr.top td{background:rgba(255,107,0,.06);}
+
+/* SPIELPLAN */
+.plan-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.36em;width:100%;max-width:820px;}
+.plan-row{background:var(--s1);border:1px solid var(--s2);border-radius:.32em;padding:.36em .6em;display:flex;align-items:center;gap:.45em;}
+.plan-time{font-family:var(--F);font-size:.48em;color:var(--gd);min-width:3.3em;}
+.plan-match{font-size:.5em;color:var(--tx);flex:1;}
+.pbadge{font-family:var(--F);font-size:.38em;padding:1px 6px;border-radius:3px;letter-spacing:1px;}
+.pb-live{background:var(--gn);color:#000;}
+.pb-done{background:var(--s3);color:var(--mu2);}
+.pb-next{background:rgba(255,107,0,.15);color:var(--or);border:1px solid rgba(255,107,0,.3);}
+
+/* OFFLINE */
+.offline-overlay{display:none;position:fixed;top:3em;left:50%;transform:translateX(-50%);z-index:200;background:rgba(240,64,96,.15);border:1px solid rgba(240,64,96,.3);color:var(--rd);font-family:var(--F);font-size:.5em;letter-spacing:2px;padding:4px 14px;border-radius:6px;}
+</style>
+</head>
+<body>
+
+<div class="portrait-hint">
+  <div class="ph-icon">📱</div>
+  <h2 class="ph-h">QUERFORMAT</h2>
+  <p class="ph-p">TV-Ansicht bitte im Querformat öffnen.<br>Oder zur Handy-Version wechseln.</p>
+  <a href="live_handy.html" class="ph-a">📱 Handy-Ansicht</a>
+</div>
+
+<a href="index.html" class="back-btn">← ZURÜCK</a>
+<div class="offline-overlay" id="offline-overlay">⚠️ OFFLINE</div>
+<div class="dots" id="dots"></div>
+
+<div class="tv-shell">
+<header class="tv-hdr">
+  <div class="tv-hdr-l">
+    <div class="tv-hdr-name" id="ev-name">🏆 TURNIEROFFLINE</div>
+    <div class="live-pill" id="live-pill">LIVE</div>
+  </div>
+  <div class="tv-hdr-time" id="uhr">--:--:--</div>
+</header>
+
+<div class="tv-content">
+
+  <!-- P0: SPIELSTAND -->
+  <div class="tv-page ac" id="p0">
+    <div class="spiel-wrap">
+      <div class="spiel-runde" id="tv-runde">⚽ –</div>
+      <div class="spiel-teams">
+        <div class="st"><div class="st-dot" id="tv-dot1"></div><div class="st-name" id="tv-t1">–</div></div>
+        <div style="text-align:center">
+          <div class="spiel-score" id="tv-score">– : –</div>
+          <div class="spiel-live" id="tv-status"><span class="blink-dot" id="tv-blink" style="display:none"></span><span id="tv-status-txt">Warte…</span></div>
+        </div>
+        <div class="st"><div class="st-dot" id="tv-dot2"></div><div class="st-name" id="tv-t2">–</div></div>
+      </div>
+      <div class="ev-list-tv" id="tv-events"></div>
+    </div>
+  </div>
+
+  <!-- P1: TABELLE -->
+  <div class="tv-page" id="p1">
+    <div class="tab-wrap">
+      <div class="sec-title">📊 TABELLE</div>
+      <table class="tv-tbl">
+        <thead><tr><th>#</th><th style="text-align:left">TEAM</th><th>SP</th><th>G</th><th>U</th><th>N</th><th>TORE</th><th>PKT</th></tr></thead>
+        <tbody id="tv-tab-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- P2: SPIELPLAN -->
+  <div class="tv-page" id="p2">
+    <div class="plan-wrap">
+      <div class="sec-title">📅 SPIELPLAN</div>
+      <div class="plan-grid" id="tv-plan"></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<div class="tv-ticker">
+  <div class="ticker-inner" id="ticker">Lade…</div>
+</div>
+</div><!-- /shell -->
+
+<script>
+const LIVE_JSON = './live.json';
+const PAGES = [{id:'p0',dauer:9000},{id:'p1',dauer:8000},{id:'p2',dauer:8000}];
+let cur=0, timer=null, lastTs=0;
+
+// Dots
+const dotsEl = document.getElementById('dots');
+PAGES.forEach((p,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot-i' + (i===0?' ac':'');
+  d.onclick = () => { clearTimeout(timer); goPage(i); scheduleNext(); };
+  dotsEl.appendChild(d);
+});
+function goPage(i) {
+  PAGES.forEach((p,j) => {
+    document.getElementById(p.id).classList.toggle('ac', j===i);
+    dotsEl.children[j].classList.toggle('ac', j===i);
+  });
+  cur = i;
+}
+function scheduleNext() { timer = setTimeout(() => { goPage((cur+1)%PAGES.length); scheduleNext(); }, PAGES[cur].dauer); }
+scheduleNext();
+
+function iconFor(typ) { return {tor:'⚽',karte_gelb:'🟨',karte_rot:'🟥',wechsel:'🔄'}[typ]||'•'; }
+
+function render(d) {
+  document.getElementById('ev-name').textContent = '🏆 ' + (d.event||'TurnierOffline');
+
+  // Spielstand
+  const s = d.spiel;
+  if (s) {
+    document.getElementById('tv-t1').textContent = s.team1;
+    document.getElementById('tv-t1').style.color = s.farbe1||'var(--tx)';
+    document.getElementById('tv-dot1').style.background = s.farbe1||'var(--mu)';
+    document.getElementById('tv-t2').textContent = s.team2;
+    document.getElementById('tv-t2').style.color = s.farbe2||'var(--tx)';
+    document.getElementById('tv-dot2').style.background = s.farbe2||'var(--mu)';
+    document.getElementById('tv-score').textContent = s.tore1 + ' : ' + s.tore2;
+    document.getElementById('tv-runde').textContent = '⚽ ' + s.runde;
+    const isLive = s.status === 'laufend';
+    document.getElementById('live-pill').style.display = isLive ? '' : 'none';
+    document.getElementById('tv-blink').style.display = isLive ? '' : 'none';
+    document.getElementById('tv-status-txt').textContent = isLive ? 'LIVE' : (s.status==='beendet' ? '✅ BEENDET' : '⏳ BALD · '+(s.startzeit||''));
+  } else {
+    document.getElementById('tv-score').textContent = '– : –';
+    document.getElementById('tv-runde').textContent = '😴 Kein Spiel';
+    document.getElementById('live-pill').style.display = 'none';
+  }
+
+  // Events
+  const evEl = document.getElementById('tv-events');
+  evEl.innerHTML = (d.events||[]).slice(0,5).map(e =>
+    `<div class="ev-row"><span class="ev-min">${e.minute}'</span><span>${iconFor(e.typ)}</span><span>${e.spieler?e.spieler+' – ':''}${e.team}</span></div>`
+  ).join('');
+
+  // Tabelle
+  document.getElementById('tv-tab-body').innerHTML = (d.tabelle||[]).map((r,i) =>
+    `<tr class="${i===0?'top':''}">
+      <td>${i===0?'🥇':('#'+(i+1))}</td>
+      <td class="tn" style="color:${r.farbe}">${r.name}</td>
+      <td>${r.sp}</td><td style="color:var(--gn)">${r.g??'-'}</td><td>${r.u??'-'}</td><td style="color:var(--rd)">${r.n??'-'}</td>
+      <td>${r.tore}:${r.gegentore}</td>
+      <td style="font-family:var(--F);color:var(--gd)">${r.pkt}</td>
+    </tr>`
+  ).join('');
+
+  // Spielplan
+  document.getElementById('tv-plan').innerHTML = (d.spielplan||[]).slice(0,8).map(s => {
+    let badge = s.status==='laufend'
+      ? '<span class="pbadge pb-live">🔴 LIVE</span>'
+      : s.status==='beendet'
+      ? `<span class="pbadge pb-done">${s.tore1}:${s.tore2}</span>`
+      : '<span class="pbadge pb-next">⏳</span>';
+    return `<div class="plan-row">
+      <span class="plan-time">${s.zeit||s.runde}</span>
+      <span class="plan-match" style="color:var(--tx)"><span style="color:${s.farbe1}">${s.team1}</span> <span style="color:var(--mu);font-size:.85em">vs</span> <span style="color:${s.farbe2}">${s.team2}</span></span>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  // Ticker
+  const live = d.spiel && d.spiel.status==='laufend'
+    ? `🔴 LIVE: ${d.spiel.team1} ${d.spiel.tore1}:${d.spiel.tore2} ${d.spiel.team2} · ${d.spiel.runde}   `
+    : '';
+  const tab = (d.tabelle||[]).slice(0,5).map((r,i)=>`${i+1}.${r.name} ${r.pkt}Pkt`).join(' · ');
+  const txt = live + tab;
+  document.getElementById('ticker').textContent = txt + '     ' + txt;
+}
+
+async function fetchData() {
+  try {
+    const r = await fetch(LIVE_JSON + '?t=' + Date.now());
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (d.ts !== lastTs) { render(d); lastTs = d.ts; }
+    document.getElementById('offline-overlay').style.display = 'none';
+  } catch(e) {
+    document.getElementById('offline-overlay').style.display = 'block';
+  }
+  setTimeout(fetchData, 15000);
+}
+
+// Uhr
+(function uhr(){
+  const el=document.getElementById('uhr'),d=new Date(),p=n=>String(n).padStart(2,'0');
+  el.textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  setTimeout(uhr,1000);
+})();
+
+fetchData();
+</script>
+</body>
+</html>
