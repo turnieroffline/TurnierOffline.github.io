@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard · TurnierOffline V16</title>
+<style>
+:root{--or:#ff6b00;--or2:#ff9340;--bg:#060810;--s1:#0c1120;--s2:#121a2e;--s3:#1a2440;--s4:#222e50;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;--gn:#20d472;--gd:#f0bc30;--rd:#f04060;--bl:#3b82f6;--F:'Impact','Arial Black',sans-serif;--B:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--rad:10px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:15px;}
+body{font-family:var(--B);background:var(--bg);color:var(--tx);min-height:100vh;}
+a{color:var(--or);text-decoration:none;cursor:pointer;}
+a:hover{color:var(--or2);}
+.anav{position:sticky;top:0;z-index:200;display:flex;align-items:center;flex-wrap:nowrap;gap:2px;padding:0 16px;height:52px;background:rgba(6,8,16,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,107,0,.15);}
+.anav-brand{font-family:var(--F);font-size:.85rem;letter-spacing:3px;color:var(--or);white-space:nowrap;padding:0 12px 0 0;flex-shrink:0;cursor:pointer;}
+.anav-links{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none;}
+.anav-links::-webkit-scrollbar{display:none;}
+.anav-links a{font-size:.72rem;color:var(--mu2);padding:5px 9px;border-radius:7px;white-space:nowrap;transition:.15s;letter-spacing:.5px;}
+.anav-links a:hover{color:var(--tx);background:rgba(255,255,255,.05);}
+.anav-links a.on{color:var(--or);background:rgba(255,107,0,.1);}
+.anav-links a.ki-link{color:#a78bfa;}
+.anav-links a.ki-link.on{color:#a78bfa;background:rgba(167,139,250,.1);}
+.anav-end{display:flex;align-items:center;gap:8px;margin-left:8px;padding-left:8px;border-left:1px solid var(--s3);flex-shrink:0;}
+.anav-end a{font-size:.72rem;color:var(--mu2);padding:4px 8px;border-radius:6px;white-space:nowrap;}
+.anav-end a:hover{color:var(--tx);}
+.nav-stats{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.stat-chip{display:inline-flex;align-items:center;gap:4px;font-size:.65rem;padding:3px 8px;border-radius:20px;border:1px solid var(--s3);color:var(--mu2);white-space:nowrap;}
+.stat-chip .sv{font-family:var(--F);font-size:.75rem;}
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;padding:6px;background:none;border:none;cursor:pointer;flex-shrink:0;margin-left:auto;}
+.nav-burger span{display:block;height:2px;width:100%;background:var(--mu2);border-radius:2px;transition:.25s;}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--or);}
+.nav-burger.open span:nth-child(2){opacity:0;}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--or);}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+.card{background:var(--s1);border:1px solid var(--s3);border-radius:var(--rad);padding:20px;margin-bottom:16px;}
+.card-title{font-family:var(--F);font-size:.8rem;letter-spacing:3px;color:var(--or);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--s3);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.stat-box{background:var(--s2);border:1px solid var(--s3);border-radius:var(--rad);padding:16px;text-align:center;}
+.stat-num{font-family:var(--F);font-size:2rem;letter-spacing:2px;color:var(--or);}
+.stat-lbl{font-size:.65rem;letter-spacing:3px;color:var(--mu);margin-top:4px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.78rem;font-family:var(--F);letter-spacing:1.5px;transition:.15s;white-space:nowrap;text-decoration:none;}
+.btn-or{background:var(--or);color:#fff;}.btn-or:hover{background:var(--or2);}
+.btn-gn{background:rgba(32,212,114,.15);color:var(--gn);border:1px solid rgba(32,212,114,.3);}.btn-gn:hover{background:rgba(32,212,114,.25);}
+.btn-rd{background:rgba(240,64,96,.12);color:var(--rd);border:1px solid rgba(240,64,96,.25);}.btn-rd:hover{background:rgba(240,64,96,.22);}
+.btn-gd{background:rgba(240,188,48,.12);color:var(--gd);border:1px solid rgba(240,188,48,.3);}.btn-gd:hover{background:rgba(240,188,48,.22);}
+.btn-line{background:transparent;color:var(--mu2);border:1px solid var(--s3);}.btn-line:hover{border-color:var(--or);color:var(--tx);}
+.btn-sm{padding:6px 12px;font-size:.7rem;}.btn-lg{padding:12px 24px;font-size:.85rem;}.btn-full{width:100%;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:.72rem;letter-spacing:2px;color:var(--mu2);margin-bottom:5px;}
+.inp{width:100%;padding:9px 12px;border-radius:7px;background:var(--s2);border:1px solid var(--s3);color:var(--tx);font-size:.85rem;font-family:var(--B);transition:.15s;outline:none;}
+.inp:focus{border-color:var(--or);background:var(--s1);}
+select.inp{cursor:pointer;}
+textarea.inp{min-height:90px;resize:vertical;}
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+.tbl th{text-align:left;padding:8px 10px;font-size:.65rem;letter-spacing:2px;color:var(--mu);border-bottom:1px solid var(--s3);font-weight:normal;}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(26,36,64,.6);}
+.tbl tr:hover td{background:rgba(255,107,0,.03);}
+.tbl tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.65rem;letter-spacing:1px;font-family:var(--F);}
+.badge-gn{background:rgba(32,212,114,.15);color:var(--gn);}
+.badge-rd{background:rgba(240,64,96,.12);color:var(--rd);}
+.badge-gd{background:rgba(240,188,48,.12);color:var(--gd);}
+.badge-or{background:rgba(255,107,0,.12);color:var(--or);}
+.alert{padding:10px 14px;border-radius:8px;font-size:.82rem;margin-bottom:14px;}
+.alert-ok{background:rgba(32,212,114,.1);border:1px solid rgba(32,212,114,.25);color:var(--gn);}
+.alert-err{background:rgba(240,64,96,.1);border:1px solid rgba(240,64,96,.25);color:var(--rd);}
+.alert-inf{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--bl);}
+.score-inp{width:56px;text-align:center;font-family:var(--F);font-size:1.4rem;letter-spacing:2px;color:var(--gd);padding:6px;background:var(--s2);border:1px solid var(--s3);border-radius:7px;outline:none;}
+.score-inp:focus{border-color:var(--or);}
+.live-score{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;}
+.live-team{flex:1;}
+.live-team-name{font-family:var(--F);font-size:1rem;letter-spacing:2px;}
+.live-score-num{font-family:var(--F);font-size:3rem;letter-spacing:12px;color:var(--gd);}
+.toggle{position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--s3);border-radius:11px;transition:.25s;}
+.toggle input:checked~.toggle-track{background:var(--or);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.25s;}
+.toggle input:checked~.toggle-thumb{left:21px;}
+.tv-seitencard{background:var(--s2);border:1px solid var(--s3);border-radius:9px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
+.tv-sc-drag{color:var(--s4);cursor:grab;font-size:1.1rem;padding-top:2px;user-select:none;}
+.tv-sc-icon{font-size:1.2rem;flex-shrink:0;padding-top:1px;}
+.tv-sc-info{flex:1;min-width:0;}
+.tv-sc-title{font-family:var(--F);font-size:.72rem;letter-spacing:2px;margin-bottom:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.tv-sc-desc{font-size:.75rem;color:var(--mu2);line-height:1.5;}
+.tv-sc-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.tv-sc-tag{font-family:var(--F);font-size:.55rem;letter-spacing:1px;padding:2px 7px;border-radius:3px;}
+.tag-aktiv{background:rgba(32,212,114,.12);color:var(--gn);border:1px solid rgba(32,212,114,.25);}
+.tag-inhalt{background:rgba(240,188,48,.1);color:var(--gd);border:1px solid rgba(240,188,48,.2);}
+.tag-leer{background:rgba(240,64,96,.08);color:var(--rd);border:1px solid rgba(240,64,96,.2);}
+.dauer-btns{display:flex;gap:3px;flex-wrap:wrap;}
+.dauer-btn{padding:3px 8px;border-radius:4px;font-family:var(--F);font-size:.58rem;background:var(--s3);border:1px solid var(--s4);color:var(--mu2);cursor:pointer;transition:.15s;}
+.dauer-btn.ac,.dauer-btn:hover{background:var(--or);color:#fff;border-color:var(--or);}
+.ko-viz{display:flex;gap:16px;overflow-x:auto;padding:4px 0;}
+.ko-runde-col{min-width:155px;}
+.ko-runde-label{font-family:var(--F);font-size:.62rem;letter-spacing:2px;color:var(--or);margin-bottom:8px;}
+.ko-card{background:var(--s2);border:1px solid var(--s3);border-radius:7px;overflow:hidden;margin-bottom:7px;}
+.ko-tr{display:flex;align-items:center;gap:7px;padding:6px 10px;border-bottom:1px solid var(--s3);font-size:.78rem;}
+.ko-tr:last-child{border:none;}
+.ko-tr.win{color:var(--gn);}
+.ko-sc{font-family:var(--F);color:var(--gd);margin-left:auto;font-size:.85rem;}
+.page-section{display:none;}
+.page-section.ac{display:block;}
+@media(max-width:900px){.grid3{grid-template-columns:1fr 1fr;}.grid4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){
+  html{font-size:14px;}.wrap{padding:12px 12px 80px;}
+  .anav-links{display:none;}.anav-end{display:none;}.nav-stats{display:none;}
+  .nav-burger{display:flex;}
+  .anav.open{position:fixed;top:0;left:0;right:0;bottom:0;flex-direction:column;align-items:stretch;flex-wrap:nowrap;height:100svh;overflow-y:auto;z-index:500;background:var(--s1);padding:0 0 32px;}
+  .anav.open .anav-brand{padding:14px 16px;border-bottom:1px solid var(--s3);display:flex;align-items:center;position:sticky;top:0;background:var(--s1);z-index:1;}
+  .anav.open .nav-burger{position:absolute;top:8px;right:12px;}
+  .anav.open .nav-stats{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1px solid var(--s3);}
+  .anav.open .anav-links{display:flex;flex-direction:column;flex:none;overflow:visible;padding:8px 0;}
+  .anav.open .anav-links a{padding:13px 16px;font-size:.88rem;border-radius:0;border-bottom:1px solid rgba(26,36,64,.5);display:flex;align-items:center;gap:8px;}
+  .anav.open .anav-links a.on{background:rgba(255,107,0,.08);border-left:3px solid var(--or);padding-left:13px;}
+  .anav.open .anav-end{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--s3);padding:8px 0;}
+  .anav.open .anav-end a{padding:12px 16px;border-bottom:1px solid rgba(26,36,64,.4);}
+  .grid2,.grid3,.grid4{grid-template-columns:1fr;}
+  .card{padding:14px;}
+  .score-inp{width:48px;font-size:1.2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav class="anav" id="anav">
+  <a class="anav-brand" onclick="goPage('dashboard')">🏆 T.OFFLINE V16</a>
+  <div class="nav-stats">
+    <div class="stat-chip">📱 <span class="sv">12</span></div>
+    <div class="stat-chip">⚡ <span class="sv" id="sv-ms" style="color:var(--gn)">38</span><span style="font-size:.6rem;color:var(--mu)">ms</span></div>
+  </div>
+  <div class="anav-links">
+    <a onclick="goPage('dashboard')" class="on" id="nl-dashboard">📊 Dashboard</a>
+    <a onclick="goPage('teams')" id="nl-teams">👥 Teams</a>
+    <a onclick="goPage('ko')" id="nl-ko">⚙️ KO-Setup</a>
+    <a onclick="goPage('live')" id="nl-live">⚽ Live</a>
+    <a onclick="goPage('spielplan')" id="nl-spielplan">📅 Spielplan</a>
+    <a onclick="goPage('ki')" id="nl-ki" class="ki-link">🤖 KI</a>
+    <a onclick="goPage('werbung')" id="nl-werbung">📢 Werbung</a>
+    <a onclick="goPage('ansagen')" id="nl-ansagen">🔊 Ansagen</a>
+    <a onclick="goPage('notfall')" id="nl-notfall">🚨 Notfall</a>
+    <a onclick="goPage('texte')" id="nl-texte">📄 Texte</a>
+    <a onclick="goPage('sieger')" id="nl-sieger">🏆 Sieger</a>
+    <a onclick="goPage('export')" id="nl-export">💾 Export</a>
+    <a onclick="goPage('qr')" id="nl-qr">🔳 QR-Codes</a>
+    <a onclick="goPage('tvseiten')" id="nl-tvseiten">📺 TV Seiten</a>
+    <a onclick="goPage('settings')" id="nl-settings">⚙️ Settings</a>
+  </div>
+  <div class="anav-end">
+    <a href="demo_tv.html" target="_blank">📺 TV ↗</a>
+    <a href="#">📱 Handy ↗</a>
+    <span style="font-size:.68rem;color:var(--gd);padding:4px 8px;border:1px solid rgba(240,188,48,.25);border-radius:6px;font-family:var(--F);letter-spacing:1px">DEMO</span>
+  </div>
+  <button class="nav-burger" id="navBurger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="page-section ac" id="page-dashboard"><div class="wrap">
+  <div class="grid4" style="margin-bottom:12px">
+    <div class="stat-box"><div class="stat-num">8</div><div class="stat-lbl">TEAMS</div></div>
+    <div class="stat-box"><div class="stat-num">12</div><div class="stat-lbl">SPIELE</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--gn)">1</div><div class="stat-lbl">LIVE</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--mu2)">7</div><div class="stat-lbl">BEENDET</div></div>
+  </div>
+  <div class="grid4" style="margin-bottom:20px">
+    <div class="stat-box" style="border-color:rgba(32,212,114,.2)"><div class="stat-num" style="color:var(--gn)">12</div><div class="stat-lbl">AKTIVE GÄSTE</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--mu2)">12</div><div class="stat-lbl">HANDYS (60s)</div></div>
+    <div class="stat-box" style="border-color:rgba(32,212,114,.2)"><div class="stat-num" style="color:var(--gn)">38</div><div class="stat-lbl">DELAY (ms)</div></div>
+    <div class="stat-box" style="border-color:rgba(32,212,114,.2)"><div class="stat-num">✅</div><div class="stat-lbl">SERVER</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">⚽ AKTUELLES SPIEL</div>
+      <div style="text-align:center;padding:16px 0">
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px">
+          <div><div style="width:10px;height:10px;border-radius:50%;background:#4488ff;margin:0 auto 6px"></div><div style="font-size:1rem;font-family:var(--F)">BLAU FC</div></div>
+          <div style="font-family:var(--F);font-size:2rem;letter-spacing:8px;color:var(--gd)">2 : 1</div>
+          <div><div style="width:10px;height:10px;border-radius:50%;background:#ff4444;margin:0 auto 6px"></div><div style="font-size:1rem;font-family:var(--F)">ROT UTD</div></div>
+        </div>
+        <span class="badge badge-gn">🔴 LIVE · HALBFINALE</span>
+        <div style="margin-top:14px"><a onclick="goPage('live')" class="btn btn-or btn-sm">Live verwalten →</a></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🚀 SCHNELLZUGRIFF</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a onclick="goPage('live')" class="btn btn-or btn-full">⚽ Live-Eingabe</a>
+        <a onclick="goPage('teams')" class="btn btn-line btn-full">👥 Teams verwalten</a>
+        <a onclick="goPage('ko')" class="btn btn-line btn-full">⚙️ KO-Setup</a>
+        <a onclick="goPage('qr')" class="btn btn-line btn-full">🔳 QR-Code anzeigen</a>
+        <a onclick="goPage('notfall')" class="btn btn-rd btn-sm btn-full">🚨 Notfall / Info</a>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between"><span>📅 SPIELÜBERSICHT</span><div style="display:flex;gap:6px"><span class="badge badge-gn">1 Live</span><span class="badge badge-or">4 Geplant</span><span class="badge" style="background:var(--s3);color:var(--mu2)">7 Fertig</span></div></div>
+    <div style="overflow-x:auto"><table class="tbl">
+      <thead><tr><th>#</th><th>Team 1</th><th>Erg.</th><th>Team 2</th><th>Runde</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--mu);font-size:.72rem">1</td><td>Blau FC</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--gd)">3:1</td><td>Weiß SV</td><td style="color:var(--mu);font-size:.75rem">Viertelfinale</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">2</td><td>Rot UTD</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--gd)">2:0</td><td>Lila FC</td><td style="color:var(--mu);font-size:.75rem">Viertelfinale</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">3</td><td>Grün SC</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--gd)">1:0</td><td>Orange SV</td><td style="color:var(--mu);font-size:.75rem">Viertelfinale</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">4</td><td>Gelb VfB</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--gd)">2:1</td><td>Cyan SC</td><td style="color:var(--mu);font-size:.75rem">Viertelfinale</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr style="background:rgba(32,212,114,.02)"><td style="color:var(--mu);font-size:.72rem">5</td><td style="color:var(--gn)">Blau FC</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--gd)">2:1</td><td style="color:var(--rd)">Rot UTD</td><td style="color:var(--mu);font-size:.75rem">Halbfinale</td><td><span class="badge badge-gn">LIVE</span></td><td><a onclick="goPage('live')" class="btn btn-gn btn-sm">⚽</a></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">6</td><td>Grün SC</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--mu)">–:–</td><td>Gelb VfB</td><td style="color:var(--mu);font-size:.75rem">Halbfinale</td><td><span class="badge badge-or">–</span></td><td><a class="btn btn-or btn-sm">▶</a></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">7</td><td style="color:var(--mu)">Verlierer HF1</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--mu)">–:–</td><td style="color:var(--mu)">Verlierer HF2</td><td style="color:var(--mu);font-size:.75rem">Platz 3</td><td><span class="badge badge-or">–</span></td><td></td></tr>
+        <tr><td style="color:var(--mu);font-size:.72rem">8</td><td style="color:var(--mu)">Sieger HF1</td><td style="font-family:var(--F);letter-spacing:4px;color:var(--mu)">–:–</td><td style="color:var(--mu)">Sieger HF2</td><td style="color:var(--gd);font-size:.75rem">🏆 Finale</td><td><span class="badge badge-or">–</span></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card"><div class="card-title">ℹ️ TURNIER-INFO</div><div class="grid2"><div>
+    <p style="font-size:.75rem;color:var(--mu2)">📛 Name: <strong style="color:var(--tx)">KLJB Turnier 2026</strong></p>
+    <p style="font-size:.75rem;color:var(--mu2);margin-top:6px">📍 Ort: <strong style="color:var(--tx)">Vereinsheim Musterstadt</strong></p>
+    <p style="font-size:.75rem;color:var(--mu2);margin-top:6px">📅 Datum: <strong style="color:var(--tx)">06.03.2026</strong></p>
+  </div><div><a onclick="goPage('settings')" class="btn btn-line btn-sm">⚙️ Einstellungen</a></div></div></div>
+</div></div>
+
+<!-- TEAMS -->
+<div class="page-section" id="page-teams"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">➕ TEAM HINZUFÜGEN</div>
+      <div class="fg"><label>TEAMNAME *</label><input class="inp" placeholder="z.B. Blau FC"></div>
+      <div class="fg"><label>KÜRZEL</label><input class="inp" maxlength="5" placeholder="BFC"></div>
+      <div class="fg"><label>GRUPPE</label><select class="inp"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+      <div class="fg"><label>TEAMFARBE</label><input class="inp" type="color" value="#3b82f6" style="height:44px;padding:4px"></div>
+      <button class="btn btn-or btn-full">Team hinzufügen</button>
+    </div>
+    <div class="card"><div class="card-title">👥 TEAMS (8)</div>
+      <table class="tbl">
+        <thead><tr><th>Name</th><th>Kürzel</th><th>Gr.</th><th>Farbe</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Blau FC</td><td style="color:var(--mu)">BFC</td><td><span class="badge badge-or">A</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#4488ff;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Rot UTD</td><td style="color:var(--mu)">RUT</td><td><span class="badge badge-or">A</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#ff4444;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Grün SC</td><td style="color:var(--mu)">GRN</td><td><span class="badge badge-or">B</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#22bb55;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Gelb VfB</td><td style="color:var(--mu)">GEL</td><td><span class="badge badge-or">B</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#f5c518;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Weiß SV</td><td style="color:var(--mu)">WSV</td><td><span class="badge badge-or">A</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#aaa;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Lila FC</td><td style="color:var(--mu)">LFC</td><td><span class="badge badge-or">B</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#aa44ff;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Orange SV</td><td style="color:var(--mu)">ORG</td><td><span class="badge badge-or">A</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#ff8800;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td>Cyan SC</td><td style="color:var(--mu)">CYN</td><td><span class="badge badge-or">B</span></td><td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#44bbbb;border:1px solid var(--s3)"></span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></div>
+
+<!-- LIVE -->
+<div class="page-section" id="page-live"><div class="wrap">
+  <div class="alert alert-ok">✅ Spiel gestartet!</div>
+  <div class="card"><div class="card-title">⚽ SPIEL AUSWÄHLEN</div>
+    <div style="display:flex;gap:8px">
+      <select class="inp" style="flex:1"><option>Blau FC vs Rot UTD · Halbfinale 🔴</option><option>Grün SC vs Gelb VfB · Halbfinale</option><option>Sieger HF1 vs Sieger HF2 · Finale</option></select>
+      <button class="btn btn-or">Öffnen</button>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="live-score">
+        <div class="live-team"><div style="width:12px;height:12px;border-radius:50%;background:#4488ff;margin:0 auto 6px"></div><div class="live-team-name" style="color:#4488ff">BLAU FC</div></div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px"><input class="score-inp" value="2"><span style="font-family:var(--F);font-size:1.5rem;color:var(--mu)">:</span><input class="score-inp" value="1"></div>
+          <div style="text-align:center;margin-top:8px"><span class="badge badge-gn">🔴 LIVE · 73'</span></div>
+        </div>
+        <div class="live-team"><div style="width:12px;height:12px;border-radius:50%;background:#ff4444;margin:0 auto 6px"></div><div class="live-team-name" style="color:#ff4444">ROT UTD</div></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px">
+        <button class="btn btn-gn btn-sm">▶ Start</button>
+        <button class="btn btn-line btn-sm">⏸ Pause</button>
+        <button class="btn btn-rd btn-sm">⏹ Ende</button>
+        <button class="btn btn-line btn-sm" style="color:var(--mu)">↺ Reset</button>
+      </div>
+      <div style="border-top:1px solid var(--s3);padding-top:16px">
+        <div style="font-size:.65rem;letter-spacing:3px;color:var(--mu);margin-bottom:12px">EREIGNIS EINTRAGEN</div>
+        <div class="fg"><label>SPIELER</label><input class="inp" placeholder="Name des Spielers" value="Müller"></div>
+        <div style="display:flex;gap:10px">
+          <div class="fg" style="flex:1"><label>MINUTE</label><input class="inp" type="number" value="73"></div>
+          <div class="fg" style="flex:1"><label>TEAM</label><select class="inp"><option>Blau FC</option><option>Rot UTD</option></select></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-gn">⚽ Tor T1</button><button class="btn btn-gn btn-sm">⚽ Tor T2</button>
+          <button class="btn btn-gd btn-sm">🟨 Gelb</button><button class="btn btn-rd btn-sm">🟥 Rot</button>
+          <button class="btn btn-line btn-sm">🔄 Wechsel</button><button class="btn btn-line btn-sm">⏸ Halbzeit</button>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">📋 SPIELVERLAUF</div>
+      <table class="tbl">
+        <thead><tr><th>MIN</th><th>TYP</th><th>SPIELER</th><th>TEAM</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-gn">73'</span></td><td>⚽ Tor</td><td>Müller</td><td style="color:#4488ff">Blau FC</td><td><button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td><span class="badge badge-gd">68'</span></td><td>🟨 Gelb</td><td>Bauer</td><td style="color:#ff4444">Rot UTD</td><td><button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td><span class="badge badge-gn">45'</span></td><td>⚽ Tor</td><td>Braun</td><td style="color:#ff4444">Rot UTD</td><td><button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td><span class="badge badge-gn">12'</span></td><td>⚽ Tor</td><td>Klein</td><td style="color:#4488ff">Blau FC</td><td><button class="btn btn-rd btn-sm">✕</button></td></tr>
+          <tr><td><span class="badge badge-rd">8'</span></td><td>🟥 Rot</td><td>Wagner</td><td style="color:#ff4444">Rot UTD</td><td><button class="btn btn-rd btn-sm">✕</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></div>
+
+<!-- SPIELPLAN -->
+<div class="page-section" id="page-spielplan"><div class="wrap">
+  <div class="card">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between"><span>📅 SPIELPLAN</span><button class="btn btn-or btn-sm">➕ Spiel hinzufügen</button></div>
+    <div class="alert alert-ok">✅ 7 von 12 Spielen abgeschlossen · 1 Spiel läuft gerade</div>
+    <div style="overflow-x:auto"><table class="tbl">
+      <thead><tr><th>ZEIT</th><th>RUNDE</th><th>FELD</th><th>TEAM 1</th><th>ERG.</th><th>TEAM 2</th><th>STATUS</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>10:00</td><td style="color:var(--mu)">Gruppe A</td><td>F1</td><td>Blau FC</td><td style="font-family:var(--F);letter-spacing:3px;color:var(--gd)">3:1</td><td>Weiß SV</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr><td>10:00</td><td style="color:var(--mu)">Gruppe B</td><td>F2</td><td>Rot UTD</td><td style="font-family:var(--F);letter-spacing:3px;color:var(--gd)">2:0</td><td>Lila FC</td><td><span class="badge" style="background:var(--s3);color:var(--mu2)">✓</span></td><td><a class="btn btn-line btn-sm">Edit</a></td></tr>
+        <tr style="background:rgba(32,212,114,.02)"><td>13:30</td><td style="color:var(--or)">Halbfinale</td><td>F1</td><td style="color:var(--gn)">Blau FC</td><td style="font-family:var(--F);letter-spacing:3px;color:var(--gd)">2:1</td><td style="color:var(--rd)">Rot UTD</td><td><span class="badge badge-gn">LIVE 73'</span></td><td><a onclick="goPage('live')" class="btn btn-gn btn-sm">⚽</a></td></tr>
+        <tr><td>14:30</td><td style="color:var(--or)">Halbfinale</td><td>F1</td><td>Grün SC</td><td style="font-family:var(--F);letter-spacing:3px;color:var(--mu)">–:–</td><td>Gelb VfB</td><td><span class="badge badge-or">–</span></td><td><a class="btn btn-or btn-sm">▶ Start</a></td></tr>
+        <tr><td>16:30</td><td style="color:var(--gd)">🏆 Finale</td><td>F1</td><td style="color:var(--mu)">Sieger HF1</td><td style="font-family:var(--F);letter-spacing:3px;color:var(--mu)">–:–</td><td style="color:var(--mu)">Sieger HF2</td><td><span class="badge badge-or">–</span></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div></div>
+
+<!-- KO -->
+<div class="page-section" id="page-ko"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">⚙️ KO-RUNDE HINZUFÜGEN</div>
+      <div class="fg"><label>RUNDEN-LABEL</label><input class="inp" placeholder="z.B. Halbfinale" value="Finale"></div>
+      <div class="fg"><label>MODUS</label><select class="inp"><option>Losziehung (zufällig)</option><option selected>Nach Tabelle (1. vs 2.)</option><option>Manuell wählen</option></select></div>
+      <div class="fg"><label>DATUM / UHRZEIT</label><input class="inp" type="datetime-local" value="2026-03-06T16:30"></div>
+      <div class="fg"><label>FELD</label><select class="inp"><option>Feld 1</option><option>Feld 2</option></select></div>
+      <button class="btn btn-or btn-full">➕ Runde hinzufügen</button>
+      <div style="margin-top:16px;border-top:1px solid var(--s3);padding-top:16px">
+        <div style="font-size:.65rem;letter-spacing:3px;color:var(--mu);margin-bottom:8px">LOSZIEHUNG</div>
+        <button class="btn btn-gd btn-full">🎲 Losziehung starten</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">🏆 KO-BRACKET</div>
+      <div class="ko-viz">
+        <div class="ko-runde-col">
+          <div class="ko-runde-label" style="color:var(--mu2)">VIERTELFINALE</div>
+          <div class="ko-card"><div class="ko-tr win"><div style="width:8px;height:8px;border-radius:50%;background:#4488ff"></div>Blau FC<span class="ko-sc">3 ✓</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#888"></div>Weiß SV<span class="ko-sc">1</span></div></div>
+          <div class="ko-card"><div class="ko-tr win"><div style="width:8px;height:8px;border-radius:50%;background:#ff4444"></div>Rot UTD<span class="ko-sc">2 ✓</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#aa44ff"></div>Lila FC<span class="ko-sc">0</span></div></div>
+          <div class="ko-card"><div class="ko-tr win"><div style="width:8px;height:8px;border-radius:50%;background:#22bb55"></div>Grün SC<span class="ko-sc">1 ✓</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#ff8800"></div>Orange<span class="ko-sc">0</span></div></div>
+          <div class="ko-card"><div class="ko-tr win"><div style="width:8px;height:8px;border-radius:50%;background:#f5c518"></div>Gelb VfB<span class="ko-sc">2 ✓</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#44bbbb"></div>Cyan SC<span class="ko-sc">1</span></div></div>
+        </div>
+        <div class="ko-runde-col">
+          <div class="ko-runde-label" style="color:var(--or)">HALBFINALE</div>
+          <div class="ko-card"><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#4488ff"></div>Blau FC<span class="ko-sc" style="color:var(--gd)">2</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#ff4444"></div>Rot UTD<span class="ko-sc" style="color:var(--gd)">1</span></div></div>
+          <div class="ko-card"><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#22bb55"></div>Grün SC<span class="ko-sc">–</span></div><div class="ko-tr"><div style="width:8px;height:8px;border-radius:50%;background:#f5c518"></div>Gelb VfB<span class="ko-sc">–</span></div></div>
+        </div>
+        <div class="ko-runde-col">
+          <div class="ko-runde-label" style="color:var(--gd)">FINALE · 16:30</div>
+          <div class="ko-card"><div class="ko-tr" style="color:var(--mu)">?<span class="ko-sc">–</span></div><div class="ko-tr" style="color:var(--mu)">?<span class="ko-sc">–</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- KI -->
+<div class="page-section" id="page-ki"><div class="wrap">
+  <div class="alert alert-ok">✅ Regelbasierte KI aktiv — keine externe Verbindung nötig</div>
+  <div class="grid2">
+    <div class="card"><div class="card-title" style="color:#a78bfa">🤖 KI-EINSTELLUNGEN</div>
+      <div class="fg"><label>MODUS</label><select class="inp"><option selected>Regelbasiert (immer aktiv, kein Internet)</option><option>Ollama (lokal, braucht Ollama-Server)</option><option>Deaktiviert</option></select></div>
+      <div class="fg"><label>OLLAMA URL</label><input class="inp" value="http://localhost:11434" style="color:var(--mu)"></div>
+      <button class="btn btn-sm" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)">💾 Speichern</button>
+    </div>
+    <div class="card"><div class="card-title" style="color:#a78bfa">💬 KI TESTEN</div>
+      <div class="fg"><label>FRAGE AN DIE KI</label><input class="inp" value="Wer hat die meisten Tore?"></div>
+      <button class="btn btn-sm" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)">🤖 Antwort generieren</button>
+      <div style="margin-top:14px;padding:12px;background:var(--s2);border:1px solid var(--s3);border-radius:8px;font-size:.82rem;color:var(--mu2);line-height:1.7">
+        <strong style="color:#a78bfa">KI:</strong> Müller (Blau FC) führt mit 3 Toren die Torschützenliste an, gefolgt von Braun (Rot UTD) mit 2 Treffern.
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- WERBUNG -->
+<div class="page-section" id="page-werbung"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">➕ WERBUNG HINZUFÜGEN</div>
+      <p style="font-size:.78rem;color:var(--mu2);margin-bottom:14px;line-height:1.6">Werbeanzeigen erscheinen im Ticker auf TV und auf der Handy-App.</p>
+      <div class="fg"><label>TITEL (Sponsor / Firma)</label><input class="inp" placeholder="z.B. Bäckerei Müller"></div>
+      <div class="fg"><label>TEXT / SLOGAN</label><textarea class="inp" rows="3" placeholder="z.B. Frische Brötchen täglich ab 6 Uhr!"></textarea></div>
+      <button class="btn btn-or btn-full">Hinzufügen</button>
+    </div>
+    <div class="card"><div class="card-title">📢 INFO</div>
+      <div class="alert alert-inf" style="font-size:.78rem"><strong>Wo erscheint Werbung?</strong><br>• TV-Ticker (unten am Bildschirm)<br>• Handy-App zwischen Spielinfos<br><br><strong>Tipp:</strong> Sponsoren können so einfach präsentiert werden — auch ohne Internet!</div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">📋 AKTIVE WERBUNG (3)</div>
+    <table class="tbl">
+      <thead><tr><th>TITEL</th><th>TEXT</th><th>STATUS</th><th></th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--tx)">🍞 Bäckerei Müller</td><td style="color:var(--mu2)">Frisch gebacken seit 1978 · Hauptstraße 12</td><td><span class="badge badge-gn">AKTIV</span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+        <tr><td style="color:var(--tx)">⛽ Autohaus Schmidt</td><td style="color:var(--mu2)">Kostenlose Probefahrt · Am Markt 3</td><td><span class="badge badge-gn">AKTIV</span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+        <tr><td style="color:var(--tx)">🏋️ Fitnessstudio Stark</td><td style="color:var(--mu2)">30 Tage gratis testen · Am Sportpark 5</td><td><span class="badge badge-gn">AKTIV</span></td><td><button class="btn btn-line btn-sm">Edit</button> <button class="btn btn-rd btn-sm">✕</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+
+<!-- ANSAGEN -->
+<div class="page-section" id="page-ansagen"><div class="wrap">
+  <div class="card"><div class="card-title">🔊 DURCHSAGEN</div>
+    <p style="font-size:.78rem;color:var(--mu2);margin-bottom:16px;line-height:1.6">Durchsagen erscheinen als Popup auf allen Handy-Bildschirmen der Zuschauer.</p>
+    <div class="fg"><label>NACHRICHT</label><textarea class="inp" rows="3" placeholder="z.B. Das Finale beginnt in 5 Minuten auf Feld 1!"></textarea></div>
+    <div style="display:flex;gap:8px"><button class="btn btn-or">📢 Sofort senden</button><button class="btn btn-line">Vorschau</button></div>
+  </div>
+  <div class="card"><div class="card-title">📋 LETZTE ANSAGEN</div>
+    <table class="tbl">
+      <thead><tr><th>ZEIT</th><th>NACHRICHT</th><th>EMPFÄNGER</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--mu)">13:15</td><td>Halbfinale 1 beginnt in 15 Minuten auf Feld 1!</td><td><span class="badge badge-gn">12 Handys</span></td></tr>
+        <tr><td style="color:var(--mu)">12:00</td><td>Mittagspause — Essen und Trinken am Stand erhältlich.</td><td><span class="badge badge-gn">8 Handys</span></td></tr>
+        <tr><td style="color:var(--mu)">10:00</td><td>Willkommen beim KLJB Turnier 2026!</td><td><span class="badge badge-gn">5 Handys</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+
+<!-- NOTFALL -->
+<div class="page-section" id="page-notfall"><div class="wrap">
+  <div class="card" style="text-align:center"><div style="display:flex;gap:12px;justify-content:center"><span style="color:var(--mu);font-size:.82rem">Kein Notfall / Info aktiv</span></div></div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">🚨 NOTFALL-ANZEIGE (TV)</div>
+      <p style="font-size:.78rem;color:var(--mu2);margin-bottom:14px;line-height:1.6">Bei Aktivierung erscheint die Notfall-Seite sofort auf <strong style="color:var(--tx)">allen TV-Bildschirmen</strong>.</p>
+      <div class="fg"><label>TITEL</label><input class="inp" value="SPIELUNTERBRECHUNG"></div>
+      <div class="fg"><label>NACHRICHT</label><textarea class="inp">Das Spiel wird kurz unterbrochen. Bitte bleibt ruhig auf euren Plätzen. Wir melden uns in Kürze.</textarea></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-rd btn-lg" style="flex:1">🚨 Notfall aktivieren</button><button class="btn btn-gn btn-sm">✅ Deaktivieren</button></div>
+    </div>
+    <div class="card"><div class="card-title">ℹ️ INFO-POPUP (Handy)</div>
+      <p style="font-size:.78rem;color:var(--mu2);margin-bottom:14px;line-height:1.6">Erscheint als <strong style="color:var(--tx)">Popup auf allen Handy-Bildschirmen</strong>.</p>
+      <div class="fg"><label>TITEL</label><input class="inp" placeholder="z.B. Wichtige Info"></div>
+      <div class="fg"><label>TEXT</label><textarea class="inp" placeholder="Erscheint auf allen Handy-Bildschirmen als Popup"></textarea></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-or" style="flex:1">📢 Info aktivieren</button><button class="btn btn-line">✕ Deaktivieren</button></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- TEXTE -->
+<div class="page-section" id="page-texte"><div class="wrap">
+  <div class="card"><div class="card-title">📄 SEITEN-TEXTE</div>
+    <p style="font-size:.78rem;color:var(--mu2);margin-bottom:16px;line-height:1.6">Diese Texte erscheinen auf der Handy-App unter "Info". Zeilenumbrüche werden übernommen.</p>
+    <div class="fg"><label>SPIELREGELN</label><textarea class="inp" rows="8">1. Spielzeit: 2 × 10 Minuten, 5 Min. Halbzeitpause
+2. Tore: Alle Tore zählen, keine Abseitsregel
+3. Karten: Gelb = Verwarnung, Rot = Feldverweis
+4. Punkte: Sieg = 3 Pkt, Unentschieden = 1 Pkt
+5. Weiterkommen: Top 2 jeder Gruppe ins KO
+6. KO-Runde: Bei Unentschieden Elfmeterschießen
+7. Wechsel: Unbegrenzt, nur bei Spielunterbrechung
+8. Schiedsrichter: Entscheidung ist endgültig</textarea></div>
+    <div class="fg"><label>INFO / WILLKOMMENSTEXT</label><textarea class="inp" rows="5">Willkommen beim KLJB Turnier 2026!
+
+📱 Folge dem Turnier live auf deinem Handy.
+🤖 Frag unseren KI-Assistenten nach Statistiken.
+🏆 Alle Ergebnisse findest du hier in Echtzeit.</textarea></div>
+    <button class="btn btn-or">Texte speichern</button>
+  </div>
+</div></div>
+
+<!-- SIEGER -->
+<div class="page-section" id="page-sieger"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">🏆 SIEGER FESTLEGEN</div>
+      <div class="fg"><label>🥇 PLATZ 1</label><select class="inp"><option>Aus Finale übernehmen (auto)</option><option>Blau FC</option><option>Rot UTD</option></select></div>
+      <div class="fg"><label>🥈 PLATZ 2</label><select class="inp"><option>Aus Finale übernehmen (auto)</option><option>Rot UTD</option></select></div>
+      <div class="fg"><label>🥉 PLATZ 3</label><select class="inp"><option>Aus Platz-3-Spiel (auto)</option><option>Grün SC</option></select></div>
+      <button class="btn btn-or btn-full">💾 Speichern</button>
+      <div style="margin-top:12px"><a href="demo_tv.html" target="_blank" class="btn btn-gd btn-full">📺 Siegerehrung auf TV anzeigen</a></div>
+    </div>
+    <div class="card"><div class="card-title">🎊 VORSCHAU</div>
+      <div style="text-align:center;padding:20px">
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:20px;margin-bottom:20px">
+          <div style="text-align:center"><div style="font-size:2rem">🥈</div><div style="font-family:var(--F);font-size:.78rem;color:var(--mu2);border:1px solid var(--s3);padding:6px 12px;border-radius:6px">ROT UTD</div></div>
+          <div style="text-align:center"><div style="font-size:3rem">🏆</div><div style="font-family:var(--F);font-size:.85rem;color:var(--gd);border:1px solid var(--or);padding:6px 12px;border-radius:6px">BLAU FC</div></div>
+          <div style="text-align:center"><div style="font-size:1.6rem">🥉</div><div style="font-family:var(--F);font-size:.7rem;color:var(--mu);border:1px solid var(--s3);padding:6px 12px;border-radius:6px">GRÜN SC</div></div>
+        </div>
+        <p style="font-size:.72rem;color:var(--mu)">KLJB TURNIER 2026 · TURNIEROFFLINE V16</p>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- EXPORT -->
+<div class="page-section" id="page-export"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">💾 DATEN EXPORTIEREN</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-line btn-full">📊 Tabelle als CSV</button>
+        <button class="btn btn-line btn-full">📅 Spielplan als CSV</button>
+        <button class="btn btn-line btn-full">📋 Alle Ereignisse als CSV</button>
+        <button class="btn btn-or btn-full">📦 Kompletter Export (ZIP)</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">🗄️ DATENBANK</div>
+      <div class="alert alert-inf">ℹ️ Die Datenbank liegt lokal auf dem Gerät und enthält alle Turnierdaten.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button class="btn btn-line btn-full">💾 SQLite-Datei herunterladen</button>
+        <button class="btn btn-rd btn-sm btn-full">🗑 Datenbank zurücksetzen</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- QR CODES -->
+<div class="page-section" id="page-qr"><div class="wrap">
+  <div class="grid2">
+    <div class="card" style="text-align:center"><div class="card-title">📱 HANDY QR-CODE</div>
+      <div style="width:140px;height:140px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:90px;margin:0 auto 16px">📱</div>
+      <div style="font-family:var(--F);font-size:.85rem;color:var(--gn);margin-bottom:4px">192.168.1.100/mobile</div>
+      <div style="font-size:.75rem;color:var(--mu);margin-bottom:16px">Zuschauer scannen → Live, KI, Tipp-Spiel</div>
+      <div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-or btn-sm">🖨 Drucken</button><button class="btn btn-line btn-sm">⬇ Download</button></div>
+    </div>
+    <div class="card" style="text-align:center"><div class="card-title">📺 TV QR-CODE</div>
+      <div style="width:140px;height:140px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:90px;margin:0 auto 16px">📺</div>
+      <div style="font-family:var(--F);font-size:.85rem;color:var(--or);margin-bottom:4px">192.168.1.100/tv</div>
+      <div style="font-size:.75rem;color:var(--mu);margin-bottom:16px">Am TV-Gerät öffnen → Vollbild-Anzeige</div>
+      <div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-or btn-sm">🖨 Drucken</button><button class="btn btn-line btn-sm">⬇ Download</button></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">🔗 WLAN QR-CODE</div>
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+      <div style="width:120px;height:120px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:75px;flex-shrink:0">📶</div>
+      <div>
+        <p style="font-size:.75rem;color:var(--mu2);margin-bottom:4px">WLAN: <strong style="color:var(--tx);font-family:var(--F)">KLJB-Turnier-2026</strong></p>
+        <p style="font-size:.75rem;color:var(--mu2);margin-bottom:14px">Passwort: <strong style="color:var(--tx)">Turnier2026!</strong></p>
+        <button class="btn btn-or btn-sm">🖨 Drucken</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- TV SEITEN -->
+<div class="page-section" id="page-tvseiten"><div class="wrap">
+  <div class="card">
+    <div class="card-title">📺 TV SEITEN-KONFIGURATION</div>
+    <p style="font-size:.78rem;color:var(--mu2);margin-bottom:16px;line-height:1.6">Pro Seite: Zeitgeber · Auto-Scroll-Geschwindigkeit · An/Aus. Leere Seiten werden erkannt — du entscheidest ob sie trotzdem erscheinen.</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--s3)">
+      <span style="font-size:.75rem;color:var(--mu2)"><span style="color:var(--gn);font-family:var(--F)">3</span> Seiten aktiv · Zyklusdauer: <span style="color:var(--or);font-family:var(--F)">45s</span></span>
+      <a href="demo_tv.html" target="_blank" class="btn btn-or btn-sm" style="margin-left:auto">📺 TV-Vorschau</a>
+    </div>
+
+    <div class="tv-seitencard">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">⚽</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Aktuelles Spiel <span class="tv-sc-tag tag-aktiv">Aktiv im Zyklus</span> <span class="tv-sc-tag tag-leer">⚠ Inhalt fehlt</span></div>
+        <div class="tv-sc-desc">Livestand, Tore, Events. Immer befüllt wenn Spiel läuft.</div>
+        <div style="font-size:.72rem;color:var(--rd);margin-top:8px;padding:8px 10px;background:rgba(240,64,96,.06);border:1px solid rgba(240,64,96,.15);border-radius:6px">⚠ Diese Seite hat noch keinen Inhalt. Trotzdem im Zyklus — du kannst sie pausieren.</div>
+        <div class="tv-sc-meta">
+          <div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn">10s</button><button class="dauer-btn ac">15s</button><button class="dauer-btn">30s</button><button class="dauer-btn">60s</button></div>
+          <span style="font-size:.65rem;color:var(--mu)">Scroll: <strong style="color:var(--mu2)">aus</strong></span>
+          <button class="btn btn-rd btn-sm">⏸ Jetzt pausieren</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--gn);font-family:var(--F)">Wird angezeigt</span></div>
+    </div>
+
+    <div class="tv-seitencard">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">🏆</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">KO-Bracket <span class="tv-sc-tag tag-aktiv">Aktiv im Zyklus</span></div>
+        <div class="tv-sc-desc">Spielbaum aller Runden. Leer solange kein KO eingerichtet.</div>
+        <div style="font-size:.72rem;color:var(--gd);margin-top:8px;padding:8px 10px;background:rgba(240,188,48,.05);border:1px solid rgba(240,188,48,.15);border-radius:6px">⚠ Diese Seite kann viel Inhalt haben. Ohne Auto-Scroll können Zuschauer den oberen Teil nicht sehen.</div>
+        <div class="tv-sc-meta">
+          <div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn">10s</button><button class="dauer-btn ac">15s</button><button class="dauer-btn">30s</button><button class="dauer-btn">60s</button></div>
+          <button class="btn btn-gd btn-sm">🔄 Auto-Scroll aktivieren</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--gn);font-family:var(--F)">Wird angezeigt</span></div>
+    </div>
+
+    <div class="tv-seitencard">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">📢</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Werbung / Angebote <span class="tv-sc-tag tag-aktiv">Aktiv im Zyklus</span> <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">Sponsoren und Angebote. Leer wenn keine Werbung eingetragen.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn">10s</button><button class="dauer-btn ac">15s</button><button class="dauer-btn">30s</button><button class="dauer-btn">60s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--gn);font-family:var(--F)">Wird angezeigt</span></div>
+    </div>
+
+    <div class="tv-seitencard" style="opacity:.72">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">📊</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Tabelle <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">Punkte und Tore aller Teams.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn ac">10s</button><button class="dauer-btn">15s</button><button class="dauer-btn">30s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--mu);font-family:var(--F)">Aus</span></div>
+    </div>
+
+    <div class="tv-seitencard" style="opacity:.72">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">📅</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Spielplan <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">Alle geplanten Spiele mit Uhrzeit.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn ac">10s</button><button class="dauer-btn">15s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--mu);font-family:var(--F)">Aus</span></div>
+    </div>
+
+    <div class="tv-seitencard" style="opacity:.72">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">📋</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Turnierregeln <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">Text, Bild oder PDF. Leer wenn noch keine Regeln eingetragen.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn">10s</button><button class="dauer-btn ac">15s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--mu);font-family:var(--F)">Aus</span></div>
+    </div>
+
+    <div class="tv-seitencard" style="opacity:.72">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">📶</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">WLAN / QR-Code <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">WLAN-Name, Passwort und QR-Code zum Verbinden.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn">10s</button><button class="dauer-btn ac">20s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--mu);font-family:var(--F)">Aus</span></div>
+    </div>
+
+    <div class="tv-seitencard" style="opacity:.72">
+      <div class="tv-sc-drag">⠿</div><div class="tv-sc-icon">👥</div>
+      <div class="tv-sc-info">
+        <div class="tv-sc-title">Teams-Übersicht <span class="tv-sc-tag tag-inhalt">✓ Inhalt</span></div>
+        <div class="tv-sc-desc">Alle Teams mit Farben und Logos.</div>
+        <div class="tv-sc-meta"><div class="dauer-btns"><button class="dauer-btn">5s</button><button class="dauer-btn ac">10s</button><button class="dauer-btn">15s</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span style="font-size:.58rem;color:var(--mu);font-family:var(--F)">Aus</span></div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-or">💾 Speichern</button>
+      <div style="margin-left:auto;font-size:.7rem;color:var(--mu2)">🌐 GitHub Pages: <span style="color:var(--gn);font-family:var(--F)">http://192.168.1.100/tv/</span></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- SETTINGS -->
+<div class="page-section" id="page-settings"><div class="wrap">
+  <div class="grid2">
+    <div class="card"><div class="card-title">⚙️ TURNIER-EINSTELLUNGEN</div>
+      <div class="fg"><label>TURNIERNAME</label><input class="inp" value="KLJB Turnier 2026"></div>
+      <div class="fg"><label>ORT</label><input class="inp" value="Vereinsheim Musterstadt"></div>
+      <div class="fg"><label>DATUM</label><input class="inp" type="date" value="2026-03-06"></div>
+      <div class="fg"><label>FELDER (1–4)</label><select class="inp"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+      <div class="fg"><label>TV-ZYKLUSDAUER (Sekunden, Fallback)</label><input class="inp" type="number" value="15"></div>
+      <div class="fg"><label>WLAN-NAME</label><input class="inp" value="KLJB-Turnier-2026"></div>
+      <div class="fg"><label>WLAN-PASSWORT</label><input class="inp" value="Turnier2026!"></div>
+      <button class="btn btn-or">💾 Speichern</button>
+    </div>
+    <div class="card"><div class="card-title">🤖 KI &amp; SICHERHEIT</div>
+      <div class="fg"><label>KI-MODUS</label><select class="inp"><option selected>Regelbasiert (immer aktiv, kein Internet)</option><option>Ollama (lokal)</option><option>Deaktiviert</option></select></div>
+      <div class="fg"><label>OLLAMA URL</label><input class="inp" value="http://localhost:11434"></div>
+      <div class="alert alert-ok" style="margin-top:10px">✅ Regelbasierte KI aktiv · Keine externe Verbindung nötig</div>
+      <div style="border-top:1px solid var(--s3);padding-top:14px;margin-top:14px">
+        <div class="fg"><label>ADMIN-PASSWORT ÄNDERN</label><input class="inp" type="password" placeholder="Neues Passwort"></div>
+        <div class="fg"><label>PASSWORT BESTÄTIGEN</label><input class="inp" type="password" placeholder="Wiederholen"></div>
+        <button class="btn btn-or">🔐 Passwort ändern</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<script>
+function goPage(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('ac'));
+    document.querySelectorAll('.anav-links a').forEach(a => a.classList.remove('on'));
+    const s = document.getElementById('page-' + id);
+    const n = document.getElementById('nl-' + id);
+    if (s) s.classList.add('ac');
+    if (n) n.classList.add('on');
+    document.getElementById('anav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+    window.scrollTo(0, 0);
+}
+function toggleNav() {
+    const nav = document.getElementById('anav');
+    const btn = document.getElementById('navBurger');
+    const open = nav.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+document.addEventListener('click', e => {
+    const nav = document.getElementById('anav');
+    if (nav?.classList.contains('open') && !nav.contains(e.target)) {
+        nav.classList.remove('open');
+        document.getElementById('navBurger').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+});
+document.querySelectorAll('.anav-links a, .anav-end a').forEach(a => {
+    a.addEventListener('click', () => {
+        document.getElementById('anav')?.classList.remove('open');
+        document.getElementById('navBurger')?.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+});
+document.querySelectorAll('.dauer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.closest('.dauer-btns').querySelectorAll('.dauer-btn').forEach(b => b.classList.remove('ac'));
+        btn.classList.add('ac');
+    });
+});
+// Live ms simulieren
+(function tick() {
+    const ms = 25 + Math.floor(Math.random() * 45);
+    const el = document.getElementById('sv-ms');
+    if (el) { el.textContent = ms; el.style.color = ms < 80 ? 'var(--gn)' : 'var(--gd)'; }
+    setTimeout(tick, 5000);
+})();
+</script>
+</body>
+</html>
