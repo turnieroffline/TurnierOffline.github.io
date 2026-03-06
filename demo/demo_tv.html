@@ -2,398 +2,429 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>TurnierOffline – TV Demo</title>
 <style>
-  @font-face{font-family:'Black Han Sans';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');font-weight:900;}
-  @font-face{font-family:'DM Sans';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');font-weight:300 400 600 700;}
-</style>
-<style>
-:root {
-  --ak:#ff6b00; --bg:#06080b; --bg2:#0d1117; --bg3:#161b22; --bg4:#21262d;
-  --txt:#dde4ef; --dim:#6b7280; --gruen:#22d66f; --rot:#f03050; --gold:#f5c518;
-  --H:'Black Han Sans',sans-serif; --B:'DM Sans',sans-serif;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--B);}
+@font-face{font-family:'TH';src:local('Impact'),local('Arial Black');font-weight:700;}
+@font-face{font-family:'TB';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');}
+:root{--or:#ff6b00;--bg:#06080b;--s1:#0c1120;--s2:#121a2e;--s3:#1a2440;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;--gn:#20d472;--rd:#f04060;--gd:#f0bc30;--bl:#3b82f6;--F:'TH',Impact,'Arial Black',sans-serif;--B:'TB','Segoe UI',Arial,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--B);}
+html{font-size:clamp(9px,1.95vh,19px);}
+@media(max-height:360px){html{font-size:clamp(8px,1.7vh,13px);}}
+.portrait-hint{display:none;position:fixed;inset:0;z-index:999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:16px;}
+.ph-icon{font-size:3rem;animation:rot 2s ease-in-out infinite;}
+@keyframes rot{0%,100%{transform:rotate(0)}50%{transform:rotate(-90deg)}}
+.ph-h{font-family:var(--F);letter-spacing:3px;color:var(--or);font-size:1rem;}
+.ph-p{font-size:.82rem;color:var(--mu2);line-height:1.7;}
+@media(orientation:portrait) and (hover:none) and (pointer:coarse){.portrait-hint{display:flex;}.tv-shell{display:none;}}
+.back-btn{position:fixed;top:9px;left:9px;z-index:500;background:rgba(6,8,11,.9);border:1px solid var(--s3);color:var(--mu2);font-size:.55rem;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-decoration:none;font-family:var(--F);transition:.15s;}
+.back-btn:hover{color:var(--or);border-color:var(--or);}
+.page-label{position:fixed;top:9px;right:9px;z-index:500;background:rgba(6,8,11,.9);border:1px solid var(--s3);color:var(--mu);font-size:.5rem;letter-spacing:2px;padding:4px 10px;border-radius:6px;font-family:var(--F);}
+.dots{position:fixed;bottom:2.6em;right:.55em;z-index:300;display:flex;flex-direction:column;gap:.28em;}
+.dot-i{width:.38em;height:.38em;border-radius:50%;background:var(--s3);cursor:pointer;transition:.3s;}
+.dot-i.ac{background:var(--or);transform:scale(1.7);}
+.tv-shell{width:100vw;height:100vh;display:grid;grid-template-rows:2.4em 1fr 1.75em;}
+.tv-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 .85em;background:rgba(10,15,28,.97);border-bottom:2px solid var(--or);}
+.tv-hdr-l{display:flex;align-items:center;gap:.55em;}
+.tv-hdr-name{font-family:var(--F);font-size:.68em;letter-spacing:.22em;color:var(--or);}
+.live-pill{font-family:var(--F);font-size:.42em;letter-spacing:.14em;background:var(--gn);color:#000;padding:1px 7px;border-radius:3px;}
+.tv-hdr-time{font-family:var(--F);font-size:.56em;color:var(--mu);}
+.tv-ticker{overflow:hidden;background:rgba(10,15,28,.97);border-top:1px solid var(--s2);display:flex;align-items:center;}
+.ticker-inner{white-space:nowrap;font-size:.5em;color:var(--mu2);animation:tick 32s linear infinite;padding-left:100%;font-family:var(--F);letter-spacing:.04em;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tv-content{position:relative;overflow:hidden;}
+.tv-page{position:absolute;inset:0;display:none;align-items:center;justify-content:center;}
+.tv-page.ac{display:flex;}
+.blink-dot{width:.42em;height:.42em;background:var(--gn);border-radius:50%;display:inline-block;animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.sec-title{font-family:var(--F);font-size:.68em;letter-spacing:.28em;color:var(--or);margin-bottom:.55em;text-align:center;}
 
-/* ── TV LAYOUT: Header / Content / Footer ── */
-.tv-wrap{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
+/* SPIELSTAND */
+.spiel-grid{display:grid;grid-template-columns:1fr 195px;width:100%;height:100%;}
+.spiel-main{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.4em;gap:.4em;}
+.spiel-runde{font-family:var(--F);font-size:.5em;letter-spacing:.3em;color:var(--or);}
+.spiel-teams{display:flex;align-items:center;gap:.9em;width:100%;max-width:640px;}
+.st{flex:1;text-align:center;}
+.st-dot{width:.7em;height:.7em;border-radius:50%;margin:0 auto .25em;}
+.st-name{font-family:var(--F);font-size:.9em;letter-spacing:.07em;}
+.spiel-score{font-family:var(--F);font-size:3.4em;letter-spacing:.38em;color:var(--gd);line-height:1;}
+.spiel-live{display:flex;align-items:center;gap:.3em;font-family:var(--F);font-size:.44em;letter-spacing:.14em;color:var(--gn);}
+.ev-list{width:100%;max-width:460px;margin-top:.3em;}
+.ev-row{display:flex;align-items:center;gap:.4em;padding:.2em .4em;border-bottom:1px solid rgba(255,255,255,.04);font-size:.48em;color:var(--mu2);}
+.ev-row:last-child{border:none;}
+.ev-min{color:var(--gd);min-width:2.3em;font-family:var(--F);}
+.spiel-side{background:rgba(10,15,28,.6);border-left:1px solid var(--s2);display:flex;flex-direction:column;padding:.5em .55em;gap:.45em;overflow:hidden;}
+.side-h{font-family:var(--F);font-size:.43em;letter-spacing:.18em;color:var(--or);}
+.ko-mini{background:var(--s1);border:1px solid var(--s2);border-radius:.28em;overflow:hidden;margin-bottom:.25em;}
+.ko-mini-t{display:flex;align-items:center;gap:.28em;padding:.24em .4em;border-bottom:1px solid var(--s2);font-size:.44em;}
+.ko-mini-t:last-child{border:none;}
+.ko-mini-t.w{color:var(--gn);}
+.ko-mini-s{font-family:var(--F);color:var(--gd);margin-left:auto;}
+.cdot{width:.38em;height:.38em;border-radius:50%;flex-shrink:0;}
+.next-list{font-size:.41em;color:var(--mu2);line-height:2.1;}
 
-/* Header */
-.tv-header{background:linear-gradient(135deg,var(--bg2),var(--bg3));border-bottom:2px solid var(--ak);padding:8px 20px;display:flex;align-items:center;gap:16px;}
-.tv-logo-ph{font-size:2rem;}
-.tv-evname{font-family:var(--H);font-size:1.1rem;letter-spacing:4px;color:var(--ak);}
-.tv-evinfo{font-size:.65rem;color:var(--dim);letter-spacing:2px;margin-top:2px;}
-.tv-uhr-wrap{margin-left:auto;text-align:right;}
-.tv-uhr{font-family:var(--H);font-size:1.2rem;letter-spacing:3px;}
-.tv-datum{font-size:.6rem;color:var(--dim);letter-spacing:2px;}
+/* TABELLE */
+.tab-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.tv-tbl{width:100%;max-width:620px;border-collapse:collapse;}
+.tv-tbl th{font-family:var(--F);font-size:.48em;letter-spacing:.16em;color:var(--or);padding:.28em .4em;border-bottom:1px solid var(--s2);font-weight:normal;text-align:center;}
+.tv-tbl td{padding:.4em .4em;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);font-size:.62em;}
+.tv-tbl td.tn{text-align:left;font-family:var(--F);font-size:.7em;}
+.tv-tbl tr:first-child td{background:rgba(255,107,0,.06);}
 
-/* Page title */
-.page-title{font-family:var(--H);font-size:1.1rem;letter-spacing:6px;color:var(--ak);margin-bottom:16px;padding:16px 20px 0;}
+/* KO */
+.ko-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.7em 1.3em;width:100%;height:100%;}
+.ko-rounds{display:flex;gap:1.1em;align-items:flex-start;justify-content:center;width:100%;max-width:820px;}
+.ko-round{flex:1;}
+.ko-rl{font-family:var(--F);font-size:.42em;letter-spacing:.18em;margin-bottom:.35em;}
+.ko-match{background:var(--s1);border:1px solid var(--s2);border-radius:.3em;overflow:hidden;margin-bottom:.32em;}
+.ko-t{display:flex;align-items:center;gap:.32em;padding:.26em .42em;border-bottom:1px solid var(--s2);font-size:.48em;}
+.ko-t:last-child{border:none;}
+.ko-t.w{color:var(--gn);}
+.ko-s{font-family:var(--F);color:var(--gd);margin-left:auto;}
 
-/* ── SCREEN: SPIEL ── */
-.spiel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 20px;height:100%;align-content:start;}
-.score-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--bg4);border-top:3px solid var(--ak);border-radius:14px;padding:20px;text-align:center;grid-column:1/-1;}
-.score-teams-tv{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:8px;}
-.tv-teamname{font-family:var(--H);font-size:1.6rem;letter-spacing:4px;}
-.tv-score{font-family:var(--H);font-size:5rem;color:var(--gold);letter-spacing:12px;line-height:1;}
-.tv-meta{font-size:.75rem;color:var(--gruen);letter-spacing:3px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
-.live-dot{width:8px;height:8px;background:var(--gruen);border-radius:50%;display:inline-block;animation:blink 1s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+/* SPIELPLAN */
+.plan-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.36em;width:100%;max-width:800px;}
+.plan-row{background:var(--s1);border:1px solid var(--s2);border-radius:.32em;padding:.36em .6em;display:flex;align-items:center;gap:.45em;}
+.plan-time{font-family:var(--F);font-size:.48em;color:var(--gd);min-width:3.3em;}
+.plan-match{font-size:.5em;color:var(--tx);flex:1;}
+.plan-match span{color:var(--mu);}
+.plan-feld{font-family:var(--F);font-size:.4em;color:var(--mu);background:var(--s2);padding:1px 5px;border-radius:3px;}
+.pbadge{font-family:var(--F);font-size:.38em;padding:1px 6px;border-radius:3px;letter-spacing:1px;}
+.pb-live{background:var(--gn);color:#000;}
+.pb-done{background:var(--s3);color:var(--mu2);}
+.pb-next{background:rgba(255,107,0,.15);color:var(--or);border:1px solid rgba(255,107,0,.3);}
+.pb-final{background:rgba(240,188,48,.12);color:var(--gd);border:1px solid rgba(240,188,48,.3);}
 
-.events-box{background:var(--bg2);border:1px solid var(--bg4);border-radius:12px;padding:14px;}
-.events-title{font-family:var(--H);font-size:.65rem;letter-spacing:4px;color:var(--ak);margin-bottom:10px;}
-.ev-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg4);font-size:.8rem;}
-.ev-row:last-child{border-bottom:none;}
-.ev-min{font-family:var(--H);color:var(--gold);min-width:32px;}
-.ev-detail{flex:1;}
-.ev-team-tv{font-size:.65rem;color:var(--dim);}
+/* TEAMS */
+.teams-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.teams-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45em;width:100%;max-width:740px;}
+.team-card{background:var(--s1);border:1px solid var(--s2);border-radius:.45em;padding:.5em;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.25em;}
+.team-ball{width:1.7em;height:1.7em;border-radius:50%;border:2px solid rgba(255,255,255,.08);}
+.tcname{font-family:var(--F);font-size:.5em;letter-spacing:.07em;}
+.tinfo{font-size:.4em;color:var(--mu);}
 
-.next-box{background:var(--bg2);border:1px solid var(--bg4);border-radius:12px;padding:14px;}
-.feld2-box{background:var(--bg2);border:1px solid var(--bg4);border-top:2px solid var(--gruen);border-radius:12px;padding:14px;}
+/* REGELN */
+.regeln-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.9em 1.8em;width:100%;height:100%;}
+.regeln-cols{display:flex;gap:1.1em;width:100%;max-width:820px;}
+.regeln-col{flex:1;display:flex;flex-direction:column;gap:.35em;}
+.regel-item{background:var(--s1);border:1px solid var(--s2);border-radius:.32em;padding:.45em .6em;display:flex;gap:.45em;}
+.regel-nr{font-family:var(--F);font-size:.62em;color:var(--or);min-width:1.4em;flex-shrink:0;}
+.regel-text{font-size:.5em;color:var(--mu2);line-height:1.7;}
+.regel-text strong{color:var(--tx);}
 
-/* ── SCREEN: BRACKET ── */
-.bracket-tv{display:flex;align-items:center;gap:16px;padding:12px 20px;height:100%;overflow:hidden;}
-.br-col-tv{display:flex;flex-direction:column;gap:10px;min-width:180px;}
-.br-col-title{font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin-bottom:4px;text-align:center;}
-.br-match-tv{background:var(--bg2);border:1px solid var(--bg4);border-radius:8px;overflow:hidden;}
-.br-match-tv.live{border-color:var(--gruen);box-shadow:0 0 12px rgba(34,198,111,.2);}
-.br-match-tv.done{opacity:.75;}
-.br-team-tv{display:flex;align-items:center;padding:6px 10px;font-size:.8rem;gap:6px;}
-.br-team-tv:first-child{border-bottom:1px solid var(--bg4);}
-.br-team-tv.w{font-weight:700;}
-.br-score-tv{margin-left:auto;font-family:var(--H);font-size:.9rem;color:var(--gold);}
-.br-arrow{font-family:var(--H);font-size:2rem;color:var(--ak);opacity:.4;}
-.trophy-icon{font-size:5rem;opacity:.15;margin:auto;}
-.trophy-icon.won{opacity:1;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05);filter:drop-shadow(0 0 20px var(--gold));}}
+/* WLAN */
+.wlan-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1em;width:100%;height:100%;gap:.55em;}
+.wlan-cards{display:flex;gap:1.4em;align-items:center;justify-content:center;}
+.wlan-card{background:var(--s1);border:1px solid var(--s3);border-radius:.75em;padding:.9em 1.3em;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.4em;}
+.qr-box{width:5.5em;height:5.5em;background:#fff;border-radius:.3em;display:flex;align-items:center;justify-content:center;font-size:3.5em;}
+.wlan-label{font-family:var(--F);font-size:.48em;letter-spacing:.18em;color:var(--or);}
+.wlan-ssid{font-family:var(--F);font-size:.7em;color:var(--tx);}
+.wlan-pw{font-size:.52em;color:var(--mu2);}
+.wlan-url{font-family:var(--F);font-size:.52em;color:var(--gn);}
+.wlan-sub{font-size:.46em;color:var(--mu);text-align:center;max-width:480px;}
 
-/* ── SCREEN: TABELLE ── */
-.tabelle-wrap{padding:12px 20px;height:100%;overflow:hidden;}
-.ztable{width:100%;border-collapse:collapse;font-size:.82rem;}
-.ztable th{font-family:var(--H);font-size:.6rem;letter-spacing:3px;color:var(--dim);text-align:left;padding:6px 10px;border-bottom:1px solid var(--bg4);}
-.ztable td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);}
-.ztable tr:hover td{background:rgba(255,255,255,.02);}
-.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.65rem;}
-.badge-gruen{background:rgba(34,198,111,.15);color:var(--gruen);}
-.badge-gold{background:rgba(245,197,24,.12);color:var(--gold);}
-.badge-dim{background:rgba(255,255,255,.06);color:var(--dim);}
+/* WERBUNG */
+.werb-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.8em;width:100%;height:100%;background:radial-gradient(ellipse at 60% 40%,rgba(255,107,0,.07) 0%,transparent 65%);}
+.werb-slabel{font-family:var(--F);font-size:.46em;letter-spacing:.38em;color:var(--mu);margin-bottom:.9em;}
+.werb-logo{width:5.5em;height:5.5em;border:2px solid var(--s3);border-radius:.75em;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:2.2em;margin-bottom:.65em;}
+.werb-name{font-family:var(--F);font-size:1.4em;letter-spacing:.1em;color:var(--tx);margin-bottom:.28em;text-align:center;}
+.werb-text{font-size:.66em;color:var(--mu2);text-align:center;max-width:460px;line-height:1.8;}
+.werb-badge{margin-top:.75em;background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);color:var(--or);font-family:var(--F);font-size:.41em;letter-spacing:.18em;padding:4px 13px;border-radius:20px;}
 
-/* ── SCREEN: SPIELPLAN ── */
-.spielplan-wrap{padding:12px 20px;height:100%;overflow:hidden;}
+/* SIEGEREHRUNG */
+.sieg-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1em;width:100%;height:100%;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,rgba(255,107,0,.1) 0%,var(--bg) 65%);}
+.kf-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.kf{position:absolute;top:-20px;animation:kfall linear infinite;opacity:.85;}
+@keyframes kfall{to{transform:translateY(105vh) rotate(360deg)}}
+.sieg-t{font-family:var(--F);font-size:.72em;letter-spacing:.38em;color:var(--or);margin-bottom:.45em;z-index:1;}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:1em;z-index:1;}
+.pod-p{text-align:center;}
+.pod-medal{display:block;margin-bottom:.18em;}
+.pod-p:nth-child(2) .pod-medal{font-size:2.9em;animation:pbounce 1.2s ease-in-out infinite;}
+.pod-p:nth-child(1) .pod-medal,.pod-p:nth-child(3) .pod-medal{font-size:1.9em;}
+@keyframes pbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-.38em)}}
+.pod-name{font-family:var(--F);letter-spacing:.07em;padding:.28em .55em;border-radius:.38em;border:1px solid var(--s3);background:var(--s1);white-space:nowrap;}
+.pod-p:nth-child(2) .pod-name{border-color:var(--or);color:var(--gd);font-size:.85em;}
+.pod-p:nth-child(1) .pod-name,.pod-p:nth-child(3) .pod-name{font-size:.68em;color:var(--mu2);}
+.pod-block{width:100%;margin-top:.26em;border-radius:0 0 .28em .28em;}
+.pod-p:nth-child(1) .pod-block{height:1.5em;background:var(--s3);}
+.pod-p:nth-child(2) .pod-block{height:3em;background:var(--or);}
+.pod-p:nth-child(3) .pod-block{height:.9em;background:var(--s3);}
+.sieg-ev{font-family:var(--F);font-size:.44em;letter-spacing:.28em;color:var(--mu);margin-top:.9em;z-index:1;}
 
-/* ── SCREEN: WERBUNG ── */
-.werbung-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px 20px;height:100%;align-content:start;}
-.werb-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;}
-.werb-icon{font-size:3.5rem;}
-.werb-title{font-family:var(--H);font-size:1rem;letter-spacing:3px;}
-.werb-text{font-size:.8rem;color:var(--dim);line-height:1.6;}
-
-/* ── SCREEN: VERBINDEN ── */
-.verbinden-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;padding:20px;}
-.qr-placeholder{width:180px;height:180px;background:var(--bg2);border:2px solid var(--bg4);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:5rem;}
-.wlan-info{text-align:center;}
-.wlan-ssid{font-family:var(--H);font-size:1.8rem;letter-spacing:4px;color:var(--ak);}
-.wlan-pw{font-size:1rem;color:var(--dim);margin-top:6px;font-family:var(--H);letter-spacing:3px;}
-.scan-hint{font-size:.72rem;color:var(--dim);letter-spacing:2px;}
-
-/* Footer-Ticker */
-.tv-footer{background:var(--bg2);border-top:1px solid var(--bg4);overflow:hidden;padding:5px 0;height:32px;}
-.ticker-track{white-space:nowrap;overflow:hidden;}
-.ticker-inner{display:inline-block;animation:ticker 25s linear infinite;font-size:.72rem;color:var(--dim);padding-left:100%;}
-@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* Progress bar */
-.progress-bar{position:fixed;bottom:32px;left:0;height:3px;background:var(--ak);z-index:100;transition:width linear;}
-
-/* Screen selector (für Demo) */
-.demo-ctrl{position:fixed;top:4px;right:8px;display:flex;gap:4px;z-index:200;flex-wrap:wrap;justify-content:flex-end;}
-.ctrl-btn{background:rgba(6,8,11,.85);border:1px solid var(--bg4);border-radius:6px;padding:3px 8px;font-size:.62rem;color:var(--dim);cursor:pointer;transition:all .15s;}
-.ctrl-btn:hover,.ctrl-btn.active{border-color:var(--ak);color:var(--ak);}
+/* NOTFALL */
+.notfall-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;text-align:center;padding:1.8em;background:radial-gradient(ellipse at center,rgba(240,64,96,.13) 0%,var(--bg) 65%);}
+.nf-icon{font-size:3em;animation:nshake .5s infinite;}
+@keyframes nshake{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.nf-titel{font-family:var(--F);font-size:1.6em;letter-spacing:.16em;color:var(--rd);margin:.25em 0;text-shadow:0 0 40px rgba(240,64,96,.4);}
+.nf-text{font-size:.68em;color:var(--tx);max-width:560px;line-height:1.85;}
+.nf-sub{font-family:var(--F);font-size:.4em;letter-spacing:.28em;color:var(--mu);margin-top:1.1em;}
 </style>
 </head>
 <body>
-
-<div class="demo-ctrl"><a href="../" style="background:rgba(255,107,0,.2);color:#ff6b00;border:1px solid rgba(255,107,0,.3);border-radius:6px;padding:4px 10px;font-size:.65rem;letter-spacing:1px;text-decoration:none;">← HOME</a>
-  <div class="ctrl-btn active" onclick="showPage('spiel',this)">⚽ Spiel</div>
-  <div class="ctrl-btn" onclick="showPage('bracket',this)">🏆 Bracket</div>
-  <div class="ctrl-btn" onclick="showPage('tabelle',this)">📊 Tabelle</div>
-  <div class="ctrl-btn" onclick="showPage('spielplan',this)">📅 Spielplan</div>
-  <div class="ctrl-btn" onclick="showPage('werbung',this)">🍔 Werbung</div>
-  <div class="ctrl-btn" onclick="showPage('verbinden',this)">📶 WLAN</div>
-  <div class="ctrl-btn auto-btn" onclick="toggleAuto()">▶ Auto</div>
+<div class="portrait-hint">
+  <div class="ph-icon">📱</div>
+  <h2 class="ph-h">QUERFORMAT</h2>
+  <p class="ph-p">Drehe dein Handy ins Querformat<br>um die TV-Ansicht zu sehen.</p>
 </div>
+<a href="index.html" class="back-btn">← ZURÜCK</a>
+<div class="page-label" id="plabel">SPIELSTAND</div>
+<div class="dots" id="dots"></div>
+<div class="tv-shell">
+<header class="tv-hdr">
+  <div class="tv-hdr-l">
+    <div class="tv-hdr-name">🏆 KLJB TURNIER 2026</div>
+    <div class="live-pill">LIVE</div>
+  </div>
+  <div class="tv-hdr-time" id="uhr">--:--</div>
+</header>
+<div class="tv-content" id="content">
 
-<div class="progress-bar" id="progress" style="width:0%;transition-duration:20s;"></div>
-
-<div class="tv-wrap">
-  <!-- HEADER -->
-  <div class="tv-header">
-    <div class="tv-logo-ph">🏆</div>
-    <div>
-      <div class="tv-evname">TURNIER 2025</div>
-      <div class="tv-evinfo">Musterdorf · 14.06.2025</div>
+<!-- P0: SPIELSTAND -->
+<div class="tv-page ac" id="p0">
+<div class="spiel-grid">
+  <div class="spiel-main">
+    <div class="spiel-runde">⚽ HALBFINALE · FELD 1</div>
+    <div class="spiel-teams">
+      <div class="st"><div class="st-dot" style="background:#4488ff"></div><div class="st-name" style="color:#4488ff">BLAU FC</div></div>
+      <div style="text-align:center">
+        <div class="spiel-score">2 : 1</div>
+        <div class="spiel-live"><span class="blink-dot"></span> LIVE · 73'</div>
+      </div>
+      <div class="st"><div class="st-dot" style="background:#ff4444"></div><div class="st-name" style="color:#ff4444">ROT UTD</div></div>
     </div>
-    <div class="tv-uhr-wrap">
-      <div class="tv-uhr" id="tv-uhr">--:--:--</div>
-      <div class="tv-datum" id="tv-dat">SA --.--.----</div>
+    <div class="ev-list">
+      <div class="ev-row"><span class="ev-min">73'</span><span>⚽</span><span>Müller – Blau FC</span></div>
+      <div class="ev-row"><span class="ev-min">68'</span><span>🟨</span><span>Bauer – Rot United</span></div>
+      <div class="ev-row"><span class="ev-min">45'</span><span>⚽</span><span>Braun – Rot United</span></div>
+      <div class="ev-row"><span class="ev-min">12'</span><span>⚽</span><span>Klein – Blau FC</span></div>
+      <div class="ev-row"><span class="ev-min">8'</span><span>🟥</span><span>Wagner – Rot United (Platzverweis)</span></div>
     </div>
   </div>
-
-  <!-- PAGES -->
-  <div style="overflow:hidden;position:relative;">
-
-    <!-- SPIEL -->
-    <div class="page" id="p-spiel">
-      <div class="page-title">⚽ AKTUELLES SPIEL</div>
-      <div class="spiel-grid">
-        <div class="score-box">
-          <div class="score-teams-tv">
-            <div class="tv-teamname" style="color:#4499ff;text-align:left">BLAU FC</div>
-            <div>
-              <div class="tv-score">2 : 1</div>
-              <div class="tv-meta"><div class="live-dot"></div> HALBFINALE · <span id="spielmin">73</span>'</div>
-            </div>
-            <div class="tv-teamname" style="color:#ff4444;text-align:right">ROT UNITED</div>
-          </div>
-        </div>
-        <div class="events-box">
-          <div class="events-title">EREIGNISSE</div>
-          <div class="ev-row"><span class="ev-min">73'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Blau FC<div class="ev-team-tv">M. Müller</div></div></div>
-          <div class="ev-row"><span class="ev-min">68'</span><span>🟨</span><div class="ev-detail">Gelbe Karte<div class="ev-team-tv">Rot United – T. Bauer</div></div></div>
-          <div class="ev-row"><span class="ev-min">45'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Rot United<div class="ev-team-tv">K. Braun</div></div></div>
-          <div class="ev-row"><span class="ev-min">12'</span><span>⚽</span><div class="ev-detail"><strong>Tor!</strong> Blau FC<div class="ev-team-tv">A. Klein</div></div></div>
-        </div>
-        <div class="feld2-box">
-          <div class="events-title">● FELD 2 · GLEICHZEITIG</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-            <span style="font-family:var(--H);font-size:1rem;color:#22aa44">GRÜN SV</span>
-            <span style="font-family:var(--H);font-size:1.4rem;color:var(--gold);letter-spacing:4px">0 : 0</span>
-            <span style="font-family:var(--H);font-size:1rem">WEISS FC</span>
-            <span style="margin-left:auto;font-size:.7rem;color:var(--gruen)"><div class="live-dot" style="display:inline-block"></div> 34'</span>
-          </div>
-        </div>
-        <div class="next-box">
-          <div class="events-title">NÄCHSTES</div>
-          <div style="font-size:.85rem;">🏆 Finale: <strong>16:30 Uhr</strong><br><span style="color:var(--dim);font-size:.72rem;">Sieger dieses Spiels</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BRACKET -->
-    <div class="page" id="p-bracket" style="display:none">
-      <div class="page-title">🏆 KO-BRACKET</div>
-      <div class="bracket-tv">
-        <div class="br-col-tv">
-          <div class="br-col-title">VIERTELFINALE</div>
-          <div class="br-match-tv done">
-            <div class="br-team-tv w"><span style="color:#4499ff">Blau FC</span><span class="br-score-tv">3 🏆</span></div>
-            <div class="br-team-tv"><span>Gelb SV</span><span class="br-score-tv">1</span></div>
-          </div>
-          <div class="br-match-tv done">
-            <div class="br-team-tv w"><span style="color:#ff4444">Rot United</span><span class="br-score-tv">2 🏆</span></div>
-            <div class="br-team-tv"><span>Lila FC</span><span class="br-score-tv">0</span></div>
-          </div>
-          <div class="br-match-tv done">
-            <div class="br-team-tv w"><span style="color:#22aa44">Grün SV</span><span class="br-score-tv">4:3 🏆</span></div>
-            <div class="br-team-tv"><span>Orange FC</span><span class="br-score-tv">–</span></div>
-          </div>
-          <div class="br-match-tv done">
-            <div class="br-team-tv w"><span>Weiß FC</span><span class="br-score-tv">2 🏆</span></div>
-            <div class="br-team-tv"><span>Schwarz SV</span><span class="br-score-tv">1</span></div>
-          </div>
-        </div>
-        <div class="br-arrow">›</div>
-        <div class="br-col-tv">
-          <div class="br-col-title">HALBFINALE ● JETZT</div>
-          <div class="br-match-tv live">
-            <div class="br-team-tv"><span style="color:#4499ff">Blau FC</span><span class="br-score-tv" style="color:var(--gruen)">2 ●</span></div>
-            <div class="br-team-tv"><span style="color:#ff4444">Rot United</span><span class="br-score-tv">1</span></div>
-          </div>
-          <div class="br-match-tv live">
-            <div class="br-team-tv"><span style="color:#22aa44">Grün SV</span><span class="br-score-tv" style="color:var(--gruen)">0 ●</span></div>
-            <div class="br-team-tv"><span>Weiß FC</span><span class="br-score-tv">0</span></div>
-          </div>
-        </div>
-        <div class="br-arrow">›</div>
-        <div class="br-col-tv">
-          <div class="br-col-title">FINALE · 16:30</div>
-          <div class="br-match-tv" style="opacity:.35">
-            <div class="br-team-tv"><span>Sieger HF 1</span><span class="br-score-tv">?</span></div>
-            <div class="br-team-tv"><span>Sieger HF 2</span><span class="br-score-tv">?</span></div>
-          </div>
-        </div>
-        <div class="br-arrow">›</div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div class="trophy-icon">🏆</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TABELLE -->
-    <div class="page" id="p-tabelle" style="display:none">
-      <div class="page-title">📊 ERGEBNISSE</div>
-      <div class="tabelle-wrap">
-        <div style="font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin-bottom:8px;">VIERTELFINALE</div>
-        <table class="ztable">
-          <thead><tr><th>Team 1</th><th>Ergebnis</th><th>Team 2</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">3 : 1</td><td>Gelb SV</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
-            <tr><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">2 : 0</td><td>Lila FC</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
-            <tr><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">1 : 1</td><td>Orange FC</td><td><span class="badge badge-dim">✓ Elfm.</span></td></tr>
-            <tr><td style="font-family:var(--H)">Weiß FC</td><td style="text-align:center;font-family:var(--H);color:var(--gold);letter-spacing:3px">2 : 1</td><td>Schwarz SV</td><td><span class="badge badge-dim">✓ beendet</span></td></tr>
-          </tbody>
-        </table>
-        <div style="font-family:var(--H);font-size:.65rem;letter-spacing:3px;color:var(--ak);margin:14px 0 8px;">HALBFINALE · JETZT</div>
-        <table class="ztable">
-          <tbody>
-            <tr><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="text-align:center;font-family:var(--H);color:var(--gruen);letter-spacing:3px">2 : 1 ●</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td><span class="badge badge-gruen">● laufend 73'</span></td></tr>
-            <tr><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="text-align:center;font-family:var(--H);color:var(--gruen);letter-spacing:3px">0 : 0 ●</td><td style="font-family:var(--H)">Weiß FC</td><td><span class="badge badge-gruen">● laufend 34'</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- SPIELPLAN -->
-    <div class="page" id="p-spielplan" style="display:none">
-      <div class="page-title">📅 SPIELPLAN</div>
-      <div class="spielplan-wrap">
-        <table class="ztable">
-          <thead><tr><th>Zeit</th><th>Runde</th><th>Feld</th><th>Team 1</th><th>Erg.</th><th>Team 2</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td style="color:var(--dim)">09:00</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>1</td><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">3:1</td><td>Gelb SV</td><td><span class="badge badge-dim">✓</span></td></tr>
-            <tr><td style="color:var(--dim)">09:20</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>2</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">2:0</td><td>Lila FC</td><td><span class="badge badge-dim">✓</span></td></tr>
-            <tr><td style="color:var(--dim)">09:40</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>1</td><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">1:1 E.</td><td>Orange FC</td><td><span class="badge badge-dim">✓</span></td></tr>
-            <tr><td style="color:var(--dim)">10:00</td><td style="color:var(--ak);font-size:.7rem">Viertelfinale</td><td>2</td><td style="font-family:var(--H)">Weiß FC</td><td style="font-family:var(--H);color:var(--gold);letter-spacing:3px">2:1</td><td>Schwarz SV</td><td><span class="badge badge-dim">✓</span></td></tr>
-            <tr style="background:rgba(34,198,111,.04)"><td style="color:var(--gruen)">14:00</td><td style="color:var(--ak);font-size:.7rem">Halbfinale</td><td>1</td><td style="color:#4499ff;font-family:var(--H)">Blau FC</td><td style="font-family:var(--H);color:var(--gruen);letter-spacing:3px">2:1 ●</td><td style="color:#ff4444;font-family:var(--H)">Rot United</td><td><span class="badge badge-gruen">● 73'</span> 📺</td></tr>
-            <tr style="background:rgba(34,198,111,.04)"><td style="color:var(--gruen)">14:00</td><td style="color:var(--ak);font-size:.7rem">Halbfinale</td><td>2</td><td style="color:#22aa44;font-family:var(--H)">Grün SV</td><td style="font-family:var(--H);color:var(--gruen);letter-spacing:3px">0:0 ●</td><td style="font-family:var(--H)">Weiß FC</td><td><span class="badge badge-gruen">● 34'</span></td></tr>
-            <tr><td>16:30</td><td style="color:var(--gold);font-size:.7rem">🏆 FINALE</td><td>1</td><td style="color:var(--dim)">Sieger HF1</td><td style="font-family:var(--H);color:var(--dim);letter-spacing:3px">–:–</td><td style="color:var(--dim)">Sieger HF2</td><td><span class="badge badge-gold">16:30</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- WERBUNG -->
-    <div class="page" id="p-werbung" style="display:none">
-      <div class="page-title">🍔 ANGEBOTE & SPONSOREN</div>
-      <div class="werbung-grid">
-        <div class="werb-card" style="border-color:rgba(255,107,0,.3)">
-          <div class="werb-icon">🍔</div>
-          <div class="werb-title">BURGER-STAND</div>
-          <div class="werb-text">Frische Burger, Pommes und Getränke direkt am Hauptfeld. Nur Barzahlung.</div>
-          <div style="font-family:var(--H);color:var(--ak);font-size:.9rem;letter-spacing:2px;">AB 11:00 UHR</div>
-        </div>
-        <div class="werb-card" style="border-color:rgba(245,197,24,.2)">
-          <div class="werb-icon">🏪</div>
-          <div class="werb-title">HAUPTSPONSOR</div>
-          <div class="werb-text">Raiffeisen-Bank Musterdorf unterstützt das Turnier 2025 als Hauptsponsor.</div>
-          <div style="font-family:var(--H);color:var(--gold);font-size:.9rem;letter-spacing:2px;">DANKE! 🏆</div>
-        </div>
-        <div class="werb-card" style="border-color:rgba(34,198,111,.2)">
-          <div class="werb-icon">⚽</div>
-          <div class="werb-title">SPORTVEREIN</div>
-          <div class="werb-text">FC Musterdorf stellt Platz und Equipment. Mitgliedschaft ab 5€/Monat.</div>
-          <div style="font-family:var(--H);color:var(--gruen);font-size:.9rem;letter-spacing:2px;">fc-musterdorf.de</div>
-        </div>
-        <div class="werb-card">
-          <div class="werb-icon">🍺</div>
-          <div class="werb-title">GETRÄNKE-STAND</div>
-          <div class="werb-text">Kaltgetränke, Kaffee und Kuchen. Alle Erlöse gehen an die Vereins-Kasse.</div>
-          <div style="font-family:var(--H);color:var(--dim);font-size:.9rem;letter-spacing:2px;">DANKE FÜR EUREN EINKAUF</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VERBINDEN -->
-    <div class="page" id="p-verbinden" style="display:none">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 60px);gap:24px;padding:20px;">
-        <div style="font-family:var(--H);font-size:1.2rem;letter-spacing:4px;color:var(--ak)">MIT HANDY VERBINDEN</div>
-        <div class="qr-placeholder">📱</div>
-        <div class="wlan-info">
-          <div style="font-size:.7rem;color:var(--dim);letter-spacing:3px;margin-bottom:8px;">WLAN-NETZWERK</div>
-          <div class="wlan-ssid">@TurnierOffline</div>
-          <!-- <div class="wlan-pw">turnier2025</div> -->
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:.72rem;color:var(--dim);letter-spacing:2px;">DANN IM BROWSER:</div>
-          <div style="font-family:var(--H);font-size:1rem;color:var(--ak);margin-top:4px;letter-spacing:2px;">192.168.1.100/mobile</div>
-        </div>
-        <div class="scan-hint">QR-CODE SCANNEN ODER IP EINGEBEN</div>
-      </div>
-    </div>
-
-  </div><!-- /pages -->
-
-  <!-- TICKER FOOTER -->
-  <div class="tv-footer">
-    <div class="ticker-track">
-      <div class="ticker-inner">
-        📡 Blau FC 2:1 Rot United (Halbfinale 73') &nbsp;·&nbsp; Grün SV 0:0 Weiß FC (Halbfinale 34') &nbsp;·&nbsp; Viertelfinale: Blau FC 3:1 Gelb SV &nbsp;·&nbsp; Rot United 2:0 Lila FC &nbsp;·&nbsp; Grün SV 1:1 Orange FC (4:3 Elfm.) &nbsp;·&nbsp; Weiß FC 2:1 Schwarz SV &nbsp;·&nbsp; ⚽ Torschützen: M.Müller 73', K.Braun 45', A.Klein 12' &nbsp;·&nbsp; 🏆 Finale: 16:30 Uhr
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        📡 Blau FC 2:1 Rot United (Halbfinale 73') &nbsp;·&nbsp; Grün SV 0:0 Weiß FC (Halbfinale 34') &nbsp;·&nbsp; Viertelfinale: Blau FC 3:1 Gelb SV &nbsp;·&nbsp; Rot United 2:0 Lila FC &nbsp;·&nbsp; Grün SV 1:1 Orange FC (4:3 Elfm.) &nbsp;·&nbsp; Weiß FC 2:1 Schwarz SV &nbsp;·&nbsp; ⚽ Torschützen: M.Müller 73', K.Braun 45', A.Klein 12' &nbsp;·&nbsp; 🏆 Finale: 16:30 Uhr
-      </div>
+  <div class="spiel-side">
+    <div class="side-h">KO-BRACKET</div>
+    <div class="ko-mini"><div class="ko-mini-t w"><div class="cdot" style="background:#4488ff"></div>Blau FC<span class="ko-mini-s">2 ✓</span></div><div class="ko-mini-t"><div class="cdot" style="background:#ff4444"></div>Rot UTD<span class="ko-mini-s">1</span></div></div>
+    <div class="ko-mini"><div class="ko-mini-t"><div class="cdot" style="background:#22bb55"></div>Grün SC<span class="ko-mini-s">–</span></div><div class="ko-mini-t"><div class="cdot" style="background:#f5c518"></div>Gelb VfB<span class="ko-mini-s">–</span></div></div>
+    <div style="font-family:var(--F);font-size:.38em;color:var(--mu);margin:.3em 0">Finale 16:30</div>
+    <div style="border-top:1px solid var(--s2);padding-top:.45em">
+      <div class="side-h" style="margin-bottom:.28em">NÄCHSTE SPIELE</div>
+      <div class="next-list">14:30 · HF 2 · Grün – Gelb<br>15:30 · Platz 3<br>16:30 · FINALE</div>
     </div>
   </div>
 </div>
+</div>
 
+<!-- P1: TABELLE -->
+<div class="tv-page" id="p1">
+<div class="tab-wrap">
+  <div class="sec-title">📊 ABSCHLUSSTABELLE · GRUPPENPHASE</div>
+  <table class="tv-tbl">
+    <thead><tr><th>#</th><th style="text-align:left">TEAM</th><th>SP</th><th>G</th><th>U</th><th>N</th><th>TORE</th><th>TD</th><th>PKT</th></tr></thead>
+    <tbody>
+      <tr><td>🥇</td><td class="tn">Blau FC</td><td>4</td><td style="color:var(--gn)">3</td><td>0</td><td style="color:var(--rd)">1</td><td>8:3</td><td style="color:var(--gn)">+5</td><td style="font-family:var(--F);color:var(--gd)">9</td></tr>
+      <tr><td style="color:var(--mu)">#2</td><td class="tn">Rot UTD</td><td>4</td><td style="color:var(--gn)">2</td><td>0</td><td style="color:var(--rd)">2</td><td>6:4</td><td style="color:var(--gn)">+2</td><td style="font-family:var(--F);color:var(--gd)">6</td></tr>
+      <tr><td style="color:var(--mu)">#3</td><td class="tn">Grün SC</td><td>4</td><td style="color:var(--gn)">2</td><td>0</td><td style="color:var(--rd)">2</td><td>5:5</td><td>0</td><td style="font-family:var(--F);color:var(--gd)">6</td></tr>
+      <tr><td style="color:var(--mu)">#4</td><td class="tn">Gelb VfB</td><td>4</td><td style="color:var(--gn)">1</td><td>1</td><td style="color:var(--rd)">2</td><td>4:7</td><td style="color:var(--rd)">-3</td><td style="font-family:var(--F);color:var(--gd)">4</td></tr>
+      <tr><td style="color:var(--mu)">#5</td><td class="tn">Weiß SV</td><td>4</td><td style="color:var(--gn)">0</td><td>1</td><td style="color:var(--rd)">3</td><td>3:6</td><td style="color:var(--rd)">-3</td><td style="font-family:var(--F);color:var(--gd)">1</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- P2: KO-BRACKET -->
+<div class="tv-page" id="p2">
+<div class="ko-wrap">
+  <div class="sec-title">🏆 KO-BRACKET</div>
+  <div class="ko-rounds">
+    <div class="ko-round">
+      <div class="ko-rl" style="color:var(--mu2)">VIERTELFINALE</div>
+      <div class="ko-match"><div class="ko-t w"><div class="cdot" style="background:#4488ff"></div>Blau FC<span class="ko-s">3 ✓</span></div><div class="ko-t"><div class="cdot" style="background:#888"></div>Weiß SV<span class="ko-s">1</span></div></div>
+      <div class="ko-match"><div class="ko-t w"><div class="cdot" style="background:#ff4444"></div>Rot UTD<span class="ko-s">2 ✓</span></div><div class="ko-t"><div class="cdot" style="background:#aa44ff"></div>Lila FC<span class="ko-s">0</span></div></div>
+      <div class="ko-match"><div class="ko-t w"><div class="cdot" style="background:#22bb55"></div>Grün SC<span class="ko-s">1 ✓</span></div><div class="ko-t"><div class="cdot" style="background:#ff8800"></div>Orange SV<span class="ko-s">0</span></div></div>
+      <div class="ko-match"><div class="ko-t w"><div class="cdot" style="background:#f5c518"></div>Gelb VfB<span class="ko-s">2 ✓</span></div><div class="ko-t"><div class="cdot" style="background:#44bbbb"></div>Cyan SC<span class="ko-s">1</span></div></div>
+    </div>
+    <div class="ko-round">
+      <div class="ko-rl" style="color:var(--or)">HALBFINALE</div>
+      <div class="ko-match"><div class="ko-t"><div class="cdot" style="background:#4488ff"></div>Blau FC<span class="ko-s" style="color:var(--gd)">2</span></div><div class="ko-t"><div class="cdot" style="background:#ff4444"></div>Rot UTD<span class="ko-s" style="color:var(--gd)">1</span></div></div>
+      <div class="ko-match"><div class="ko-t"><div class="cdot" style="background:#22bb55"></div>Grün SC<span class="ko-s">–</span></div><div class="ko-t"><div class="cdot" style="background:#f5c518"></div>Gelb VfB<span class="ko-s">–</span></div></div>
+    </div>
+    <div class="ko-round">
+      <div class="ko-rl" style="color:var(--gd)">FINALE · 16:30</div>
+      <div class="ko-match"><div class="ko-t" style="color:var(--mu)">Sieger HF 1<span class="ko-s">–</span></div><div class="ko-t" style="color:var(--mu)">Sieger HF 2<span class="ko-s">–</span></div></div>
+      <div class="ko-rl" style="color:var(--gn);margin-top:.45em">PLATZ 3 · 15:30</div>
+      <div class="ko-match"><div class="ko-t" style="color:var(--mu)">Verlierer HF 1<span class="ko-s">–</span></div><div class="ko-t" style="color:var(--mu)">Verlierer HF 2<span class="ko-s">–</span></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- P3: SPIELPLAN -->
+<div class="tv-page" id="p3">
+<div class="plan-wrap">
+  <div class="sec-title">📅 SPIELPLAN · HEUTE</div>
+  <div class="plan-grid">
+    <div class="plan-row"><span class="plan-time">10:00</span><span class="plan-match">Blau FC <span>vs</span> Weiß SV</span><span class="plan-feld">F1</span><span class="pbadge pb-done">✓</span></div>
+    <div class="plan-row"><span class="plan-time">10:00</span><span class="plan-match">Rot UTD <span>vs</span> Lila FC</span><span class="plan-feld">F2</span><span class="pbadge pb-done">✓</span></div>
+    <div class="plan-row"><span class="plan-time">10:45</span><span class="plan-match">Grün SC <span>vs</span> Orange SV</span><span class="plan-feld">F1</span><span class="pbadge pb-done">✓</span></div>
+    <div class="plan-row"><span class="plan-time">10:45</span><span class="plan-match">Gelb VfB <span>vs</span> Cyan SC</span><span class="plan-feld">F2</span><span class="pbadge pb-done">✓</span></div>
+    <div class="plan-row"><span class="plan-time">13:30</span><span class="plan-match">HF 1 · Blau FC <span>vs</span> Rot UTD</span><span class="plan-feld">F1</span><span class="pbadge pb-live">🔴 LIVE</span></div>
+    <div class="plan-row"><span class="plan-time">14:30</span><span class="plan-match">HF 2 · Grün SC <span>vs</span> Gelb VfB</span><span class="plan-feld">F1</span><span class="pbadge pb-next">⏳ Next</span></div>
+    <div class="plan-row"><span class="plan-time">15:30</span><span class="plan-match">Platz 3 · Verlierer HF</span><span class="plan-feld">F1</span><span class="pbadge pb-done" style="background:var(--s2)">–</span></div>
+    <div class="plan-row"><span class="plan-time">16:30</span><span class="plan-match">🏆 FINALE</span><span class="plan-feld">F1</span><span class="pbadge pb-final">Final</span></div>
+  </div>
+</div>
+</div>
+
+<!-- P4: TEAMS-ÜBERSICHT -->
+<div class="tv-page" id="p4">
+<div class="teams-wrap">
+  <div class="sec-title">👥 TEAMS-ÜBERSICHT</div>
+  <div class="teams-grid">
+    <div class="team-card"><div class="team-ball" style="background:#4488ff"></div><div class="tcname" style="color:#4488ff">BLAU FC</div><div class="tinfo">8 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#ff4444"></div><div class="tcname" style="color:#ff4444">ROT UTD</div><div class="tinfo">7 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#22bb55"></div><div class="tcname" style="color:#22bb55">GRÜN SC</div><div class="tinfo">8 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#f5c518"></div><div class="tcname" style="color:#f5c518">GELB VFB</div><div class="tinfo">6 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#888"></div><div class="tcname" style="color:#aaa">WEISS SV</div><div class="tinfo">7 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#aa44ff"></div><div class="tcname" style="color:#aa44ff">LILA FC</div><div class="tinfo">8 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#ff8800"></div><div class="tcname" style="color:#ff8800">ORANGE SV</div><div class="tinfo">7 Spieler</div></div>
+    <div class="team-card"><div class="team-ball" style="background:#44bbbb"></div><div class="tcname" style="color:#44bbbb">CYAN SC</div><div class="tinfo">6 Spieler</div></div>
+  </div>
+</div>
+</div>
+
+<!-- P5: TURNIERREGELN -->
+<div class="tv-page" id="p5">
+<div class="regeln-wrap">
+  <div class="sec-title">📋 TURNIERREGELN</div>
+  <div class="regeln-cols">
+    <div class="regeln-col">
+      <div class="regel-item"><span class="regel-nr">1</span><span class="regel-text"><strong>Spielzeit:</strong> 2 × 10 Minuten, 5 Min. Halbzeitpause</span></div>
+      <div class="regel-item"><span class="regel-nr">2</span><span class="regel-text"><strong>Tore:</strong> Alle Tore zählen, keine Abseitsregel</span></div>
+      <div class="regel-item"><span class="regel-nr">3</span><span class="regel-text"><strong>Karten:</strong> Gelb = Verwarnung, Rot = Feldverweis für restliche Spielzeit</span></div>
+      <div class="regel-item"><span class="regel-nr">4</span><span class="regel-text"><strong>Punkte:</strong> Sieg = 3 Pkt, Unentschieden = 1 Pkt, Niederlage = 0 Pkt</span></div>
+    </div>
+    <div class="regeln-col">
+      <div class="regel-item"><span class="regel-nr">5</span><span class="regel-text"><strong>Weiterkommen:</strong> Top 2 jeder Gruppe ins KO, bei Gleichstand: Tordifferenz</span></div>
+      <div class="regel-item"><span class="regel-nr">6</span><span class="regel-text"><strong>KO-Runde:</strong> Bei Unentschieden direkt Elfmeterschießen (5 Schützen)</span></div>
+      <div class="regel-item"><span class="regel-nr">7</span><span class="regel-text"><strong>Wechsel:</strong> Unbegrenzt, nur bei Spielunterbrechung</span></div>
+      <div class="regel-item"><span class="regel-nr">8</span><span class="regel-text"><strong>Schiedsrichter:</strong> Entscheidung ist endgültig</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- P6: WLAN / QR-CODE -->
+<div class="tv-page" id="p6">
+<div class="wlan-wrap">
+  <div class="sec-title">📶 WLAN &amp; APP-ZUGANG</div>
+  <div class="wlan-cards">
+    <div class="wlan-card">
+      <div class="wlan-label">WLAN VERBINDEN</div>
+      <div class="qr-box">📶</div>
+      <div class="wlan-ssid">KLJB-Turnier-2026</div>
+      <div class="wlan-pw">Passwort: Turnier2026!</div>
+    </div>
+    <div class="wlan-card">
+      <div class="wlan-label">HANDY-APP</div>
+      <div class="qr-box">📱</div>
+      <div class="wlan-url">192.168.1.100/mobile</div>
+      <div class="wlan-pw">Live · KI-Assistent · Tipp-Spiel</div>
+    </div>
+  </div>
+  <div class="wlan-sub">QR-Code scannen oder Adresse im Browser eingeben · Kein Download nötig · Kein Internet erforderlich</div>
+</div>
+</div>
+
+<!-- P7: WERBUNG / ANGEBOTE -->
+<div class="tv-page" id="p7">
+<div class="werb-wrap">
+  <div class="werb-slabel">PRÄSENTIERT VON</div>
+  <div class="werb-logo" id="werb-logo">🍞</div>
+  <div class="werb-name" id="werb-name">BÄCKEREI MÜLLER</div>
+  <div class="werb-text" id="werb-text">Frisch gebacken seit 1978 — jeden Morgen für euch da.<br>Hauptstraße 12 · Musterstadt · Tel. 0123 456789</div>
+  <div class="werb-badge">OFFIZIELLER TURNIERSPONSOR</div>
+</div>
+</div>
+
+<!-- P8: SIEGEREHRUNG -->
+<div class="tv-page" id="p8">
+<div class="sieg-wrap">
+  <div class="kf-layer" id="konfetti"></div>
+  <div class="sieg-t">🏆 SIEGEREHRUNG · KLJB TURNIER 2026</div>
+  <div class="podium">
+    <div class="pod-p"><span class="pod-medal">🥈</span><div class="pod-name" style="color:var(--mu2)">ROT UTD</div><div class="pod-block"></div></div>
+    <div class="pod-p"><span class="pod-medal">🏆</span><div class="pod-name" style="color:var(--gd);border-color:var(--or)">BLAU FC</div><div class="pod-block"></div></div>
+    <div class="pod-p"><span class="pod-medal">🥉</span><div class="pod-name" style="font-size:.65em;color:var(--mu)">GRÜN SC</div><div class="pod-block"></div></div>
+  </div>
+  <div class="sieg-ev">KLJB TURNIER 2026 · POWERED BY TURNIEROFFLINE V16</div>
+</div>
+</div>
+
+<!-- P9: NOTFALL -->
+<div class="tv-page" id="p9">
+<div class="notfall-wrap">
+  <div class="nf-icon">🚨</div>
+  <div class="nf-titel">SPIELUNTERBRECHUNG</div>
+  <div class="nf-text">Das Spiel wird kurz unterbrochen.<br>Bitte bleibt ruhig auf euren Plätzen.<br>Wir melden uns in Kürze mit weiteren Informationen.</div>
+  <div class="nf-sub">TURNIERLEITUNG · KLJB TURNIER 2026</div>
+</div>
+</div>
+
+</div><!-- /content -->
+<div class="tv-ticker">
+  <div class="ticker-inner">🔴 LIVE: Blau FC 2:1 Rot UTD · 73' ⚽ Müller · 68' 🟨 Bauer · ⏳ HF2: Grün vs Gelb 14:30 · Finale 16:30 · 1.Blau 9Pkt · 2.Rot 6Pkt · WLAN: KLJB-Turnier-2026 · Sponsor: Bäckerei Müller &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔴 LIVE: Blau FC 2:1 Rot UTD · 73' ⚽ Müller · 68' 🟨 Bauer · ⏳ HF2: Grün vs Gelb 14:30 · Finale 16:30 · 1.Blau 9Pkt · 2.Rot 6Pkt · WLAN: KLJB-Turnier-2026 · Sponsor: Bäckerei Müller</div>
+</div>
+</div>
 <script>
-// Uhr
-(function(){
-  const T=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  function tick(){
-    const d=new Date(),p=n=>String(n).padStart(2,'0');
-    document.getElementById('tv-uhr').textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-    document.getElementById('tv-dat').textContent=T[d.getDay()]+' '+p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear();
-    setTimeout(tick,1000);
-  }tick();
-})();
-
-// Pages
-const pages=['spiel','bracket','tabelle','spielplan','werbung','verbinden'];
-const durations={spiel:20,bracket:18,tabelle:15,spielplan:15,werbung:12,verbinden:10};
-let curIdx=0, autoTimer=null, autoMode=false;
-
-function showPage(name, btnEl) {
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.ctrl-btn:not(.auto-btn)').forEach(b=>b.classList.remove('active'));
-  document.getElementById('p-'+name).style.display='block';
-  if(btnEl) btnEl.classList.add('active');
-  curIdx = pages.indexOf(name);
-  // Progress bar
-  const dur = (durations[name]||15)*1000;
-  const bar = document.getElementById('progress');
-  bar.style.transition='none'; bar.style.width='0%';
-  setTimeout(()=>{ bar.style.transition='width '+dur+'ms linear'; bar.style.width='100%'; },50);
+const PAGES=[
+  {id:'p0',label:'SPIELSTAND',    dauer:9000},
+  {id:'p1',label:'TABELLE',       dauer:8000},
+  {id:'p2',label:'KO-BRACKET',    dauer:10000},
+  {id:'p3',label:'SPIELPLAN',     dauer:8000},
+  {id:'p4',label:'TEAMS',         dauer:7000},
+  {id:'p5',label:'TURNIERREGELN', dauer:8000},
+  {id:'p6',label:'WLAN / QR',     dauer:8000},
+  {id:'p7',label:'WERBUNG',       dauer:7000},
+  {id:'p8',label:'SIEGEREHRUNG',  dauer:10000},
+  {id:'p9',label:'NOTFALL',       dauer:8000},
+];
+let cur=0,timer=null;
+const dotsEl=document.getElementById('dots');
+PAGES.forEach((p,i)=>{
+  const d=document.createElement('div');
+  d.className='dot-i'+(i===0?' ac':'');
+  d.onclick=()=>{clearTimeout(timer);goPage(i);scheduleNext();};
+  dotsEl.appendChild(d);
+});
+function goPage(i){
+  PAGES.forEach((p,j)=>{
+    document.getElementById(p.id).classList.toggle('ac',j===i);
+    dotsEl.children[j].classList.toggle('ac',j===i);
+  });
+  document.getElementById('plabel').textContent=PAGES[i].label;
+  cur=i;
+  if(i===8)startKonfetti();else stopKonfetti();
 }
-
-function nextPage() {
-  curIdx = (curIdx+1)%pages.length;
-  const name = pages[curIdx];
-  showPage(name);
-  document.querySelectorAll('.ctrl-btn:not(.auto-btn)').forEach((b,i)=>b.classList.toggle('active',i===curIdx));
-  if(autoMode) autoTimer=setTimeout(nextPage,(durations[name]||15)*1000);
-}
-
-function toggleAuto() {
-  autoMode=!autoMode;
-  const btn=document.querySelector('.auto-btn');
-  if(autoMode){
-    btn.textContent='⏸ Auto'; btn.classList.add('active');
-    const dur=(durations[pages[curIdx]]||15)*1000;
-    autoTimer=setTimeout(nextPage,dur);
-  } else {
-    btn.textContent='▶ Auto'; btn.classList.remove('active');
-    clearTimeout(autoTimer);
-  }
-}
-
-// Simulate live minute
-let min=73;
-setInterval(()=>{ min=Math.min(90,min+1); const el=document.getElementById('spielmin'); if(el)el.textContent=min; },20000);
-
-// Init
-showPage('spiel');
+function scheduleNext(){timer=setTimeout(()=>{goPage((cur+1)%PAGES.length);scheduleNext();},PAGES[cur].dauer);}
+scheduleNext();
+let sx=0;
+document.addEventListener('touchstart',e=>sx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>55){clearTimeout(timer);goPage(dx<0?(cur+1)%PAGES.length:(cur-1+PAGES.length)%PAGES.length);scheduleNext();}});
+(function tick(){const el=document.getElementById('uhr');if(el){const d=new Date(),p=n=>String(n).padStart(2,'0');el.textContent=p(d.getHours())+':'+p(d.getMinutes());}setTimeout(tick,1000);})();
+const emojis=['🎉','⭐','🏆','🎊','✨','🥳','🎈','🏅'];
+const kEl=document.getElementById('konfetti');
+let kActive=false;
+function startKonfetti(){if(kActive)return;kActive=true;kEl.innerHTML='';for(let i=0;i<35;i++){const el=document.createElement('div');el.className='kf';el.textContent=emojis[Math.floor(Math.random()*emojis.length)];el.style.left=Math.random()*100+'vw';el.style.fontSize=(.55+Math.random()*.75)+'em';el.style.animationDuration=(3+Math.random()*5)+'s';el.style.animationDelay=(-Math.random()*8)+'s';kEl.appendChild(el);}}
+function stopKonfetti(){kActive=false;kEl.innerHTML='';}
+const werbs=[
+  {logo:'🍞',name:'BÄCKEREI MÜLLER',text:'Frisch gebacken seit 1978 — jeden Morgen für euch da.<br>Hauptstraße 12 · Musterstadt'},
+  {logo:'⛽',name:'AUTOHAUS SCHMIDT',text:'Ihr Partner für Neu- und Gebrauchtwagen.<br>Kostenlose Probefahrt — Am Markt 3 · Musterstadt'},
+  {logo:'🏋️',name:'FITNESSSTUDIO STARK',text:'Stark werden, stark bleiben — 30 Tage gratis testen.<br>Am Sportpark 5 · Musterstadt'},
+];
+let wIdx=0;
+setInterval(()=>{wIdx=(wIdx+1)%werbs.length;const w=werbs[wIdx];document.getElementById('werb-logo').textContent=w.logo;document.getElementById('werb-name').textContent=w.name;document.getElementById('werb-text').innerHTML=w.text;},7000);
 </script>
 </body>
 </html>
