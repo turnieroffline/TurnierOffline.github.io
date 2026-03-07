@@ -1,0 +1,119 @@
+TURNIEROFFLINE SOFTWARE LICENSE
+Version 1.1 — März 2026
+Copyright © 2024–2026 Tobias (turnieroffline@gmail.com)
+
+════════════════════════════════════════════════════════════════════
+KURZFASSUNG
+════════════════════════════════════════════════════════════════════
+
+  ✅  Kostenlos nutzen        — für jeden, ohne Einschränkung
+  ✅  Quellcode einsehen      — GitHub ist öffentlich lesbar
+  ✅  Weitergeben             — unverändert, kostenlos, mit dieser Lizenz
+  ✅  Freiwillig spenden      — ko-fi.com/turnieroffline
+  ✅  Verbesserungen senden   — Pull Requests willkommen
+  ❌  Verkaufen               — weder Original noch Abwandlung
+  ❌  Als eigenes Produkt     — nicht ohne schriftliche Zustimmung
+  ❌  Lizenz entfernen        — Urheberhinweis muss erhalten bleiben
+
+════════════════════════════════════════════════════════════════════
+VOLLSTÄNDIGE LIZENZBEDINGUNGEN
+════════════════════════════════════════════════════════════════════
+
+§ 1  URHEBERRECHT
+
+TurnierOffline ist ein privates Softwareprojekt. Das Urheberrecht
+(§ 2 UrhG) liegt vollständig bei Tobias. Es entsteht automatisch mit
+der Erstellung und bedarf keiner Registrierung.
+
+§ 2  NUTZUNGSRECHT
+
+Jede natürliche oder juristische Person darf TurnierOffline kostenlos
+herunterladen, installieren und nutzen — ohne Registrierung, ohne
+Genehmigung, ohne zeitliche Einschränkung. Dies gilt für private
+Nutzung, Vereine, Schulen, Jugendgruppen und Veranstaltungen jeder Art.
+
+§ 3  WEITERGABE
+
+Die unveränderte Software darf kostenlos weitergegeben werden, sofern:
+
+  a) diese Lizenzdatei unverändert beigefügt wird,
+  b) keine Vergütung verlangt wird,
+  c) der Urheberhinweis sichtbar erhalten bleibt.
+
+§ 4  QUELLCODE UND ÄNDERUNGEN
+
+Der Quellcode ist auf GitHub öffentlich einsehbar. Die Einsichtnahme
+berechtigt nicht zur Veröffentlichung veränderter Versionen als
+eigenständiges Produkt oder unter eigenem Namen.
+
+Verbesserungen und Fehlerbehebungen sind willkommen. Wer Änderungen
+beisteuern möchte, wird gebeten:
+
+  a) einen Pull Request auf GitHub einzureichen, oder
+  b) die Änderungen per E-Mail an turnieroffline@gmail.com zu senden.
+
+Der Urheber entscheidet über die Aufnahme. Wer Beiträge einreicht,
+bestätigt, dass er über die notwendigen Rechte daran verfügt, und
+erteilt dem Projekt ein unwiderrufliches, kostenloses Nutzungsrecht.
+Das Urheberrecht am Beitrag verbleibt beim Beitragenden.
+
+§ 5  VERBOTE
+
+Ohne ausdrückliche schriftliche Zustimmung des Urhebers ist untersagt:
+
+  a) Verkauf, entgeltliche Weitergabe oder kommerzielle Verwertung der
+     Software, unabhängig davon ob verändert oder unverändert.
+
+  b) Veröffentlichung einer veränderten Version als eigenständiges
+     Produkt, unter eigenem Namen oder mit eigenem Branding.
+
+  c) Entfernen, Verändern oder Verbergen von Urheberrechtshinweisen
+     oder Lizenzangaben.
+
+  d) Nutzung der Bezeichnung "TurnierOffline" für eigene Produkte,
+     Dienstleistungen oder Domains ohne Genehmigung.
+
+§ 6  FREIWILLIGE UNTERSTÜTZUNG
+
+Die Software ist kostenlos und bleibt es. Wer das Projekt unterstützen
+möchte, kann dies freiwillig über ko-fi.com/turnieroffline tun.
+
+Freiwillige Zahlungen sind Spenden ohne Gegenleistung. Sie begründen
+keine Ansprüche auf Support, Updates oder sonstige Leistungen und
+stellen keinen Kauf- oder Dienstleistungsvertrag dar (§ 516 BGB).
+
+§ 7  GEWÄHRLEISTUNGSAUSSCHLUSS
+
+Die Software wird in der vorliegenden Form ("as is") bereitgestellt.
+Der Urheber übernimmt keine Gewährleistung für Eignung, Fehlerfreiheit
+oder Verfügbarkeit (§ 523 BGB analog). Nutzung auf eigene Verantwortung.
+
+§ 8  HAFTUNGSBESCHRÄNKUNG
+
+Der Urheber haftet nicht für direkte oder indirekte Schäden aus der
+Nutzung oder Nichtnutzbarkeit der Software, soweit kein Vorsatz oder
+grobe Fahrlässigkeit vorliegt (§ 521 BGB).
+
+§ 9  KONTAKT UND AUSNAHMEN
+
+  E-Mail:  turnieroffline@gmail.com
+  GitHub:  github.com/TurnierOffline/TurnierOffline
+  Web:     turnieroffline.github.io
+
+Anfragen werden in der Regel innerhalb von 7 Werktagen beantwortet.
+
+§ 10  ANWENDBARES RECHT
+
+Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist
+der Wohnsitz des Urhebers, soweit gesetzlich zulässig.
+
+§ 11  SALVATORISCHE KLAUSEL
+
+Sollte eine Bestimmung dieser Lizenz unwirksam sein, bleibt der Rest
+unberührt. Die unwirksame Bestimmung wird durch eine wirksame ersetzt,
+die dem wirtschaftlichen Zweck am nächsten kommt.
+
+════════════════════════════════════════════════════════════════════
+Privates Hobbyprojekt · Kein kommerzielles Produkt
+turnieroffline.github.io · ko-fi.com/turnieroffline
+════════════════════════════════════════════════════════════════════

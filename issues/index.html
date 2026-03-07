@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Issues & Support · TurnierOffline V16</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="description" content="Bug melden, Feature wünschen oder Fragen stellen — TurnierOffline Support & Issues.">
+<style>
+:root{
+  --or:#ff6b00;--or2:#ff9340;--bg:#060810;--s1:#0c1120;--s2:#121a2e;
+  --s3:#1a2440;--s4:#222e50;--tx:#e8edf8;--mu:#6b7fa0;--mu2:#9aaac8;
+  --gn:#20d472;--rd:#f04060;--bl:#3b82f6;--pu:#a78bfa;
+  --F:'Impact','Arial Black',sans-serif;--B:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --rad:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;scroll-behavior:smooth;}
+body{font-family:var(--B);background:var(--bg);color:var(--tx);min-height:100vh;}
+a{color:var(--or);text-decoration:none;}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;height:52px;
+  background:rgba(6,8,16,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,107,0,.18);
+}
+.nav-logo{font-family:var(--F);font-size:.85rem;letter-spacing:3px;color:var(--or);}
+.nav-back{font-size:.72rem;color:var(--mu2);letter-spacing:1px;padding:6px 14px;border:1px solid var(--s3);border-radius:8px;transition:.15s;}
+.nav-back:hover{color:var(--tx);border-color:var(--or);}
+
+/* HERO */
+.hero{text-align:center;padding:56px 24px 40px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.07) 0%,transparent 65%);pointer-events:none;}
+.sl{font-family:var(--F);font-size:.6rem;letter-spacing:4px;color:var(--or);margin-bottom:10px;}
+.hero h1{font-family:var(--F);font-size:clamp(1.8rem,6vw,3.5rem);letter-spacing:4px;margin-bottom:14px;}
+.hero p{color:var(--mu2);font-size:.88rem;line-height:1.7;max-width:500px;margin:0 auto;}
+
+/* LAYOUT */
+.wrap{max-width:960px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:720px){.wrap{grid-template-columns:1fr;}}
+
+/* TYPE CARDS */
+.type-card{
+  background:var(--s1);border:1px solid var(--s3);border-radius:14px;
+  padding:24px;cursor:pointer;transition:.2s;user-select:none;
+  display:flex;flex-direction:column;gap:8px;
+}
+.type-card:hover{transform:translateY(-2px);}
+.type-card.selected{border-color:rgba(255,107,0,.5);background:rgba(255,107,0,.05);}
+.type-card.bug.selected{border-color:rgba(240,64,96,.5);background:rgba(240,64,96,.04);}
+.type-card.feat.selected{border-color:rgba(32,212,114,.5);background:rgba(32,212,114,.04);}
+.type-card.question.selected{border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.04);}
+.tc-ico{font-size:2rem;}
+.tc-title{font-family:var(--F);font-size:.85rem;letter-spacing:2px;}
+.tc-desc{font-size:.72rem;color:var(--mu2);line-height:1.5;}
+.tc-badge{
+  display:inline-block;font-family:var(--F);font-size:.55rem;letter-spacing:1.5px;
+  padding:3px 9px;border-radius:5px;margin-top:4px;
+}
+.badge-rd{background:rgba(240,64,96,.12);color:var(--rd);border:1px solid rgba(240,64,96,.25);}
+.badge-gn{background:rgba(32,212,114,.12);color:var(--gn);border:1px solid rgba(32,212,114,.25);}
+.badge-bl{background:rgba(59,130,246,.12);color:var(--bl);border:1px solid rgba(59,130,246,.25);}
+.badge-or{background:rgba(255,107,0,.12);color:var(--or);border:1px solid rgba(255,107,0,.25);}
+
+/* FORM SECTION */
+.form-section{grid-column:1/-1;display:none;}
+.form-section.visible{display:block;}
+.form-box{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:28px;}
+.form-title{font-family:var(--F);font-size:.9rem;letter-spacing:2px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+
+/* FORM ELEMENTS */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:.72rem;color:var(--mu2);letter-spacing:1px;margin-bottom:6px;font-family:var(--F);}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--s2);border:1px solid var(--s3);border-radius:9px;
+  color:var(--tx);font-family:var(--B);font-size:.85rem;padding:10px 14px;
+  transition:.15s;outline:none;resize:vertical;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(255,107,0,.4);}
+.field textarea{min-height:120px;}
+.field select option{background:var(--s2);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.field-row{grid-template-columns:1fr;}}
+
+/* SEVERITY */
+.sev-row{display:flex;gap:8px;flex-wrap:wrap;}
+.sev-btn{
+  padding:6px 14px;border-radius:7px;font-size:.7rem;letter-spacing:1px;
+  border:1px solid var(--s3);color:var(--mu2);background:var(--s2);cursor:pointer;transition:.15s;
+}
+.sev-btn:hover{border-color:rgba(255,255,255,.2);}
+.sev-btn.active-sev{color:#fff;}
+.sev-1.active-sev{background:#3b82f6;border-color:#3b82f6;}
+.sev-2.active-sev{background:#f0bc30;border-color:#f0bc30;color:#000;}
+.sev-3.active-sev{background:#f04060;border-color:#f04060;}
+.sev-4.active-sev{background:#7c3aed;border-color:#7c3aed;}
+
+/* SEND BUTTONS */
+.send-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;}
+.btn-gh{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;
+  border-radius:10px;background:var(--tx);color:var(--bg);
+  font-family:var(--F);font-size:.72rem;letter-spacing:2px;transition:.15s;cursor:pointer;border:none;
+}
+.btn-gh:hover{background:#fff;transform:translateY(-1px);}
+.btn-mail{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;
+  border-radius:10px;background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.3);
+  color:var(--or);font-family:var(--F);font-size:.72rem;letter-spacing:2px;transition:.15s;cursor:pointer;
+}
+.btn-mail:hover{background:rgba(255,107,0,.2);transform:translateY(-1px);}
+.send-hint{font-size:.68rem;color:var(--mu);margin-top:8px;line-height:1.6;}
+
+/* OPEN ISSUES (live via GitHub API) */
+.issues-section{grid-column:1/-1;}
+.issues-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.issues-head h2{font-family:var(--F);font-size:.85rem;letter-spacing:2px;}
+.issues-filter{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{font-size:.65rem;padding:4px 12px;border-radius:6px;border:1px solid var(--s3);color:var(--mu);background:var(--s1);cursor:pointer;transition:.15s;}
+.filter-btn:hover,.filter-btn.on{border-color:var(--or);color:var(--or);}
+.issue-list{display:flex;flex-direction:column;gap:10px;}
+.issue-item{
+  background:var(--s1);border:1px solid var(--s3);border-radius:10px;
+  padding:14px 18px;display:flex;align-items:flex-start;gap:14px;transition:.15s;
+}
+.issue-item:hover{border-color:rgba(255,107,0,.25);}
+.issue-num{font-family:var(--F);font-size:.65rem;color:var(--mu);white-space:nowrap;padding-top:2px;}
+.issue-body{flex:1;min-width:0;}
+.issue-title{font-size:.82rem;color:var(--tx);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.issue-meta{font-size:.67rem;color:var(--mu);display:flex;gap:8px;flex-wrap:wrap;}
+.issue-label{font-size:.6rem;padding:2px 7px;border-radius:4px;}
+.issue-open-btn{
+  font-size:.65rem;color:var(--mu2);white-space:nowrap;padding:4px 10px;
+  border:1px solid var(--s3);border-radius:6px;transition:.15s;
+}
+.issue-item:hover .issue-open-btn{color:var(--or);border-color:rgba(255,107,0,.3);}
+.issues-loading{text-align:center;padding:32px;color:var(--mu);font-size:.78rem;}
+.issues-empty{text-align:center;padding:32px;color:var(--mu);font-size:.78rem;}
+.gh-link-row{text-align:center;margin-top:14px;}
+.gh-link-row a{font-size:.72rem;color:var(--mu2);border:1px solid var(--s3);padding:7px 18px;border-radius:8px;display:inline-block;transition:.15s;}
+.gh-link-row a:hover{color:var(--tx);border-color:rgba(255,107,0,.3);}
+
+/* FOOTER */
+footer{background:var(--s1);border-top:1px solid rgba(255,107,0,.12);padding:24px 32px;text-align:center;}
+.fl{font-family:var(--F);font-size:.7rem;color:#6b7fa0;margin-bottom:6px;}
+.fl strong{color:#ff6b00;letter-spacing:3px;}
+.fc{font-size:.62rem;color:#3a4a6a;line-height:1.8;}
+.fc a{color:#4a5a7a;text-decoration:underline;text-underline-offset:3px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🏆 TURNIEROFFLINE</div>
+  <a href="../" class="nav-back">← Startseite</a>
+</nav>
+
+<div class="hero">
+  <p class="sl">FEEDBACK · BUGS · IDEEN</p>
+  <h1>ISSUES & SUPPORT</h1>
+  <p>Bug gefunden? Feature-Idee? Frage? Melde dich — per GitHub oder E-Mail.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- TYPE SELECTION -->
+  <div class="type-card bug" onclick="selectType('bug',this)">
+    <div class="tc-ico">🐛</div>
+    <div class="tc-title">BUG MELDEN</div>
+    <div class="tc-desc">Etwas funktioniert nicht wie erwartet? Absturz, Fehler, falsches Verhalten.</div>
+    <span class="tc-badge badge-rd">FEHLER</span>
+  </div>
+
+  <div class="type-card feat" onclick="selectType('feat',this)">
+    <div class="tc-ico">💡</div>
+    <div class="tc-title">FEATURE WÜNSCHEN</div>
+    <div class="tc-desc">Funktion fehlt oder könnte besser sein? Verbesserungsvorschlag einreichen.</div>
+    <span class="tc-badge badge-gn">IDEE</span>
+  </div>
+
+  <div class="type-card question" onclick="selectType('question',this)">
+    <div class="tc-ico">❓</div>
+    <div class="tc-title">FRAGE / SUPPORT</div>
+    <div class="tc-desc">Setup-Problem, Frage zur Bedienung oder einfach nicht weitergekommen.</div>
+    <span class="tc-badge badge-bl">SUPPORT</span>
+  </div>
+
+  <div class="type-card" onclick="selectType('other',this)">
+    <div class="tc-ico">💬</div>
+    <div class="tc-title">SONSTIGES</div>
+    <div class="tc-desc">Feedback, Lob, Kritik oder einfach Hallo sagen.</div>
+    <span class="tc-badge badge-or">ALLGEMEIN</span>
+  </div>
+
+  <!-- FORM — shown after type selection -->
+  <div class="form-section" id="form-section">
+    <div class="form-box">
+      <div class="form-title" id="form-title">📝 MELDUNG ERSTELLEN</div>
+
+      <!-- BUG fields -->
+      <div id="bug-fields">
+        <div class="field">
+          <label>TITEL / KURZBESCHREIBUNG *</label>
+          <input type="text" id="bug-title" placeholder="z.B. Admin-Seite lädt nicht nach Login">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>BETRIEBSSYSTEM</label>
+            <select id="bug-os">
+              <option value="">-- wählen --</option>
+              <option>Android / Termux</option>
+              <option>Windows / XAMPP</option>
+              <option>Linux (Ubuntu)</option>
+              <option>Linux (openSUSE)</option>
+              <option>Docker</option>
+              <option>Sonstiges</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>VERSION</label>
+            <input type="text" id="bug-ver" value="V16" placeholder="z.B. V16">
+          </div>
+        </div>
+        <div class="field">
+          <label>SCHWEREGRAD</label>
+          <div class="sev-row">
+            <button class="sev-btn sev-1" onclick="setSev(1,this)">🔵 Gering</button>
+            <button class="sev-btn sev-2" onclick="setSev(2,this)">🟡 Mittel</button>
+            <button class="sev-btn sev-3" onclick="setSev(3,this)">🔴 Hoch</button>
+            <button class="sev-btn sev-4" onclick="setSev(4,this)">💜 Kritisch</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>WAS IST PASSIERT? *</label>
+          <textarea id="bug-desc" placeholder="Schritte um den Fehler zu reproduzieren:&#10;1. Auf ... klicken&#10;2. Dann ...&#10;3. Fehler erscheint"></textarea>
+        </div>
+        <div class="field">
+          <label>WAS HÄTTEST DU ERWARTET?</label>
+          <textarea id="bug-expected" placeholder="Erwartetes Verhalten..." style="min-height:70px;"></textarea>
+        </div>
+      </div>
+
+      <!-- FEATURE fields -->
+      <div id="feat-fields" style="display:none">
+        <div class="field">
+          <label>FEATURE-TITEL *</label>
+          <input type="text" id="feat-title" placeholder="z.B. Export als PDF">
+        </div>
+        <div class="field">
+          <label>BESCHREIBUNG *</label>
+          <textarea id="feat-desc" placeholder="Was soll die Funktion machen? Wie würdest du sie dir vorstellen?"></textarea>
+        </div>
+        <div class="field">
+          <label>WARUM WÄRE DAS HILFREICH?</label>
+          <textarea id="feat-why" placeholder="Anwendungsfall oder Beispiel..." style="min-height:70px;"></textarea>
+        </div>
+      </div>
+
+      <!-- QUESTION fields -->
+      <div id="question-fields" style="display:none">
+        <div class="field">
+          <label>DEINE FRAGE *</label>
+          <textarea id="q-text" placeholder="Was funktioniert nicht? Wo steckst du fest?"></textarea>
+        </div>
+        <div class="field">
+          <label>BETRIEBSSYSTEM</label>
+          <select id="q-os">
+            <option value="">-- wählen --</option>
+            <option>Android / Termux</option>
+            <option>Windows / XAMPP</option>
+            <option>Linux (Ubuntu)</option>
+            <option>Linux (openSUSE)</option>
+            <option>Docker</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- OTHER fields -->
+      <div id="other-fields" style="display:none">
+        <div class="field">
+          <label>BETREFF</label>
+          <input type="text" id="other-title" placeholder="Worum geht es?">
+        </div>
+        <div class="field">
+          <label>NACHRICHT *</label>
+          <textarea id="other-text" placeholder="Deine Nachricht..."></textarea>
+        </div>
+      </div>
+
+      <!-- SEND -->
+      <div class="send-row">
+        <button class="btn-gh" onclick="sendGitHub()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub Issue öffnen
+        </button>
+        <button class="btn-mail" onclick="sendMail()">
+          ✉️ Per E-Mail senden
+        </button>
+      </div>
+      <div class="send-hint">
+        <strong>GitHub:</strong> Öffnet ein vorausgefülltes Issue direkt auf GitHub (GitHub-Konto empfohlen, aber nicht zwingend).<br>
+        <strong>E-Mail:</strong> Öffnet dein E-Mail-Programm mit vorausgefüllter Nachricht an turnieroffline@gmail.com
+      </div>
+    </div>
+  </div>
+
+  <!-- OPEN ISSUES -->
+  <div class="issues-section">
+    <div class="issues-head">
+      <h2>📋 OFFENE ISSUES</h2>
+      <div class="issues-filter">
+        <button class="filter-btn on" onclick="filterIssues('all',this)">Alle</button>
+        <button class="filter-btn" onclick="filterIssues('bug',this)">🐛 Bugs</button>
+        <button class="filter-btn" onclick="filterIssues('enhancement',this)">💡 Features</button>
+        <button class="filter-btn" onclick="filterIssues('question',this)">❓ Fragen</button>
+      </div>
+    </div>
+    <div class="issue-list" id="issue-list">
+      <div class="issues-loading">⏳ Lade Issues von GitHub…</div>
+    </div>
+    <div class="gh-link-row">
+      <a href="https://github.com/TurnierOffline/TurnierOffline.github.io/issues" target="_blank" rel="noopener">
+        Alle Issues auf GitHub ansehen →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="fl">🏆 <strong>TURNIEROFFLINE V16</strong> &nbsp;·&nbsp; Privates Hobbyprojekt · Entwickelt von Tobias</div>
+  <div class="fc">
+    Copyright © 2024–2026 Tobias ·
+    <a href="../lizenz/">Lizenz</a> ·
+    <a href="../impressum.html">Impressum</a> ·
+    <a href="../datenschutz.html">Datenschutz</a> ·
+    <a href="https://ko-fi.com/turnieroffline" target="_blank" rel="noopener">☕ Ko-fi</a>
+  </div>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────
+let currentType = null;
+let currentSev = 2;
+let allIssues = [];
+
+const LABELS = {
+  bug:         {text:'🐛 Bug',        color:'#f04060', bg:'rgba(240,64,96,.12)'},
+  enhancement: {text:'💡 Feature',    color:'#20d472', bg:'rgba(32,212,114,.12)'},
+  question:    {text:'❓ Frage',      color:'#3b82f6', bg:'rgba(59,130,246,.12)'},
+  help_wanted: {text:'🙋 Help',       color:'#f0bc30', bg:'rgba(240,188,48,.12)'},
+  wontfix:     {text:'🚫 Wontfix',    color:'#6b7fa0', bg:'rgba(107,127,160,.12)'},
+};
+
+// ── TYPE SELECTION ─────────────────────────────────────────────────
+function selectType(type, el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentType = type;
+
+  ['bug','feat','question','other'].forEach(t =>
+    document.getElementById(t+'-fields').style.display = t === type ? 'block' : 'none'
+  );
+
+  const titles = {
+    bug:'🐛 BUG MELDEN', feat:'💡 FEATURE WÜNSCHEN',
+    question:'❓ FRAGE STELLEN', other:'💬 SONSTIGES'
+  };
+  document.getElementById('form-title').textContent = titles[type];
+  const fs = document.getElementById('form-section');
+  fs.classList.add('visible');
+  setTimeout(() => fs.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+}
+
+// ── SEVERITY ───────────────────────────────────────────────────────
+function setSev(n, el) {
+  document.querySelectorAll('.sev-btn').forEach(b => b.classList.remove('active-sev'));
+  el.classList.add('active-sev');
+  currentSev = n;
+}
+
+// ── BUILD BODY TEXT ────────────────────────────────────────────────
+function buildBody() {
+  const sevLabels = ['','🔵 Gering','🟡 Mittel','🔴 Hoch','💜 Kritisch'];
+  if (currentType === 'bug') {
+    const os  = document.getElementById('bug-os').value || '–';
+    const ver = document.getElementById('bug-ver').value || 'V16';
+    const desc = document.getElementById('bug-desc').value || '–';
+    const exp  = document.getElementById('bug-expected').value || '–';
+    return `**Betriebssystem:** ${os}\n**Version:** ${ver}\n**Schweregrad:** ${sevLabels[currentSev]}\n\n**Was ist passiert?**\n${desc}\n\n**Erwartet:**\n${exp}\n\n---\n*Gemeldet über turnieroffline.github.io/issues*`;
+  }
+  if (currentType === 'feat') {
+    const desc = document.getElementById('feat-desc').value || '–';
+    const why  = document.getElementById('feat-why').value || '–';
+    return `**Beschreibung:**\n${desc}\n\n**Warum hilfreich?**\n${why}\n\n---\n*Eingereicht über turnieroffline.github.io/issues*`;
+  }
+  if (currentType === 'question') {
+    const os = document.getElementById('q-os').value || '–';
+    const q  = document.getElementById('q-text').value || '–';
+    return `**Betriebssystem:** ${os}\n\n**Frage:**\n${q}\n\n---\n*Gesendet über turnieroffline.github.io/issues*`;
+  }
+  return document.getElementById('other-text').value || '';
+}
+
+function buildTitle() {
+  if (currentType === 'bug')      return document.getElementById('bug-title').value || 'Bug-Meldung';
+  if (currentType === 'feat')     return document.getElementById('feat-title').value || 'Feature-Wunsch';
+  if (currentType === 'question') return 'Frage: ' + (document.getElementById('q-text').value.slice(0,60) || 'Support-Anfrage');
+  return document.getElementById('other-title').value || 'Feedback';
+}
+
+function ghLabel() {
+  return {bug:'bug', feat:'enhancement', question:'question', other:''}[currentType] || '';
+}
+
+// ── SEND VIA GITHUB ────────────────────────────────────────────────
+function sendGitHub() {
+  if (!currentType) { alert('Bitte erst eine Kategorie auswählen.'); return; }
+  const title = encodeURIComponent(buildTitle());
+  const body  = encodeURIComponent(buildBody());
+  const label = ghLabel();
+  const url = `https://github.com/TurnierOffline/TurnierOffline.github.io/issues/new?title=${title}&body=${body}${label ? '&labels='+label : ''}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+// ── SEND VIA MAIL ──────────────────────────────────────────────────
+function sendMail() {
+  if (!currentType) { alert('Bitte erst eine Kategorie auswählen.'); return; }
+  const subjects = {
+    bug: '[BUG] ', feat: '[FEATURE] ', question: '[FRAGE] ', other: '[FEEDBACK] '
+  };
+  const subject = encodeURIComponent(subjects[currentType] + buildTitle());
+  const body    = encodeURIComponent(buildBody().replace(/\*\*/g,''));
+  window.location.href = `mailto:turnieroffline@gmail.com?subject=${subject}&body=${body}`;
+}
+
+// ── LOAD ISSUES FROM GITHUB API ────────────────────────────────────
+const REPO = 'TurnierOffline/TurnierOffline.github.io';
+
+async function loadIssues() {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=20`, {
+      headers: {'Accept':'application/vnd.github.v3+json'}
+    });
+    if (!r.ok) throw new Error(r.status);
+    allIssues = await r.json();
+    renderIssues(allIssues);
+  } catch(e) {
+    document.getElementById('issue-list').innerHTML =
+      `<div class="issues-empty">GitHub Issues konnten nicht geladen werden.<br>
+       <a href="https://github.com/${REPO}/issues" target="_blank" rel="noopener" style="color:var(--or)">Direkt auf GitHub ansehen →</a></div>`;
+  }
+}
+
+function renderIssues(issues) {
+  const list = document.getElementById('issue-list');
+  if (!issues.length) {
+    list.innerHTML = '<div class="issues-empty">✅ Keine offenen Issues — alles läuft gut!</div>';
+    return;
+  }
+  list.innerHTML = issues.map(iss => {
+    const labels = iss.labels.map(l => {
+      const info = LABELS[l.name] || {text: l.name, color:'#'+l.color, bg:'rgba(255,255,255,.06)'};
+      return `<span class="issue-label" style="background:${info.bg};color:${info.color};border:1px solid ${info.color}40">${info.text}</span>`;
+    }).join('');
+    const ago = timeAgo(iss.created_at);
+    return `<a class="issue-item" href="${iss.html_url}" target="_blank" rel="noopener">
+      <div class="issue-num">#${iss.number}</div>
+      <div class="issue-body">
+        <div class="issue-title">${escHtml(iss.title)}</div>
+        <div class="issue-meta">${labels}<span>${ago}</span>${iss.comments ? `<span>💬 ${iss.comments}</span>` : ''}</div>
+      </div>
+      <div class="issue-open-btn">ansehen →</div>
+    </a>`;
+  }).join('');
+}
+
+function filterIssues(label, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if (label === 'all') { renderIssues(allIssues); return; }
+  renderIssues(allIssues.filter(i => i.labels.some(l => l.name === label)));
+}
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 3600)  return `vor ${Math.floor(diff/60)} Min.`;
+  if (diff < 86400) return `vor ${Math.floor(diff/3600)} Std.`;
+  if (diff < 2592000) return `vor ${Math.floor(diff/86400)} Tagen`;
+  return new Date(dateStr).toLocaleDateString('de-DE');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+loadIssues();
+</script>
+</body>
+</html>

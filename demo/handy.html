@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TurnierOffline V16 – Handy Demo</title>
+<style>
+@font-face{font-family:'TH';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');font-weight:900;}
+@font-face{font-family:'TB';src:local('Segoe UI'),local('Helvetica Neue'),local('Arial');font-weight:300 700;}
+:root{
+  --ak:#ff6b00;--ak2:#ff9340;
+  --bg:#06080b;--bg2:#0d1117;--bg3:#161b22;--bg4:#21262d;
+  --tx:#dde4ef;--dim:#6b7280;--gn:#22d66f;--rd:#f03050;--gd:#f5c518;
+  --H:'TH',Impact,'Arial Black',sans-serif;
+  --B:'TB','Segoe UI','Helvetica Neue',Arial,sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--B);background:var(--bg);color:var(--tx);max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;min-height:100vh;-webkit-tap-highlight-color:transparent;}
+
+/* TOP BAR */
+.top-bar{background:var(--ak);padding:10px 14px;display:flex;align-items:center;gap:8px;
+  position:sticky;top:0;z-index:50;flex-shrink:0;}
+.ev-name{font-family:var(--H);font-size:1rem;letter-spacing:2px;color:#fff;flex:1;}
+.live-badge{background:rgba(0,0,0,.3);color:#fff;font-size:.6rem;padding:2px 8px;
+  border-radius:10px;letter-spacing:2px;display:flex;align-items:center;gap:4px;}
+.live-dot{width:6px;height:6px;background:var(--gn);border-radius:50%;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.back-link{color:rgba(255,255,255,.7);font-size:1.1rem;text-decoration:none;padding:2px 6px;}
+
+/* TABS */
+.screen-nav{background:var(--bg2);border-bottom:1px solid var(--bg4);
+  display:flex;overflow-x:auto;flex-shrink:0;}
+.screen-nav::-webkit-scrollbar{display:none;}
+.snav{flex-shrink:0;padding:10px 14px;font-size:.78rem;color:var(--dim);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none;}
+.snav.active{color:var(--ak);border-bottom-color:var(--ak);}
+
+/* SCREENS */
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.screen.active{display:block;}
+.sec-label{font-size:.65rem;letter-spacing:3px;color:var(--dim);padding:14px 14px 6px;text-transform:uppercase;}
+
+/* SPIEL SCREEN */
+.score-hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border-bottom:1px solid var(--bg4);padding:20px 16px;}
+.score-runde{font-size:.65rem;letter-spacing:3px;color:var(--ak);margin-bottom:10px;text-align:center;}
+.score-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:10px;}
+.team-name{font-family:var(--H);font-size:.85rem;letter-spacing:2px;}
+.team-name.left{text-align:right;color:#4488ff;}
+.team-name.right{color:#ff4444;}
+.score-num{font-family:var(--H);font-size:2.8rem;letter-spacing:8px;color:var(--gd);text-align:center;}
+.score-status{text-align:center;font-size:.7rem;color:var(--gn);
+  display:flex;align-items:center;justify-content:center;gap:5px;}
+.live-badge2{background:var(--rd);color:#fff;font-size:.55rem;padding:2px 7px;
+  border-radius:3px;font-family:var(--H);letter-spacing:1px;}
+
+.events{padding:0 14px 14px;}
+.ev-row{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--bg3);font-size:.85rem;}
+.ev-min{font-size:.7rem;color:var(--gd);min-width:28px;font-family:var(--H);}
+.ev-icon{font-size:1.1rem;min-width:22px;}
+.ev-txt{flex:1;}
+.ev-txt strong{display:block;font-size:.85rem;}
+.ev-txt span{font-size:.72rem;color:var(--dim);}
+.ev-side{font-size:.65rem;color:var(--dim);}
+
+/* FELD 2 BOX */
+.feld2-box{margin:14px;background:var(--bg3);border-radius:10px;padding:12px;
+  border:1px solid var(--bg4);}
+.feld2-label{font-size:.58rem;letter-spacing:2px;color:var(--dim);margin-bottom:6px;}
+.feld2-score{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;}
+.feld2-teams{display:flex;align-items:center;gap:8px;}
+.feld2-num{font-family:var(--H);font-size:1.1rem;letter-spacing:4px;color:var(--gd);}
+
+/* SPIELPLAN */
+.sp-runde{background:var(--bg2);border-bottom:1px solid var(--bg4);
+  padding:8px 14px;font-size:.65rem;letter-spacing:3px;color:var(--ak);font-family:var(--H);}
+.sp-row{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid var(--bg3);gap:10px;}
+.sp-status{width:22px;text-align:center;font-size:.9rem;flex-shrink:0;}
+.sp-teams{flex:1;}
+.sp-t1{font-size:.88rem;font-weight:600;}
+.sp-t2{font-size:.82rem;color:var(--dim);margin-top:1px;}
+.sp-score{font-family:var(--H);font-size:1.1rem;letter-spacing:3px;color:var(--gd);min-width:44px;text-align:right;}
+.sp-time{font-size:.65rem;color:var(--dim);text-align:right;}
+
+/* KO */
+.ko-section{padding:14px;}
+.ko-runde-title{font-size:.65rem;letter-spacing:3px;color:var(--ak);font-family:var(--H);
+  padding:10px 0 6px;border-bottom:1px solid var(--bg4);margin-bottom:8px;}
+.ko-match{background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--bg4);}
+.ko-team{display:flex;justify-content:space-between;align-items:center;padding:4px 0;}
+.ko-team-name{font-size:.85rem;display:flex;align-items:center;gap:6px;}
+.ko-score{font-family:var(--H);font-size:1.2rem;color:var(--gd);}
+.ko-win{color:var(--gn);}
+.ko-divider{border:none;border-top:1px solid var(--bg4);margin:4px 0;}
+.ko-meta{font-size:.62rem;color:var(--dim);margin-top:4px;display:flex;gap:8px;}
+.ko-live-pill{background:var(--rd);color:#fff;font-size:.5rem;padding:1px 5px;border-radius:3px;font-family:var(--H);}
+.ko-placeholder{color:var(--dim);font-style:italic;}
+
+/* TIPP */
+.tipp-box{margin:14px;background:var(--bg3);border-radius:12px;padding:16px;border:1px solid var(--bg4);}
+.tipp-title{font-family:var(--H);font-size:.85rem;letter-spacing:3px;margin-bottom:4px;}
+.tipp-sub{font-size:.72rem;color:var(--dim);margin-bottom:14px;line-height:1.5;}
+.tipp-teams{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:14px;}
+.tipp-team{font-size:.8rem;font-weight:600;text-align:center;}
+.tipp-inputs{display:flex;gap:8px;justify-content:center;align-items:center;}
+.tipp-input{width:48px;height:48px;background:var(--bg2);border:1px solid var(--bg4);
+  border-radius:8px;font-family:var(--H);font-size:1.4rem;color:var(--gd);
+  text-align:center;outline:none;transition:.15s;}
+.tipp-input:focus{border-color:var(--ak);}
+.tipp-colon{font-family:var(--H);font-size:1.4rem;color:var(--dim);}
+.tipp-btn{width:100%;padding:12px;background:var(--ak);color:#fff;border:none;border-radius:10px;
+  font-family:var(--H);font-size:.85rem;letter-spacing:2px;cursor:pointer;margin-top:10px;transition:.2s;}
+.tipp-btn:hover,.tipp-btn:active{background:var(--ak2);}
+.tipp-done{background:var(--gn)!important;color:#000!important;}
+
+.rangliste-row{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-bottom:1px solid var(--bg3);}
+.rang-pos{font-family:var(--H);font-size:1.1rem;min-width:28px;
+  color:var(--gd);}
+.rang-pos.top1{color:#ffd700;}
+.rang-pos.top2{color:#c0c0c0;}
+.rang-pos.top3{color:#cd7f32;}
+.rang-name{flex:1;font-size:.85rem;}
+.rang-pts{font-family:var(--H);font-size:.95rem;color:var(--gn);}
+
+/* KI CHAT */
+.ki-wrap{display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:300px;}
+.ki-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch;}
+.msg{display:flex;gap:8px;align-items:flex-end;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.msg.user{flex-direction:row-reverse;}
+.bubble{max-width:78%;padding:10px 13px;border-radius:16px;font-size:.85rem;line-height:1.6;}
+.msg.bot .bubble{background:var(--bg3);border:1px solid var(--bg4);border-radius:4px 16px 16px 16px;}
+.msg.user .bubble{background:var(--ak);color:#fff;border-radius:16px 4px 16px 16px;}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;}
+.msg.bot .avatar{background:var(--bg3);}
+.msg.user .avatar{background:var(--ak);}
+.ki-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 8px;}
+.ki-chip{background:var(--bg3);border:1px solid var(--bg4);border-radius:20px;
+  padding:6px 12px;font-size:.75rem;cursor:pointer;transition:.15s;user-select:none;}
+.ki-chip:hover,.ki-chip:active{border-color:var(--ak);color:var(--ak);}
+.ki-input-row{display:flex;gap:8px;padding:10px 14px;background:var(--bg2);
+  border-top:1px solid var(--bg4);flex-shrink:0;}
+.ki-input{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;
+  padding:10px 14px;color:var(--tx);font-size:.88rem;font-family:var(--B);outline:none;resize:none;
+  min-height:40px;max-height:100px;}
+.ki-input:focus{border-color:var(--ak);}
+.ki-send{background:var(--ak);border:none;border-radius:10px;padding:10px 14px;
+  color:#fff;cursor:pointer;font-size:1rem;transition:.2s;flex-shrink:0;}
+.ki-send:hover,.ki-send:active{background:var(--ak2);}
+.typing{display:flex;gap:4px;padding:12px 14px;align-items:center;}
+.typing span{width:7px;height:7px;background:var(--dim);border-radius:50%;
+  animation:bounce .8s infinite;display:inline-block;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* STIMMUNG */
+.mood-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
+.mood-btn{background:var(--bg3);border:1px solid var(--bg4);border-radius:12px;
+  padding:16px;text-align:center;cursor:pointer;transition:.2s;user-select:none;}
+.mood-btn:hover,.mood-btn:active,.mood-btn.selected{border-color:var(--ak);background:rgba(255,107,0,.08);}
+.mood-em{font-size:2rem;margin-bottom:4px;}
+.mood-label{font-size:.8rem;}
+.mood-bar{margin:0 14px;background:var(--bg3);border-radius:10px;overflow:hidden;}
+.mood-bar-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--bg4);}
+.mood-bar-row:last-child{border-bottom:none;}
+.mood-bar-em{font-size:1rem;min-width:24px;}
+.mood-bar-fill{flex:1;background:var(--bg4);border-radius:4px;height:8px;overflow:hidden;}
+.mood-bar-inner{height:100%;background:var(--ak);border-radius:4px;transition:width .5s ease;}
+.mood-pct{font-size:.72rem;color:var(--dim);min-width:30px;text-align:right;}
+
+/* KONTAKT */
+.kontakt-section{padding:0 14px 20px;}
+.contact-btn{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:10px;
+  margin-bottom:8px;border:1px solid var(--ak);color:var(--ak);background:transparent;
+  cursor:pointer;transition:.2s;text-decoration:none;width:100%;}
+.contact-btn:hover,.contact-btn:active{background:var(--ak);color:#fff;}
+.contact-btn .icon{font-size:1.3rem;}
+.soc-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;
+  margin-bottom:7px;border:1px solid var(--bg4);background:var(--bg3);
+  text-decoration:none;color:var(--tx);cursor:pointer;transition:.2s;}
+.soc-btn:hover,.soc-btn:active{border-color:var(--ak);}
+.soc-btn svg{width:28px;height:28px;flex-shrink:0;}
+.soc-name{font-family:var(--H);font-size:.78rem;letter-spacing:2px;}
+.soc-handle{font-size:.72rem;color:var(--dim);}
+
+/* BOTTOM NAV */
+.bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--bg2);border-top:1px solid var(--bg4);flex-shrink:0;position:sticky;bottom:0;}
+.bnav{display:flex;flex-direction:column;align-items:center;padding:8px 2px 6px;
+  cursor:pointer;font-size:.55rem;color:var(--dim);transition:.15s;user-select:none;gap:2px;}
+.bnav .bi{font-size:1.2rem;}
+.bnav.active,.bnav:active{color:var(--ak);}
+
+/* MARKDOWN IN BUBBLES */
+.bubble b,.bubble strong{font-weight:700;}
+.bubble br{line-height:2;}
+</style>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="./" class="back-link" title="Startseite">←</a>
+  <div class="ev-name">🏆 DORF CUP 2026</div>
+  <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+</div>
+
+<div class="screen-nav">
+  <div class="snav active" onclick="show('spiel',this)">⚽ Spiel</div>
+  <div class="snav" onclick="show('plan',this)">📅 Spielplan</div>
+  <div class="snav" onclick="show('ko',this)">🏆 KO</div>
+  <div class="snav" onclick="show('tipp',this)">🎯 Tipp</div>
+  <div class="snav" onclick="show('ki',this)">🤖 KI</div>
+  <div class="snav" onclick="show('stimmung',this)">😄 Stimmung</div>
+  <div class="snav" onclick="show('kontakt',this)">📞 Kontakt</div>
+</div>
+
+<!-- SPIEL -->
+<div class="screen active" id="s-spiel">
+  <div class="score-hero">
+    <div class="score-runde">⚽ HALBFINALE · FELD 1</div>
+    <div class="score-row">
+      <div class="team-name left">BLAU FC</div>
+      <div class="score-num" id="scoreDisplay">2 : 1</div>
+      <div class="team-name right">ROT UTD.</div>
+    </div>
+    <div class="score-status">
+      <div class="live-badge2">LIVE</div>
+      <span id="spielminute">73'</span>
+      <span style="color:var(--dim)">· Halbfinale</span>
+    </div>
+  </div>
+
+  <div class="feld2-box">
+    <div class="feld2-label">GLEICHZEITIG · FELD 2</div>
+    <div class="feld2-score">
+      <div class="feld2-teams"><span style="color:#22bb55">GRÜN SV</span></div>
+      <div class="feld2-num">0 : 0</div>
+      <div class="feld2-teams"><span style="color:#fff">WEISS FC</span></div>
+    </div>
+    <div style="font-size:.62rem;color:var(--dim);margin-top:4px;text-align:center">34' · Halbfinale</div>
+  </div>
+
+  <div class="sec-label">Ereignisse</div>
+  <div class="events">
+    <div class="ev-row"><div class="ev-min">73'</div><div class="ev-icon">⚽</div><div class="ev-txt"><strong>Tor! Blau FC</strong><span>M. Müller (Torschütze)</span></div><div class="ev-side" style="color:#4488ff">Blau</div></div>
+    <div class="ev-row"><div class="ev-min">68'</div><div class="ev-icon">🟨</div><div class="ev-txt"><strong>Gelbe Karte</strong><span>Rot United – T. Bauer</span></div><div class="ev-side" style="color:#ff4444">Rot</div></div>
+    <div class="ev-row"><div class="ev-min">45'</div><div class="ev-icon">⚽</div><div class="ev-txt"><strong>Tor! Rot United</strong><span>K. Braun (Torschütze)</span></div><div class="ev-side" style="color:#ff4444">Rot</div></div>
+    <div class="ev-row"><div class="ev-min">12'</div><div class="ev-icon">⚽</div><div class="ev-txt"><strong>Tor! Blau FC</strong><span>A. Klein (Torschütze)</span></div><div class="ev-side" style="color:#4488ff">Blau</div></div>
+    <div class="ev-row"><div class="ev-min">1'</div><div class="ev-icon">🏁</div><div class="ev-txt"><strong>Anstoß</strong><span>Halbfinale beginnt</span></div></div>
+  </div>
+
+  <div style="margin:0 14px 20px;background:var(--bg3);border-radius:10px;padding:12px;border:1px solid var(--bg4);">
+    <div style="font-size:.62rem;letter-spacing:2px;color:var(--ak);margin-bottom:6px;">🏆 NÄCHSTES FINALE</div>
+    <div style="font-size:.82rem;">Sieger dieses Spiels spielt um <strong>16:30 Uhr</strong> im Finale.</div>
+  </div>
+</div>
+
+<!-- SPIELPLAN -->
+<div class="screen" id="s-plan">
+  <div class="sp-runde">VIERTELFINALE</div>
+  <div class="sp-row"><div class="sp-status">✅</div><div class="sp-teams"><div class="sp-t1">Blau FC vs. Gelb SV</div><div class="sp-t2">Viertelfinale · Feld 1</div></div><div><div class="sp-score">3:1</div><div class="sp-time">Ende</div></div></div>
+  <div class="sp-row"><div class="sp-status">✅</div><div class="sp-teams"><div class="sp-t1">Rot United vs. Lila FC</div><div class="sp-t2">Viertelfinale · Feld 2</div></div><div><div class="sp-score">2:0</div><div class="sp-time">Ende</div></div></div>
+  <div class="sp-row"><div class="sp-status">✅</div><div class="sp-teams"><div class="sp-t1">Grün SV vs. Orange FC</div><div class="sp-t2">Viertelfinale · Feld 1</div></div><div><div class="sp-score">1:1</div><div class="sp-time">n. E.</div></div></div>
+  <div class="sp-row"><div class="sp-status">✅</div><div class="sp-teams"><div class="sp-t1">Weiß FC vs. Schwarz SV</div><div class="sp-t2">Viertelfinale · Feld 2</div></div><div><div class="sp-score">2:1</div><div class="sp-time">Ende</div></div></div>
+  <div class="sp-runde">HALBFINALE · JETZT</div>
+  <div class="sp-row" style="background:rgba(255,107,0,.05);border-left:3px solid var(--ak)"><div class="sp-status">🔴</div><div class="sp-teams"><div class="sp-t1">Blau FC vs. Rot United</div><div class="sp-t2">Halbfinale · Feld 1</div></div><div><div class="sp-score" style="color:var(--rd)">2:1</div><div class="sp-time">73'</div></div></div>
+  <div class="sp-row" style="background:rgba(255,107,0,.05);border-left:3px solid var(--ak)"><div class="sp-status">🔴</div><div class="sp-teams"><div class="sp-t1">Grün SV vs. Weiß FC</div><div class="sp-t2">Halbfinale · Feld 2</div></div><div><div class="sp-score" style="color:var(--rd)">0:0</div><div class="sp-time">34'</div></div></div>
+  <div class="sp-runde">FINALE</div>
+  <div class="sp-row"><div class="sp-status">⏳</div><div class="sp-teams"><div class="sp-t1">Sieger HF 1 vs. Sieger HF 2</div><div class="sp-t2">Finale · 16:30 Uhr</div></div><div><div class="sp-score" style="color:var(--dim)">–:–</div><div class="sp-time">16:30</div></div></div>
+</div>
+
+<!-- KO BRACKET -->
+<div class="screen" id="s-ko">
+  <div class="ko-section">
+    <div class="ko-runde-title">🏅 VIERTELFINALE</div>
+    <div class="ko-match"><div class="ko-team"><div class="ko-team-name" style="color:#4488ff">🏆 Blau FC</div><div class="ko-score ko-win">3</div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#f5c518">Gelb SV</div><div class="ko-score" style="color:var(--dim)">1</div></div></div>
+    <div class="ko-match"><div class="ko-team"><div class="ko-team-name" style="color:#ff4444">🏆 Rot United</div><div class="ko-score ko-win">2</div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#aa44ff">Lila FC</div><div class="ko-score" style="color:var(--dim)">0</div></div></div>
+    <div class="ko-match"><div class="ko-team"><div class="ko-team-name" style="color:#22bb55">🏆 Grün SV</div><div class="ko-score ko-win">4:3</div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#ff6622">Orange FC</div><div class="ko-score" style="color:var(--dim)">–</div></div><div class="ko-meta">n. Elfm.</div></div>
+    <div class="ko-match"><div class="ko-team"><div class="ko-team-name" style="color:#eee">🏆 Weiß FC</div><div class="ko-score ko-win">2</div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#888">Schwarz SV</div><div class="ko-score" style="color:var(--dim)">1</div></div></div>
+
+    <div class="ko-runde-title">⚔ HALBFINALE · JETZT</div>
+    <div class="ko-match" style="border-color:var(--rd)"><div class="ko-team"><div class="ko-team-name" style="color:#4488ff">Blau FC</div><div class="ko-score">2 <span class="ko-live-pill">LIVE</span></div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#ff4444">Rot United</div><div class="ko-score" style="color:var(--dim)">1</div></div></div>
+    <div class="ko-match" style="border-color:var(--rd)"><div class="ko-team"><div class="ko-team-name" style="color:#22bb55">Grün SV</div><div class="ko-score">0 <span class="ko-live-pill">LIVE</span></div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name" style="color:#eee">Weiß FC</div><div class="ko-score" style="color:var(--dim)">0</div></div></div>
+
+    <div class="ko-runde-title">🏆 FINALE · 16:30 UHR</div>
+    <div class="ko-match"><div class="ko-team"><div class="ko-team-name ko-placeholder">Sieger HF 1</div><div class="ko-score" style="color:var(--dim)">?</div></div><hr class="ko-divider"><div class="ko-team"><div class="ko-team-name ko-placeholder">Sieger HF 2</div><div class="ko-score" style="color:var(--dim)">?</div></div></div>
+  </div>
+</div>
+
+<!-- TIPP -->
+<div class="screen" id="s-tipp">
+  <div class="sec-label">Dein Tipp · Finale</div>
+  <div class="tipp-box" id="tippBox">
+    <div class="tipp-title">🎯 FINALE TIPPEN</div>
+    <div class="tipp-sub">Tippe das Ergebnis! 3 Punkte exakt, 1 Punkt richtiger Sieger.</div>
+    <div class="tipp-teams">
+      <div class="tipp-team" style="color:#4488ff">Blau FC</div>
+      <div style="color:var(--dim);font-size:.7rem">vs.</div>
+      <div class="tipp-team" style="color:#22bb55">Grün SV</div>
+    </div>
+    <div class="tipp-inputs">
+      <input class="tipp-input" id="t1" type="number" min="0" max="99" placeholder="0">
+      <div class="tipp-colon">:</div>
+      <input class="tipp-input" id="t2" type="number" min="0" max="99" placeholder="0">
+    </div>
+    <button class="tipp-btn" onclick="sendTipp()">🎯 TIPP ABGEBEN</button>
+  </div>
+
+  <div class="sec-label">Tipp-Rangliste</div>
+  <div class="rangliste-row"><div class="rang-pos top1">1.</div><div class="rang-name">Max M.</div><div class="rang-pts">9 Pkte</div></div>
+  <div class="rangliste-row"><div class="rang-pos top2">2.</div><div class="rang-name">Lisa K.</div><div class="rang-pts">7 Pkte</div></div>
+  <div class="rangliste-row"><div class="rang-pos top3">3.</div><div class="rang-name">Tom B.</div><div class="rang-pts">6 Pkte</div></div>
+  <div class="rangliste-row"><div class="rang-pos">4.</div><div class="rang-name">Anna W.</div><div class="rang-pts">5 Pkte</div></div>
+  <div class="rangliste-row"><div class="rang-pos">5.</div><div class="rang-name">Klaus P.</div><div class="rang-pts">3 Pkte</div></div>
+</div>
+
+<!-- KI -->
+<div class="screen" id="s-ki">
+  <div class="ki-wrap">
+    <div class="ki-msgs" id="kiMsgs">
+      <div class="msg bot">
+        <div class="avatar">🤖</div>
+        <div class="bubble">Hallo! 👋 Ich bin der KI-Assistent des <strong>Muster Turnier 2026</strong>.<br><br>Frag mich alles zum Turnier — Spielplan, Ergebnisse, Teams, Regeln oder Kontakt!</div>
+      </div>
+    </div>
+    <div class="ki-chips" id="kiChips">
+      <div class="ki-chip" onclick="askKI(this.textContent)">🔴 Wer spielt gerade?</div>
+      <div class="ki-chip" onclick="askKI(this.textContent)">📅 Spielplan</div>
+      <div class="ki-chip" onclick="askKI(this.textContent)">🏆 Ergebnisse</div>
+      <div class="ki-chip" onclick="askKI(this.textContent)">👥 Welche Teams?</div>
+      <div class="ki-chip" onclick="askKI(this.textContent)">⏰ Wann Finale?</div>
+      <div class="ki-chip" onclick="askKI(this.textContent)">📊 Statistik</div>
+    </div>
+    <div class="ki-input-row">
+      <textarea class="ki-input" id="kiInput" placeholder="Frag mich etwas..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();kiSend();}"></textarea>
+      <button class="ki-send" onclick="kiSend()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- STIMMUNG -->
+<div class="screen" id="s-stimmung">
+  <div class="sec-label">Wie ist deine Stimmung?</div>
+  <div class="mood-options">
+    <div class="mood-btn" onclick="vote(this,'super')"><div class="mood-em">🔥</div><div class="mood-label">Super!</div></div>
+    <div class="mood-btn" onclick="vote(this,'gut')"><div class="mood-em">😊</div><div class="mood-label">Gut</div></div>
+    <div class="mood-btn" onclick="vote(this,'naja')"><div class="mood-em">😐</div><div class="mood-label">Na ja</div></div>
+    <div class="mood-btn" onclick="vote(this,'schlecht')"><div class="mood-em">😞</div><div class="mood-label">Schlecht</div></div>
+  </div>
+  <div class="sec-label">Live-Ergebnis</div>
+  <div class="mood-bar" id="moodBar">
+    <div class="mood-bar-row"><div class="mood-bar-em">🔥</div><div class="mood-bar-fill"><div class="mood-bar-inner" id="b-super" style="width:65%"></div></div><div class="mood-pct" id="p-super">65%</div></div>
+    <div class="mood-bar-row"><div class="mood-bar-em">😊</div><div class="mood-bar-fill"><div class="mood-bar-inner" id="b-gut" style="width:25%"></div></div><div class="mood-pct" id="p-gut">25%</div></div>
+    <div class="mood-bar-row"><div class="mood-bar-em">😐</div><div class="mood-bar-fill"><div class="mood-bar-inner" id="b-naja" style="width:8%"></div></div><div class="mood-pct" id="p-naja">8%</div></div>
+    <div class="mood-bar-row"><div class="mood-bar-em">😞</div><div class="mood-bar-fill"><div class="mood-bar-inner" id="b-schlecht" style="width:2%"></div></div><div class="mood-pct" id="p-schlecht">2%</div></div>
+  </div>
+  <div style="text-align:center;font-size:.7rem;color:var(--dim);padding:12px" id="voteCount">47 Stimmen</div>
+</div>
+
+<!-- KONTAKT -->
+<div class="screen" id="s-kontakt">
+  <div class="sec-label">Ansprechpartner</div>
+  <div class="kontakt-section">
+    <div style="background:var(--bg3);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;border:1px solid var(--bg4);">
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--ak);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>
+      <div><div style="font-size:.9rem;font-weight:700;">Turnierleitung</div><div style="font-size:.75rem;color:var(--dim);margin-top:2px;">Muster Turnier 2026</div></div>
+    </div>
+    <a href="mailto:turnieroffline@gmail.com" class="contact-btn"><span class="icon">✉️</span><div><div>E-Mail</div><div style="font-size:.72rem;color:var(--dim)">turnieroffline@gmail.com</div></div></a>
+  </div>
+
+  <div class="sec-label">TurnierOffline folgen</div>
+  <div class="kontakt-section">
+    <a href="https://instagram.com/turnieroffline" target="_blank" class="soc-btn">
+      <svg viewBox="0 0 24 24" fill="#E4405F"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm10 2c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.5-.75a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/></svg>
+      <div><div class="soc-name">INSTAGRAM</div><div class="soc-handle">@turnieroffline</div></div>
+    </a>
+    <a href="https://youtube.com/@turnieroffline" target="_blank" class="soc-btn">
+      <svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2s-.2-1.7-.9-2.4c-.9-.9-1.9-.9-2.4-1C16.6 2.5 12 2.5 12 2.5h-.1s-4.6 0-8.2.3c-.5.1-1.5.1-2.4 1-.7.7-.9 2.4-.9 2.4S0 8.1 0 10v1.9c0 1.9.2 3.8.2 3.8s.2 1.7.9 2.4c.9.9 2.1.9 2.6 1 1.9.2 8.1.3 8.1.3s4.6 0 8.2-.3c.5-.1 1.5-.1 2.4-1 .7-.7.9-2.4.9-2.4s.2-1.9.2-3.8V10c0-1.9-.2-3.8-.2-3.8zM9.7 14.6V7.9l6.4 3.4-6.4 3.3z"/></svg>
+      <div><div class="soc-name">YOUTUBE</div><div class="soc-handle">@turnieroffline</div></div>
+    </a>
+    <a href="https://tiktok.com/@turnieroffline" target="_blank" class="soc-btn">
+      <svg viewBox="0 0 24 24"><path fill="#69C9D0" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.06a8.15 8.15 0 004.77 1.51V7.12a4.85 4.85 0 01-1-.43z"/></svg>
+      <div><div class="soc-name">TIKTOK</div><div class="soc-handle">@turnieroffline</div></div>
+    </a>
+    <a href="https://github.com/TurnierOffline" target="_blank" class="soc-btn">
+      <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      <div><div class="soc-name">GITHUB</div><div class="soc-handle">TurnierOffline</div></div>
+    </a>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <div class="bnav active" onclick="show('spiel',null,this)"><div class="bi">⚽</div>Spiel</div>
+  <div class="bnav" onclick="show('plan',null,this)"><div class="bi">📅</div>Plan</div>
+  <div class="bnav" onclick="show('ko',null,this)"><div class="bi">🏆</div>KO</div>
+  <div class="bnav" onclick="show('ki',null,this)"><div class="bi">🤖</div>KI</div>
+  <div class="bnav" onclick="show('kontakt',null,this)"><div class="bi">📞</div>Kontakt</div>
+</nav>
+
+<script>
+// ── NAVIGATION ──────────────────────────────────────────────────────
+function show(id, tabBtn, navBtn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.snav').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bnav').forEach(n => n.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  if (tabBtn) tabBtn.classList.add('active');
+  // Sync bottom nav
+  var navMap = {spiel:0,plan:1,ko:2,ki:3,kontakt:4};
+  var bnavs = document.querySelectorAll('.bnav');
+  if (navMap[id] !== undefined) bnavs[navMap[id]].classList.add('active');
+  if (navBtn) navBtn.classList.add('active');
+  // Sync tab nav
+  var snavMap = {spiel:0,plan:1,ko:2,tipp:3,ki:4,stimmung:5,kontakt:6};
+  var snavs = document.querySelectorAll('.snav');
+  if (snavMap[id] !== undefined) snavs[snavMap[id]].classList.add('active');
+  // Scroll tab into view
+  var activeTab = document.querySelector('.snav.active');
+  if (activeTab) activeTab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+// ── LIVEUHR ─────────────────────────────────────────────────────────
+var startMin = 73, startMs = Date.now();
+setInterval(function(){
+  var el = document.getElementById('spielminute');
+  if (el) {
+    var elapsed = Math.floor((Date.now() - startMs) / 60000);
+    el.textContent = Math.min(90, startMin + elapsed) + "'";
+  }
+}, 10000);
+
+// ── TIPP ────────────────────────────────────────────────────────────
+function sendTipp() {
+  var t1 = document.getElementById('t1').value;
+  var t2 = document.getElementById('t2').value;
+  if (t1 === '' || t2 === '') { alert('Bitte beide Felder ausfüllen!'); return; }
+  var btn = document.querySelector('.tipp-btn');
+  btn.textContent = '✅ Tipp gespeichert! ' + t1 + ':' + t2;
+  btn.classList.add('tipp-done');
+  btn.disabled = true;
+  document.getElementById('t1').disabled = true;
+  document.getElementById('t2').disabled = true;
+}
+
+// ── STIMMUNG ────────────────────────────────────────────────────────
+var votes = {super:65, gut:25, naja:8, schlecht:2}, total = 47, myVote = null;
+function vote(btn, key) {
+  if (myVote) {
+    votes[myVote] = Math.max(0, votes[myVote] - 1);
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  }
+  myVote = key;
+  votes[key]++;
+  total++;
+  btn.classList.add('selected');
+  document.getElementById('voteCount').textContent = total + ' Stimmen';
+  var sum = Object.values(votes).reduce((a,b)=>a+b,0);
+  Object.keys(votes).forEach(function(k){
+    var pct = Math.round(votes[k]/sum*100);
+    document.getElementById('b-'+k).style.width = pct + '%';
+    document.getElementById('p-'+k).textContent = pct + '%';
+  });
+}
+
+// ── KI BASIS (immer offline, kein Server nötig) ──────────────────────
+var kiData = {
+  teams: ['Blau FC','Rot United','Grün SV','Weiß FC','Gelb SV','Lila FC','Orange FC','Schwarz SV'],
+  spiele: [
+    {r:'Viertelfinale',t1:'Blau FC',t2:'Gelb SV',s:'beendet',e:'3:1'},
+    {r:'Viertelfinale',t1:'Rot United',t2:'Lila FC',s:'beendet',e:'2:0'},
+    {r:'Viertelfinale',t1:'Grün SV',t2:'Orange FC',s:'beendet',e:'1:1 (4:3 n.E.)'},
+    {r:'Viertelfinale',t1:'Weiß FC',t2:'Schwarz SV',s:'beendet',e:'2:1'},
+    {r:'Halbfinale',t1:'Blau FC',t2:'Rot United',s:'laufend',e:'2:1',min:73},
+    {r:'Halbfinale',t1:'Grün SV',t2:'Weiß FC',s:'laufend',e:'0:0',min:34},
+    {r:'Finale',t1:'Sieger HF1',t2:'Sieger HF2',s:'geplant',e:'–:–',zeit:'16:30 Uhr'}
+  ],
+  turnier: 'Muster Turnier 2026',
+  ort: 'Gemeindeplatz',
+  siegerehrung: '18:00 Uhr'
+};
+
+function kiBeantworten(frage) {
+  var f = frage.toLowerCase().trim();
+
+  // Grüße
+  if (/^(hallo|hi|hey|moin|servus|guten|nabend)/.test(f))
+    return 'Hallo! 👋 Ich bin der Turnier-Assistent des **' + kiData.turnier + '**.\n\nFrag mich:\n• Wer spielt gerade?\n• Spielplan / Ergebnisse\n• Welche Teams?\n• Wann ist Finale?';
+
+  // Aktuelles Spiel / Stand
+  if (/gerade|aktuell|live|jetzt|stand|läuft|score/.test(f)) {
+    var live = kiData.spiele.filter(function(s){return s.s==='laufend';});
+    if (!live.length) return 'Aktuell läuft kein Spiel.';
+    return live.map(function(s){
+      return '🔴 **LIVE · ' + s.r + '**\n**' + s.t1 + '** ' + s.e + ' **' + s.t2 + '**\n' + s.min + '. Minute';
+    }).join('\n\n');
+  }
+
+  // Spielplan
+  if (/spielplan|alle spiele|programm|wann (spielt|ist)/.test(f)) {
+    var lines = ['**Spielplan ' + kiData.turnier + ':**\n'];
+    var curR = '';
+    kiData.spiele.forEach(function(s){
+      if(s.r !== curR){lines.push('\n**' + s.r + '**');curR=s.r;}
+      var icon = s.s==='beendet'?'✅':s.s==='laufend'?'🔴':'⏳';
+      lines.push(icon + ' ' + s.t1 + (s.e?' '+s.e:'')+' vs '+s.t2+(s.zeit?' · '+s.zeit:''));
+    });
+    return lines.join('\n');
+  }
+
+  // Ergebnisse
+  if (/ergebnis|resultat|wie (lief|war)|wer hat gewonnen/.test(f)) {
+    var done = kiData.spiele.filter(function(s){return s.s==='beendet';});
+    if (!done.length) return 'Noch keine Spiele beendet.';
+    return '**Ergebnisse:**\n' + done.map(function(s){return '✅ ' + s.t1 + ' **' + s.e + '** ' + s.t2;}).join('\n');
+  }
+
+  // Teams
+  if (/teams?|mannschaft|teilnehmer|wer (ist|spielt)|angemeldet/.test(f))
+    return '**' + kiData.teams.length + ' Teams dabei:**\n' + kiData.teams.map(function(t){return '• '+t;}).join('\n');
+
+  // Finale
+  if (/finale|wann|uhrzeit|zeit/.test(f))
+    return '🏆 **Finale** um **16:30 Uhr**\n\nSiegerehrung: ' + kiData.siegerehrung + '\nAlle Spieler bitte pünktlich am Hauptplatz erscheinen.';
+
+  // Sieger / Gewinner
+  if (/sieger|gewinner|wer gewinnt|wer hat/.test(f))
+    return 'Das Finale ist noch nicht gespielt! ⏳\n\nAktuell im Halbfinale:\n🔴 Blau FC **2:1** Rot United (73\')\n🔴 Grün SV **0:0** Weiß FC (34\')';
+
+  // Statistik
+  if (/statistik|stats|anzahl|wie viele|tore (gesamt|insg)/.test(f)) {
+    var tore = 0;
+    kiData.spiele.forEach(function(s){
+      if(s.s==='beendet'){var p=s.e.split(':');tore+=parseInt(p[0]||0)+parseInt(p[1]||0);}
+    });
+    return '📊 **Statistik ' + kiData.turnier + ':**\n• Teams: ' + kiData.teams.length + '\n• Spiele: ' + kiData.spiele.length + ' (' + kiData.spiele.filter(function(s){return s.s==='beendet';}).length + ' fertig)\n• Tore bisher: ' + tore;
+  }
+
+  // Ort / Wo
+  if (/wo|ort|adresse|standort|platz/.test(f))
+    return '📍 **' + kiData.ort + '**\n\nTurnier: ' + kiData.turnier;
+
+  // Siegerehrung
+  if (/siegerehrung|ehrung|pokal|preisverleihung/.test(f))
+    return '🏅 Siegerehrung findet um **' + kiData.siegerehrung + '** statt.\n\nAlle Spieler bitte pünktlich am Hauptplatz erscheinen!';
+
+  // Kontakt
+  if (/kontakt|admin|organisator|wer organisiert/.test(f))
+    return '📞 **Kontakt:**\nE-Mail: turnieroffline@gmail.com\nInstagram: @turnieroffline\n\nOder schau in den Kontakt-Tab!';
+
+  // Hilfe
+  if (/hilfe|help|was (kannst|weißt)|fragen/.test(f))
+    return 'Ich beantworte gerne:\n• „Wer spielt gerade?"\n• „Spielplan"\n• „Ergebnisse"\n• „Welche Teams?"\n• „Wann Finale?"\n• „Statistik"\n• „Wo findet statt?"';
+
+  // Fallback
+  var live2 = kiData.spiele.filter(function(s){return s.s==='laufend';});
+  if (live2.length)
+    return 'Das weiß ich nicht genau 🤔\n\nAktuell läuft:\n' + live2.map(function(s){return '🔴 '+s.t1+' '+s.e+' '+s.t2;}).join('\n') + '\n\nFrag mich z.B. nach dem Spielplan oder den Ergebnissen!';
+  return 'Das weiß ich nicht genau 🤔\n\nIch kann dir helfen mit:\n• Spielplan & Ergebnisse\n• Teams & Statistik\n• Finale & Siegerehrung';
+}
+
+function mdToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function addMsg(text, role) {
+  var msgs = document.getElementById('kiMsgs');
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = '<div class="avatar">' + (role==='bot'?'🤖':'👤') + '</div>' +
+    '<div class="bubble">' + mdToHtml(text) + '</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  var msgs = document.getElementById('kiMsgs');
+  var div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'typing';
+  div.innerHTML = '<div class="avatar">🤖</div><div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function kiSend() {
+  var inp = document.getElementById('kiInput');
+  var text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+  askKI(text);
+}
+
+function askKI(text) {
+  addMsg(text, 'user');
+  var t = showTyping();
+  setTimeout(function() {
+    t.remove();
+    var antwort = kiBeantworten(text);
+    addMsg(antwort, 'bot');
+  },  1200);
+}
+</script>
+<footer style="background:#060810;border-top:1px solid rgba(255,107,0,.12);padding:24px 32px;text-align:center;">
+  <div style="font-size:.7rem;color:#6b7fa0;margin-bottom:6px;">
+    🏆 <strong style="color:#ff6b00;font-family:Impact,Arial Black,sans-serif;letter-spacing:3px;">TURNIEROFFLINE V16</strong>
+    &nbsp;·&nbsp; Privates Hobbyprojekt · Entwickelt von Tobias
+  </div>
+  <div style="font-size:.62rem;color:#3a4a6a;line-height:1.8;">
+    Copyright © 2024–2026 Tobias ·
+    <a href="../lizenz/" style="color:#4a5a7a;text-decoration:underline;text-underline-offset:3px;">Lizenz</a> ·
+    <a href="../impressum.html" style="color:#4a5a7a;text-decoration:underline;text-underline-offset:3px;">Impressum</a> ·
+    <a href="../datenschutz.html" style="color:#4a5a7a;text-decoration:underline;text-underline-offset:3px;">Datenschutz</a> ·
+    <a href="https://ko-fi.com/turnieroffline" target="_blank" rel="noopener" style="color:#4a5a7a;text-decoration:underline;text-underline-offset:3px;">☕ Ko-fi</a>
+  </div>
+</footer>
+</body>
+</html>
