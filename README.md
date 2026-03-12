@@ -28,7 +28,7 @@
 - 🤖 **KI-Assistent** — „Wer spielt gerade?" — regelbasiert oder via Ollama, auch komplett offline
 - 🔊 **Sprachansagen** — Automatische Text-to-Speech-Ansagen bei Toren, Karten, Halbzeit
 - 🏟 **Multi-Feld** — Bis zu 4 Felder parallel, TV zeigt Split-Screen
-- 🎯 **Tipp-Spiel** — Zuschauer tippen Ergebnisse, Live-Rangliste *(neu in V16)*
+- 🎯 **Wetten-Spiel** — Zuschauer Wetten Ergebnisse, Live-Rangliste *(neu in V16)*
 - 🌐 **GitHub Sync** — Nach jedem Tor automatisch auf GitHub Pages gepusht
 - 🔌 **WordPress-Plugin** — Live-Stand direkt auf der Vereinswebseite einbetten
 - 🏅 **Siegerehrung** — Automatisches Podest, Export als HTML
