@@ -3,7 +3,7 @@
 **Kostenloses Turnierverwaltungssystem — offline, lokal, ohne Cloud.**
 
 [![Version](https://img.shields.io/badge/Version-V16-brightgreen)](https://github.com/turnieroffline/TurnierOffline.github.io)
-[![Lizenz](https://img.shields.io/badge/Lizenz-Open%20Source-blue)](https://github.com/turnieroffline/TurnierOffline.github.io/blob/main/lizenz/index.html)
+[![Lizenz](https://img.shields.io/badge/Lizenz-Open%20Source-blue)](https://github.com/turnieroffline/TurnierOffline.github.io/blob/main/LICENSE.txt)
 [![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-ff5e5b?logo=ko-fi)](https://ko-fi.com/turnieroffline)
 [![Plattform](https://img.shields.io/badge/Plattform-Android%20%7C%20Windows%20%7C%20Linux-lightgrey)]()
 
